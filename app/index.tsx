@@ -8,7 +8,7 @@ import ExitScreen from './screens/ExitScreen';
 
 const KbStyles = {
   white: '#FFFFFF',
-  fundoHeader: '#FCb773',
+  fundoHeader: '#EE8424',
   headerItem: '#FFC88d'
 };
 
@@ -20,6 +20,8 @@ export default function App() {
   <Drawer.Navigator initialRouteName="Home"
     screenOptions={{
       drawerStyle: {
+        backgroundColor: KbStyles.fundoHeader,
+        
         width: 240
       },
       headerStyle: {
@@ -31,7 +33,12 @@ export default function App() {
         color: KbStyles.white
       },
       drawerActiveBackgroundColor : KbStyles.headerItem,
-      drawerActiveTintColor: "white"
+      drawerInactiveTintColor: "white",
+      drawerActiveTintColor: "white",
+      drawerItemStyle:{
+        borderWidth:2,
+        borderColor:KbStyles.headerItem
+      }
     }}
   >
         <Drawer.Screen  name="Home" component={HomeScreen} />
@@ -42,10 +49,6 @@ export default function App() {
       
       </Drawer.Navigator>
  
-
-
-        <Text>teste</Text>
-
       </>
   );
 }
