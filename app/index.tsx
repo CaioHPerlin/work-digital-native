@@ -1,53 +1,34 @@
-import 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Provider } from 'react-native-paper';
+import * as React from 'react';
+import { Button, View, Text, } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import AccountScreen from './screens/AccountScreen';
 import ExitScreen from './screens/ExitScreen';
-import Header from './components/Header';
-import MenuDrawer from './components/MenuDrawer';
 
-const App: React.FC = () => {
-  const [currentScreen, setCurrentScreen] = useState('Home');
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'Home':
-        return <HomeScreen />;
-      case 'Configurações':
-        return <SettingsScreen />;
-      case 'Conta':
-        return <AccountScreen />;
-      case 'Sair':
-        return <ExitScreen />;
-      default:
-        return <HomeScreen />;
-    }
-  };
 
+const Drawer = createDrawerNavigator();
+export default function App() {
   return (
-    <Provider>
-      <View style={styles.container}>
-        <Header toggleMenu={() => setIsMenuVisible(!isMenuVisible)} />
-        <MenuDrawer
-          isVisible={isMenuVisible}
-          setIsVisible={setIsMenuVisible}
-          setCurrentScreen={setCurrentScreen}
-        />
-        {renderScreen()}
-      </View>
-    </Provider>
+< >
+
+  <Drawer.Navigator initialRouteName="Home"
+  
+  >
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Configurações" component={SettingsScreen} />
+        <Drawer.Screen name="Conta" component={AccountScreen} />
+        <Drawer.Screen name="Sair" component={ExitScreen} />
+
+      
+      </Drawer.Navigator>
+ 
+
+
+        <Text>teste</Text>
+
+      </>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
-
-export default App;
+}

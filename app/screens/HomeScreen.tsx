@@ -1,29 +1,17 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import ItemChurras from '../components/ItemChurras';
+import * as React from 'react';
+import { Button, View } from 'react-native';
 
-const HomeScreen: React.FC = () => {
+
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <ItemChurras />
-        <ItemChurras />
-        <ItemChurras />
-        <ItemChurras />
-      </ScrollView>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button
+        
+        title="Go to notifications"
+      />
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollView: {
-    padding: 10,
-    alignItems: 'center',
-  },
-});
 
-export default HomeScreen;
+
