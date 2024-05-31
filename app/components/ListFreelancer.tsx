@@ -24,8 +24,8 @@ export default function ListFreelancer() {
           <View style={styles.itemContainer}>
             <Image source={{ uri: item.image }} style={styles.image} />
             <View style={styles.textContainer}>
-              <Text style={styles.nameText}>Nome: {item.name}</Text>
-              <Text style={styles.roleText}>Cargo: {item.role}</Text>
+              <Text style={styles.nameText}>{item.name}</Text>
+              <Text style={styles.roleText}>{item.role}</Text>
             </View>
           </View>
         )}
@@ -44,11 +44,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     margin: 5,
-    backgroundColor: '#c3e7ff',
+    
+    borderWidth:1,
+    borderColor:'#dcfaff',
+    backgroundColor: '#ffffff',
     borderBottomColor: 'trasparent',
     borderRadius: 5,
+    
   },
   textContainer: {
+    fontSize:26,
     marginLeft: 10,
   },
   image: {
@@ -61,10 +66,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   nameText: {
-    fontSize: 16,
+    fontSize: 20,
   },
   roleText: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#666',
   },
 });
