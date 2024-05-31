@@ -3,7 +3,7 @@ import { Button, View, Text, } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from './screens/HomeScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import AccountScreen from './screens/AccountScreen';
+import RegisterAccount from './screens/RegisterAccount';
 import ExitScreen from './screens/ExitScreen';
 
 const KbStyles = {
@@ -43,7 +43,7 @@ export default function App() {
   >
         <Drawer.Screen  name="Home" component={HomeScreen} />
         <Drawer.Screen name="Configurações" component={SettingsScreen} />
-        <Drawer.Screen name="Conta" component={AccountScreen} />
+        <Drawer.Screen name="Conta" component={RegisterAccount} />
         <Drawer.Screen name="Sair" component={ExitScreen} />
 
       
