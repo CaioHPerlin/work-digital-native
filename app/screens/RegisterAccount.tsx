@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity,  ScrollView } from 'react-native';
 import { TextInput } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 export default function RegisterAccount() {
   const [nome, setNome] = React.useState('');
@@ -23,6 +24,10 @@ export default function RegisterAccount() {
 
   return (
     <View style={styles.container}>
+        
+
+        <ScrollView>
+        <Text variant="headlineSmall" style={styles.title}>Cadastro</Text>
       <TextInput
         label="Nome"
         value={nome}
@@ -87,17 +92,28 @@ export default function RegisterAccount() {
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
     padding: 20,
-    justifyContent: 'center',
+    height: '70%',
+    
   },
+    title: {
+        marginBottom: 20,
+        flex:1,  
+        textAlign:'center'
+    },
+
   input: {
+
+    
+    flexDirection: 'row',
     marginBottom: 10,
   },
   buttonContainer: {
