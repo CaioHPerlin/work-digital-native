@@ -1,18 +1,56 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity,  ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import { Text } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
 
 export default function RegisterAccount() {
-  const [nome, setNome] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [estado, setEstado] = React.useState('');
-  const [cidade, setCidade] = React.useState('');
-  const [endereco, setEndereco] = React.useState('');
-  const [numero, setNumero] = React.useState('');
-  const [bairro, setBairro] = React.useState('');
-  const [telefone, setTelefone] = React.useState('');
-  const [senha, setSenha] = React.useState('');
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [estado, setEstado] = useState('');
+  const [cidade, setCidade] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [numero, setNumero] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [senha, setSenha] = useState('');
+
+  const [estados, setEstados] = useState([]);
+  const [cidades, setCidades] = useState([]);
+  const [loadingEstados, setLoadingEstados] = useState(true);
+  const [loadingCidades, setLoadingCidades] = useState(false);
+
+  useEffect(() => {
+    // Fetch estados from IBGE API
+    axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+      .then(response => {
+        const sortedStates = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
+        setEstados(sortedStates);
+        setLoadingEstados(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoadingEstados(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (estado) {
+      setLoadingCidades(true);
+      // Fetch cidades from IBGE API based on selected estado
+      axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`)
+        .then(response => {
+          const sortedCities = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
+          setCidades(sortedCities);
+          setLoadingCidades(false);
+        })
+        .catch(error => {
+          console.error(error);
+          setLoadingCidades(false);
+        });
+    }
+  }, [estado]);
 
   const handleCancel = () => {
     // Implementar lógica de cancelamento
@@ -24,74 +62,132 @@ export default function RegisterAccount() {
 
   return (
     <View style={styles.container}>
-        
+      <ScrollView>
+        <Text style={styles.title}>Cadastro</Text>
 
-        <ScrollView>
-        <Text variant="headlineSmall" style={styles.title}>Cadastro</Text>
-      <TextInput
-        label="Nome"
-        value={nome}
-        onChangeText={text => setNome(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={text => setEmail(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Estado"
-        value={estado}
-        onChangeText={text => setEstado(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Cidade"
-        value={cidade}
-        onChangeText={text => setCidade(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Endereço"
-        value={endereco}
-        onChangeText={text => setEndereco(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Número"
-        value={numero}
-        onChangeText={text => setNumero(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Bairro"
-        value={bairro}
-        onChangeText={text => setBairro(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Telefone"
-        value={telefone}
-        onChangeText={text => setTelefone(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Senha"
-        value={senha}
-        onChangeText={text => setSenha(text)}
-        secureTextEntry
-        style={styles.input}
-      />
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            label="Nome"
+            value={nome}
+            onChangeText={text => setNome(text)}
+            style={styles.input}
+          />
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleCancel}>
-          <Text style={styles.buttonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            label="Email"
+            value={email}
+            onChangeText={text => setEmail(text)}
+            keyboardType="email-address"
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Estado</Text>
+          {loadingEstados ? (
+            <ActivityIndicator size="large" color="#FFC88d" />
+          ) : (
+            <Picker
+              selectedValue={estado}
+              style={styles.select}
+              onValueChange={(itemValue) => {
+                setEstado(itemValue);
+                setCidade(''); 
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione um estado" value="" />
+              {estados.map((estado) => (
+                <Picker.Item key={estado.id} label={estado.nome} value={estado.sigla} />
+              ))}
+            </Picker>
+          )}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Cidade</Text>
+          {loadingCidades ? (
+            <ActivityIndicator size="large" color="#FFC88d" />
+          ) : (
+            <Picker
+              selectedValue={cidade}
+              onValueChange={(itemValue) => setCidade(itemValue)}
+              style={styles.picker}
+              enabled={estado !== ''}
+            >
+              <Picker.Item label="Selecione uma cidade" value="" />
+              {cidades.map((cidade) => (
+                <Picker.Item key={cidade.id} label={cidade.nome} value={cidade.nome} />
+              ))}
+            </Picker>
+          )}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Endereço</Text>
+          <TextInput
+            label="Endereço"
+            value={endereco}
+            onChangeText={text => setEndereco(text)}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Número</Text>
+          <TextInput
+            label="Número"
+            value={numero}
+            onChangeText={text => setNumero(text)}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Bairro</Text>
+          <TextInput
+            label="Bairro"
+            value={bairro}
+            onChangeText={text => setBairro(text)}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput
+            label="Telefone"
+            value={telefone}
+            onChangeText={text => setTelefone(text)}
+            keyboardType="phone-pad"
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            label="Senha"
+            value={senha}
+            onChangeText={text => setSenha(text)}
+            secureTextEntry
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Cadastrar</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -99,27 +195,50 @@ export default function RegisterAccount() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
     padding: 20,
-    height: '70%',
-    
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-    title: {
-        marginBottom: 20,
-        flex:1,  
-        textAlign:'center'
-    },
-
-  input: {
-
-    
-    flexDirection: 'row',
+  title: {
+    fontSize: 34,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputGroup: {
     marginBottom: 10,
+    width: '100%',
   },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    backgroundColor:'#FFC88d',
+    marginBottom: 10,
+    opacity:0.4,
+    color:'#000000',
+   
+    borderRadius:5,
+    borderBottomWidth:0
+  },
+  picker: {
+    backgroundColor:'#FFC88d',
+    opacity:0.4,
+    height: 50,
+    width: '100%',
+   // marginBottom: 10,
+  },
+    select: {
+        backgroundColor:'#FFC88d',
+        marginBottom: 5,
+        borderWidth:2,
+    },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
+    width: '100%',
   },
   button: {
     backgroundColor: '#FFC88d',
