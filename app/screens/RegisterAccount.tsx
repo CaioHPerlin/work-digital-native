@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import { TextInput } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import Layout from '../components/Layout';
 
 export default function RegisterAccount() {
   const [nome, setNome] = useState('');
@@ -61,6 +62,7 @@ export default function RegisterAccount() {
   };
 
   return (
+    <Layout>
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Cadastro</Text>
@@ -190,6 +192,7 @@ export default function RegisterAccount() {
         </View>
       </ScrollView>
     </View>
+    </Layout>
   );
 }
 

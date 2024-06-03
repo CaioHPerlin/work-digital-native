@@ -4,7 +4,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from './screens/HomeScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import RegisterAccount from './screens/RegisterAccount';
-import ExitScreen from './screens/ExitScreen';
+//import ExitScreen from './screens/ExitScreen';
+import Login from './screens/Login';
 
 const KbStyles = {
   white: '#FFFFFF',
@@ -44,7 +45,7 @@ export default function App() {
         <Drawer.Screen  name="Home" component={HomeScreen} />
         <Drawer.Screen name="Configurações" component={SettingsScreen} />
         <Drawer.Screen name="Conta" component={RegisterAccount} />
-        <Drawer.Screen name="Sair" component={ExitScreen} />
+        <Drawer.Screen name="Sair" component={Login} />
 
       
       </Drawer.Navigator>
