@@ -85,9 +85,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    backgroundColor:'#FFC88d',
+    backgroundColor:'#fef5eb',
     marginBottom: 10,
-    opacity:0.4,
+   
     color:'#000000',
    
     borderRadius:5,
