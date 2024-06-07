@@ -5,14 +5,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+ 
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { Textarea } from '@gluestack-ui/themed';
+import { Textarea, TextareaInput } from "@gluestack-ui/themed";
+import Layout from "@/app/components/Layout";
 
 const BecomeAutonomo = ({ setCurrentScreen }) => {
+  const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [servico, setServico] = useState("");
   const [icone, setIcone] = useState(null);
@@ -34,18 +38,33 @@ const BecomeAutonomo = ({ setCurrentScreen }) => {
   };
 
   return (
+    <Layout>
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Tornar-se Autônomo</Text>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Descrição</Text>
+            <Text style={styles.label}>Nome Fantasia</Text>
+            <TextInput
 
-        <Textarea size="md" isReadOnly={false} isInvalid={false} isDisabled={false}  w='$64'>
+             
+              value={nome}
+              placeholder="Digite o nome fantasia "
+              onChangeText={(text) => setNome(text)}
+              style={styles.input}
+              
+            />
+          </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Descrição</Text>
+        <Textarea   isReadOnly={false} isInvalid={true} isDisabled={false} w="$64">
           <TextareaInput
-            placeholder="Your text goes here..."
+          style={styles.input}
+            placeholder="Escreva a descrição dos seus serviços"
+            value={descricao}
+            onChangeText={text => setDescricao(text)}
           />
         </Textarea>
-      
       </View>
 
       <View style={styles.inputGroup}>
@@ -96,11 +115,11 @@ const BecomeAutonomo = ({ setCurrentScreen }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} >
-          <Text style={styles.buttonText}>Cancelar</Text>
+        <TouchableOpacity style={styles.buttonConfirmar}>
+          <Text style={styles.buttonText} >Confirmar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} >
-          <Text style={styles.buttonText}>Cadastrar</Text>
+        <TouchableOpacity style={styles.buttonVisualizar}>
+          <Text style={styles.buttonText}>Visualizar</Text>
         </TouchableOpacity>
       </View>
 
@@ -111,6 +130,7 @@ const BecomeAutonomo = ({ setCurrentScreen }) => {
         <Text style={styles.buttonText}>Voltar para Configurações</Text>
       </TouchableOpacity>
     </ScrollView>
+    </Layout>
   );
 };
 
@@ -119,7 +139,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    
   },
   title: {
     fontSize: 34,
@@ -131,6 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "100%",
   },
+
   label: {
     fontSize: 16,
     marginBottom: 5,
@@ -174,6 +195,26 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#FFC88d",
     padding: 10,
+    marginTop:10,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonConfirmar: {
+    backgroundColor: "#a3ff7f",
+    padding: 10,
+    marginTop:10,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+  },
+
+  buttonVisualizar: {
+    backgroundColor: "#ffec7f",
+    padding: 10,
+    marginTop:10,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,

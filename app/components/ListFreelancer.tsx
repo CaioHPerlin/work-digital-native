@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 5,
     
-    borderWidth:1,
-    borderColor:'#dcfaff',
+    borderColor: "#FFC88d",
+    borderWidth: 1,
     backgroundColor: '#ffffff',
     borderBottomColor: 'trasparent',
     borderRadius: 5,

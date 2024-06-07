@@ -12,7 +12,7 @@ import { TextInput, RadioButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import Layout from "../components/Layout";
-import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+
 
 export default function RegisterAccount() {
   const [nome, setNome] = useState("");
@@ -286,12 +286,15 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#fef5eb",
     marginBottom: 10,
-
+    borderColor: "#FFC88d",
+    borderWidth: 1,
     color: "#000000",
     borderRadius: 5,
-    borderBottomWidth: 0,
+
   },
   picker: {
+    borderColor: "#FFC88d",
+    borderWidth: 1,
     backgroundColor: "#fef5eb",
     height: 50,
     width: "100%",
