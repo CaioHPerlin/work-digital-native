@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 
+
 const freelancers = [
   { id: '1', name: 'João Silva', role: 'Desenvolvedor Web', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3LNtU9Vm-wzMbyN6YvwfxsmukZhcKlE5YEQ&s' },
   { id: '2', name: 'Maria Oliveira', role: 'Designer Gráfico', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3LNtU9Vm-wzMbyN6YvwfxsmukZhcKlE5YEQ&s' },
@@ -16,7 +17,9 @@ const freelancers = [
 
 export default function ListFreelancer() {
   return (
+
     <View style={styles.container}>
+      
       <FlatList
         data={freelancers}
         keyExtractor={(item) => item.id}
@@ -27,10 +30,14 @@ export default function ListFreelancer() {
               <Text style={styles.nameText}>{item.name}</Text>
               <Text style={styles.roleText}>{item.role}</Text>
             </View>
+          
           </View>
         )}
       />
+      
     </View>
+    
+    
   );
 }
 
