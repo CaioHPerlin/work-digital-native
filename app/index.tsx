@@ -8,6 +8,8 @@ import {useState} from "react"
 //import ExitScreen from './screens/ExitScreen';
 import Login from "./screens/Login";
 import ConfigApp from "./screens/ConfigApp";
+import Slider from "./components/Slider";
+import ExitScreen from "./screens/ExitScreen";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -49,7 +51,7 @@ export default function App() {
         <Drawer.Screen name="Home" component={HomeScreen} />
         <Drawer.Screen name="Configurações" component={ ConfigApp} />
         <Drawer.Screen name="Conta" component={RegisterAccount} />
-        <Drawer.Screen name="Sair" component={Login} />
+        <Drawer.Screen name="Sair" component={ExitScreen} />
       </Drawer.Navigator>
     </>
   );

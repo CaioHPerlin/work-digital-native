@@ -1,11 +1,14 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { Title } from 'react-native-paper';
+import Slider from '../components/Slider';
 
-const ExitScreen: React.FC = () => (
-  <View>
-    <Title>Sair</Title>
-  </View>
-);
+export default function ExitScreen(){
+    return(
+        <>
+            <Text>teste</Text>
+            <Slider/>
+        </>
+    );
+}
 
-export default ExitScreen;
