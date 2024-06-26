@@ -1,34 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import BecomeAutonomo from './opcoesConfig/BecomeAutonomo';
-import ChangePassword from './opcoesConfig/ChangePassword';
 
-const ConfigApp = () => {
-  const [currentScreen, setCurrentScreen] = useState('');
 
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'BecomeAutonomo':
-        return <BecomeAutonomo setCurrentScreen={setCurrentScreen} />;
-      case 'ChangePassword':
-        return <ChangePassword setCurrentScreen={setCurrentScreen} />;
-      default:
+const ConfigApp = ({navigation}) => {
+
+
         return (
           <View style={styles.container}>
             <Text style={styles.title}>Configurações do Aplicativo</Text>
-            <TouchableOpacity style={styles.button} onPress={() => setCurrentScreen('BecomeAutonomo')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BecomeAutonomo')}>
               <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setCurrentScreen('ChangePassword')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChangePassword')}>
               <Text style={styles.buttonText}>Alterar Senha</Text>
             </TouchableOpacity>
           </View>
         );
     }
-  };
+  
 
-  return renderScreen();
-};
 
 const styles = StyleSheet.create({
   container: { 

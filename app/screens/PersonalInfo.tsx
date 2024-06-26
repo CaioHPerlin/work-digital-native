@@ -7,7 +7,7 @@ import Description from '../components/Description';
 import BtnPersonal from '../components/BtnPersonal';
 import Layout from '../components/Layout';
 
-export default function ExitScreen(){
+export default function PersonalInfo(){
     return(
         <>
         <Layout>

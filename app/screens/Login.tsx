@@ -5,7 +5,7 @@ import { TextInput } from 'react-native-paper';
 import Layout from '../components/Layout';
 
 
-export default function Login() {
+export default function Login({navigation}) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
@@ -49,7 +49,7 @@ export default function Login() {
 
         <View style={styles.buttonContainer}>
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sidebar')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>

@@ -14,7 +14,7 @@ import axios from "axios";
 import Layout from "../components/Layout";
 
 
-export default function RegisterAccount() {
+export default function RegisterAccount({navigation}) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [estado, setEstado] = useState("");
@@ -240,7 +240,7 @@ export default function RegisterAccount() {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <TouchableOpacity style={styles.button} >
               <Text style={styles.buttonText}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleRegister}>

@@ -9,7 +9,8 @@ import {useState} from "react"
 import Login from "./screens/Login";
 import ConfigApp from "./screens/ConfigApp";
 import Slider from "./components/Slider";
-import ExitScreen from "./screens/ExitScreen";
+import ExitScreen from "./screens/PersonalInfo";
+import Routes from "./routes/routes";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -23,36 +24,7 @@ export default function App() {
  //const [config, setConfig] = useState('')
   return (
     <>
-      <Drawer.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          drawerStyle: {
-            backgroundColor: KbStyles.fundoHeader,
-
-            width: 240,
-          },
-          headerStyle: {
-            height: 80,
-            backgroundColor: KbStyles.fundoHeader,
-          },
-
-          headerTitleStyle: {
-            color: KbStyles.white,
-          },
-          drawerActiveBackgroundColor: KbStyles.headerItem,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "white",
-          drawerItemStyle: {
-            borderWidth: 2,
-            borderColor: KbStyles.headerItem,
-          },
-        }}
-      >
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Configurações" component={ ConfigApp} />
-        <Drawer.Screen name="Conta" component={RegisterAccount} />
-        <Drawer.Screen name="Sair" component={ExitScreen} />
-      </Drawer.Navigator>
+    <Routes/>
     </>
   );
 }
