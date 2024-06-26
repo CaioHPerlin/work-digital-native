@@ -10,6 +10,11 @@ const ConfigApp = ({navigation}) => {
             <Text style={styles.title}>Configurações do Aplicativo</Text>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DadosPessoais')}>
               <Text style={styles.buttonText}>Dados Pessoais</Text>
+              
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PersonalInfo')}>
+              <Text style={styles.buttonText}>testeS</Text>
+              
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('BecomeAutonomo')}>
               <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
