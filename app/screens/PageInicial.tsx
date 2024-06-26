@@ -6,7 +6,7 @@ export default function PageInicial({navigation}){
     return(
     <Layout>
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo ao ConstruCasa</Text>
+      <Text style={styles.title}>Bem-vindo ao Aplicativo</Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity

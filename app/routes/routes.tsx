@@ -9,6 +9,7 @@ import PageInicial from '../screens/PageInicial';
 import Sidebar from '../components/Sidebar'
 import BecomeAutonomo from '../screens/opcoesConfig/BecomeAutonomo';
 import ChangePassword from '../screens/opcoesConfig/ChangePassword';
+import DadosPessoais from '../screens/DadosPessoais';
 
 
 const KbStyles = {
@@ -31,6 +32,7 @@ const Routes = () => {
         <Stack.Screen name="BecomeAutonomo" component={BecomeAutonomo}  />
         <Stack.Screen name="Sidebar" component={Sidebar}  />
         <Stack.Screen name="ChangePassword" component={ChangePassword}  />
+        <Stack.Screen name="DadosPessoais" component={DadosPessoais}  />
       </Stack.Navigator>
 
 </>

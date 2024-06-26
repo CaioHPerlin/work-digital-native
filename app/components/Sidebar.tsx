@@ -4,12 +4,11 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import RegisterAccount from "../screens/RegisterAccount";
-import {useState} from "react"
+import { useState } from "react";
 //import ExitScreen from './screens/ExitScreen';
 import Login from "../screens/Login";
 import ConfigApp from "../screens/ConfigApp";
 import Slider from "./Slider";
-
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -19,7 +18,6 @@ const KbStyles = {
 
 const Drawer = createDrawerNavigator();
 export default function Sidebar() {
-
   return (
     <>
       <Drawer.Navigator
@@ -48,9 +46,9 @@ export default function Sidebar() {
         }}
       >
         <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Configurações" component={ ConfigApp} />
-        <Drawer.Screen name="Conta" component={RegisterAccount} />
-      
+        <Drawer.Screen name="Configurações" component={ConfigApp} />
+
+        
       </Drawer.Navigator>
     </>
   );
