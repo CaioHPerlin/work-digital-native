@@ -26,7 +26,7 @@ export default function ChangePassword({ navigation }) {
       alert("As senhas não coincidem");
       return;
     }
-    // Lógica para alterar a senha
+    alert('alterado com sucesso')
   };
 
   return (

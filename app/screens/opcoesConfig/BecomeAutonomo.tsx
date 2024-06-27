@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
- 
   Image,
   ScrollView,
   Alert,
@@ -15,7 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Textarea, TextareaInput } from "@gluestack-ui/themed";
 import Layout from "@/app/components/Layout";
 
-const BecomeAutonomo = ({ setCurrentScreen }) => {
+const BecomeAutonomo = ({ navigation }) => {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [servico, setServico] = useState("");
@@ -39,97 +38,99 @@ const BecomeAutonomo = ({ setCurrentScreen }) => {
 
   return (
     <Layout>
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Tornar-se Autônomo</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Tornar-se Autônomo</Text>
 
-      <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome Fantasia</Text>
-            <TextInput
-
-             
-              value={nome}
-              placeholder="Digite o nome fantasia "
-              onChangeText={(text) => setNome(text)}
-              style={styles.input}
-              
-            />
-          </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Descrição</Text>
-        <Textarea   isReadOnly={false} isInvalid={true} isDisabled={false} w="$64">
-          <TextareaInput
-          style={styles.input}
-            placeholder="Escreva a descrição dos seus serviços"
-            value={descricao}
-            onChangeText={text => setDescricao(text)}
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome Fantasia</Text>
+          <TextInput
+            value={nome}
+            placeholder="Digite o nome fantasia "
+            onChangeText={(text) => setNome(text)}
+            style={styles.input}
           />
-        </Textarea>
-      </View>
+        </View>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Tipo de Serviço</Text>
-        <Picker
-          selectedValue={servico}
-          style={styles.picker}
-          onValueChange={(itemValue) => setServico(itemValue)}
-        >
-          <Picker.Item label="Selecione um serviço" value="" />
-          <Picker.Item label="Serviço 1" value="servico1" />
-          <Picker.Item label="Serviço 2" value="servico2" />
-          <Picker.Item label="Serviço 3" value="servico3" />
-        </Picker>
-      </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Descrição</Text>
+          <Textarea
+            isReadOnly={false}
+            isInvalid={true}
+            isDisabled={false}
+            w="$64"
+          >
+            <TextareaInput
+              style={styles.input}
+              placeholder="Escreva a descrição dos seus serviços"
+              value={descricao}
+              onChangeText={(text) => setDescricao(text)}
+            />
+          </Textarea>
+        </View>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Ícone</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Tipo de Serviço</Text>
+          <Picker
+            selectedValue={servico}
+            style={styles.picker}
+            onValueChange={(itemValue) => setServico(itemValue)}
+          >
+            <Picker.Item label="Selecione um serviço" value="" />
+            <Picker.Item label="Serviço 1" value="servico1" />
+            <Picker.Item label="Serviço 2" value="servico2" />
+            <Picker.Item label="Serviço 3" value="servico3" />
+          </Picker>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Ícone</Text>
+          <TouchableOpacity
+            style={styles.imagePicker}
+            onPress={() => pickImage(setIcone)}
+          >
+            <Text style={styles.imagePickerText}>Escolher Ícone</Text>
+          </TouchableOpacity>
+          {icone && <Image source={{ uri: icone }} style={styles.image} />}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Banner 1</Text>
+          <TouchableOpacity
+            style={styles.imagePicker}
+            onPress={() => pickImage(setBanner1)}
+          >
+            <Text style={styles.imagePickerText}>Escolher Banner 1</Text>
+          </TouchableOpacity>
+          {banner1 && <Image source={{ uri: banner1 }} style={styles.image} />}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Banner 2</Text>
+          <TouchableOpacity
+            style={styles.imagePicker}
+            onPress={() => pickImage(setBanner2)}
+          >
+            <Text style={styles.imagePickerText}>Escolher Banner 2</Text>
+          </TouchableOpacity>
+          {banner2 && <Image source={{ uri: banner2 }} style={styles.image} />}
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonConfirmar}>
+            <Text style={styles.buttonText}>Confirmar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonVisualizar}>
+            <Text style={styles.buttonText}>Visualizar</Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity
-          style={styles.imagePicker}
-          onPress={() => pickImage(setIcone)}
+          style={styles.buttonVoltar}
+          onPress={() => navigation.navigate("ConfigApp")}
         >
-          <Text style={styles.imagePickerText}>Escolher Ícone</Text>
+          <Text style={styles.buttonText}>Voltar para Configurações</Text>
         </TouchableOpacity>
-        {icone && <Image source={{ uri: icone }} style={styles.image} />}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Banner 1</Text>
-        <TouchableOpacity
-          style={styles.imagePicker}
-          onPress={() => pickImage(setBanner1)}
-        >
-          <Text style={styles.imagePickerText}>Escolher Banner 1</Text>
-        </TouchableOpacity>
-        {banner1 && <Image source={{ uri: banner1 }} style={styles.image} />}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Banner 2</Text>
-        <TouchableOpacity
-          style={styles.imagePicker}
-          onPress={() => pickImage(setBanner2)}
-        >
-          <Text style={styles.imagePickerText}>Escolher Banner 2</Text>
-        </TouchableOpacity>
-        {banner2 && <Image source={{ uri: banner2 }} style={styles.image} />}
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonConfirmar}>
-          <Text style={styles.buttonText} >Confirmar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonVisualizar}>
-          <Text style={styles.buttonText}>Visualizar</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setCurrentScreen("ConfigApp")}
-      >
-        <Text style={styles.buttonText}>Voltar para Configurações</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
     </Layout>
   );
 };
@@ -139,7 +140,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     alignItems: "center",
-    
   },
   title: {
     fontSize: 34,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFC88d",
     borderWidth: 1,
     borderRadius: 5,
-    padding: 10,
+    padding: 15,
     backgroundColor: "#fef5eb",
   },
   picker: {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   imagePicker: {
     backgroundColor: "#FFC88d",
-    padding: 10,
+    padding: 20,
     borderRadius: 5,
     alignItems: "center",
   },
@@ -194,17 +194,28 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#FFC88d",
-    padding: 10,
-    marginTop:10,
+    padding: 30,
+    marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+   
+  },
+  buttonVoltar: {
+    backgroundColor: "#FFC88d",
+    padding: 20,
+    marginTop: 10,
+    borderRadius: 5,
+    alignItems: "center",
+   
+  
+   
   },
   buttonConfirmar: {
     backgroundColor: "#a3ff7f",
-    padding: 10,
-    marginTop:10,
+    padding: 15,
+    marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,
@@ -213,8 +224,8 @@ const styles = StyleSheet.create({
 
   buttonVisualizar: {
     backgroundColor: "#ffec7f",
-    padding: 10,
-    marginTop:10,
+    padding: 15,
+    marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,

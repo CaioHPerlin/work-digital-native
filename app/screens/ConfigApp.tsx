@@ -22,6 +22,7 @@ const ConfigApp = ({navigation}) => {
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChangePassword')}>
               <Text style={styles.buttonText}>Alterar Senha</Text>
             </TouchableOpacity>
+,
           </View>
         );
     }

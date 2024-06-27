@@ -113,10 +113,10 @@ export default function DadosPessoais({ navigation }) {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ConfigApp')}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <TouchableOpacity style={styles.button} onPress={() => alert('alterado com successo') }>
               <Text style={styles.buttonText}>Alterar</Text>
             </TouchableOpacity>
           </View>
