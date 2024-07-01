@@ -1,71 +1,89 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Image,
   ScrollView,
+  Alert,
   ActivityIndicator,
-} from "react-native";
-import { TextInput, RadioButton } from "react-native-paper";
-import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
-import Layout from "../components/Layout";
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
+import { Textarea, TextareaInput } from '@gluestack-ui/themed';
+import { RadioButton } from 'react-native-paper';
+import axios from 'axios';
+import Layout from '../components/Layout';
 
-
-export default function RegisterAccount({navigation}) {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [estado, setEstado] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [senha, setSenha] = useState("");
-  const [checked, setChecked] = React.useState("yesYears");
+const RegisterAccount = ({ navigation }) => {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [estado, setEstado] = useState('');
+  const [cidade, setCidade] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [numero, setNumero] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [senha, setSenha] = useState('');
+  const [checked, setChecked] = useState('yesYears');
   const [estados, setEstados] = useState([]);
   const [cidades, setCidades] = useState([]);
   const [loadingEstados, setLoadingEstados] = useState(true);
   const [loadingCidades, setLoadingCidades] = useState(false);
+  const [isPrestadorVisible, setPrestadorVisible] = useState(false);
+  const [descricao, setDescricao] = useState('');
+  const [servicos, setServicos] = useState([]);
+  const [servicoAtual, setServicoAtual] = useState('');
+  const [icone, setIcone] = useState(null);
+  const [banner1, setBanner1] = useState(null);
+  const [banner2, setBanner2] = useState(null);
+
+  const pickImage = async (setImage) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      Alert.alert('Imagem carregada', 'A imagem foi carregada com sucesso!');
+    }
+  };
 
   useEffect(() => {
-    // Fetch estados from IBGE API
-    axios
-      .get("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
-      .then((response) => {
-        const sortedStates = response.data.sort((a, b) =>
-          a.nome.localeCompare(b.nome)
-        );
+    const fetchEstados = async () => {
+      try {
+        const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
+        const sortedStates = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
         setEstados(sortedStates);
         setLoadingEstados(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
         setLoadingEstados(false);
-      });
+      }
+    };
+    fetchEstados();
   }, []);
 
   useEffect(() => {
     if (estado) {
       setLoadingCidades(true);
-      // Fetch cidades from IBGE API based on selected estado
-      axios
-        .get(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
-        )
-        .then((response) => {
-          const sortedCities = response.data.sort((a, b) =>
-            a.nome.localeCompare(b.nome)
-          );
+      const fetchCidades = async () => {
+        try {
+          const response = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`);
+          const sortedCities = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
           setCidades(sortedCities);
           setLoadingCidades(false);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error(error);
           setLoadingCidades(false);
-        });
+        }
+      };
+      fetchCidades();
     }
   }, [estado]);
 
@@ -77,175 +95,111 @@ export default function RegisterAccount({navigation}) {
     // Implementar lógica de registro
   };
 
+  const addServico = () => {
+    if (servicoAtual) {
+      setServicos([...servicos, servicoAtual]);
+      setServicoAtual('');
+    }
+  };
+
   return (
     <Layout>
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Cadastro</Text>
+          <InputGroup label="Nome" value={nome} onChangeText={setNome} />
+          <InputGroup label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome</Text>
-            <TextInput
-              label="Nome"
-              value={nome}
-              onChangeText={(text) => setNome(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
+          <PickerGroup
+            label="Estado"
+            selectedValue={estado}
+            onValueChange={(itemValue) => {
+              setEstado(itemValue);
+              setCidade('');
+            }}
+            options={estados}
+            loading={loadingEstados}
+            prompt="Selecione um estado"
+          />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              label="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              keyboardType="email-address"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
+          <PickerGroup
+            label="Cidade"
+            selectedValue={cidade}
+            onValueChange={setCidade}
+            options={cidades}
+            loading={loadingCidades}
+            prompt="Selecione uma cidade"
+            enabled={estado !== ''}
+          />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Estado</Text>
-            {loadingEstados ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={estado}
-                style={styles.select}
-                onValueChange={(itemValue) => {
-                  setEstado(itemValue);
-                  setCidade("");
-                }}
-                style={styles.picker}
-              >
-                <Picker.Item label="Selecione um estado" value="" />
-                {estados.map((estado) => (
-                  <Picker.Item
-                    key={estado.id}
-                    label={estado.nome}
-                    value={estado.sigla}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
+          <InputGroup label="Endereço" value={endereco} onChangeText={setEndereco} />
+          <InputGroup label="Número" value={numero} onChangeText={setNumero} keyboardType="numeric" />
+          <InputGroup label="Bairro" value={bairro} onChangeText={setBairro} />
+          <InputGroup label="Telefone" value={telefone} onChangeText={setTelefone} keyboardType="phone-pad" />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cidade</Text>
-            {loadingCidades ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={cidade}
-                onValueChange={(itemValue) => setCidade(itemValue)}
-                style={styles.picker}
-                enabled={estado !== ""}
-              >
-                <Picker.Item label="Selecione uma cidade" value="" />
-                {cidades.map((cidade) => (
-                  <Picker.Item
-                    key={cidade.id}
-                    label={cidade.nome}
-                    value={cidade.nome}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Endereço</Text>
-            <TextInput
-              label="Endereço"
-              value={endereco}
-              onChangeText={(text) => setEndereco(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Número</Text>
-            <TextInput
-              label="Número"
-              value={numero}
-              onChangeText={(text) => setNumero(text)}
-              keyboardType="numeric"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Bairro</Text>
-            <TextInput
-              label="Bairro"
-              value={bairro}
-              onChangeText={(text) => setBairro(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Telefone</Text>
-            <TextInput
-              label="Telefone"
-              value={telefone}
-              onChangeText={(text) => setTelefone(text)}
-              keyboardType="phone-pad"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-          <Text style={styles.label}>Tem +18 Anos </Text>
+          <Text style={styles.label}>Tem +18 Anos</Text>
           <View style={styles.switch}>
             <View style={styles.radioGroup}>
               <Text>Sim</Text>
               <RadioButton
                 value="yesYears"
-                status={checked === "yesYears" ? "checked" : "unchecked"}
-                onPress={() => setChecked("yesYears")}
+                status={checked === 'yesYears' ? 'checked' : 'unchecked'}
+                onPress={() => setChecked('yesYears')}
                 color="#FFC88d"
               />
               <Text>Não</Text>
               <RadioButton
                 value="notYears"
-                status={checked === "notYears" ? "checked" : "unchecked"}
-                onPress={() => setChecked("notYears")}
+                status={checked === 'notYears' ? 'checked' : 'unchecked'}
+                onPress={() => setChecked('notYears')}
                 color="#FFC88d"
               />
             </View>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Senha</Text>
-            <TextInput
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-              label="Senha"
-              value={senha}
-              onChangeText={(text) => setSenha(text)}
-              secureTextEntry
-              style={styles.input}
-            />
-          </View>
+          <InputGroup label="Senha" value={senha} onChangeText={setSenha} secureTextEntry />
+
+          <TouchableOpacity style={styles.button} onPress={() => setPrestadorVisible(!isPrestadorVisible)}>
+            <Text style={styles.buttonText}>Seja Autônomo</Text>
+          </TouchableOpacity>
+
+
+          {isPrestadorVisible && (
+            <>
+              <InputGroup label="Descrição" value={descricao} onChangeText={setDescricao} multiline />
+
+              <View>
+                <Text>Serviços selecionados</Text>
+                {servicos.map((s, index) => (
+                  <Text key={index} style={styles.servicoItem}>{s}</Text>
+                ))}
+              </View>
+
+              <PickerGroup
+                label="Tipo de Serviço"
+                selectedValue={servicoAtual}
+                onValueChange={setServicoAtual}
+                options={[
+                  { label: 'Selecione um serviço', value: '' },
+                  { label: 'Serviço 1', value: 'servico1' },
+                  { label: 'Serviço 2', value: 'servico2' },
+                  { label: 'Serviço 3', value: 'servico3' },
+                ]}
+              />
+
+              <TouchableOpacity style={styles.addButton} onPress={addServico}>
+                <Text style={styles.addButtonText}>Adicionar Serviço</Text>
+              </TouchableOpacity>
+
+              <ImagePickerGroup label="Ícone" image={icone} onPickImage={() => pickImage(setIcone)} />
+              <ImagePickerGroup label="Banner 1" image={banner1} onPickImage={() => pickImage(setBanner1)} />
+              <ImagePickerGroup label="Banner 2" image={banner2} onPickImage={() => pickImage(setBanner2)} />
+            </>
+          )}
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
+            <Button text="Cancelar" onPress={handleCancel} />
+            <Button text="Cadastrar" onPress={handleRegister} />
           </View>
         </ScrollView>
       </View>
@@ -253,73 +207,163 @@ export default function RegisterAccount({navigation}) {
   );
 }
 
+const InputGroup = ({ label, value, onChangeText, keyboardType, secureTextEntry, multiline }) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>{label}</Text>
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      keyboardType={keyboardType}
+      secureTextEntry={secureTextEntry}
+      style={[styles.input, multiline && { height: 100 }]}
+      multiline={multiline}
+      underlineColor="transparent"
+      activeUnderlineColor="black"
+    />
+  </View>
+);
+
+const PickerGroup = ({ label, selectedValue, onValueChange, options, loading, prompt, enabled = true }) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>{label}</Text>
+    {loading ? (
+      <ActivityIndicator size="large" color="#FFC88d" />
+    ) : (
+      <Picker
+        selectedValue={selectedValue}
+        onValueChange={onValueChange}
+        style={styles.picker}
+        enabled={enabled}
+      >
+        {options.map((option, index) => (
+          <Picker.Item key={index} label={option.label} value={option.value} />
+        ))}
+      </Picker>
+    )}
+  </View>
+);
+
+const ImagePickerGroup = ({ label, image, onPickImage }) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>{label}</Text>
+    <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
+      <Text style={styles.imagePickerText}>Escolher {label}</Text>
+    </TouchableOpacity>
+    {image && <Image source={{ uri: image }} style={styles.image} />}
+  </View>
+);
+
+const Button = ({ text, onPress }) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <Text style={styles.buttonText}>{text}</Text>
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 34,
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   inputGroup: {
     marginBottom: 10,
-    width: "100%",
+    width: '100%',
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
   },
   switch: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
   radioGroup: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 10,
   },
   input: {
-    backgroundColor: "#fef5eb",
-    marginBottom: 10,
-    borderColor: "#FFC88d",
+    backgroundColor: '#fef5eb',
+    borderColor: '#FFC88d',
     borderWidth: 1,
-    color: "#000000",
+    color: '#000000',
     borderRadius: 5,
-
+    marginBottom: 10,
+    height: 50,
+    paddingHorizontal: 10,
   },
   picker: {
-    borderColor: "#FFC88d",
+    backgroundColor: '#fef5eb',
+    borderColor: '#FFC88d',
     borderWidth: 1,
-    backgroundColor: "#fef5eb",
+    marginBottom: 10,
     height: 50,
-    width: "100%",
+    justifyContent: 'center',
   },
-  select: {
-    backgroundColor: "#FFC88d",
-    marginBottom: 5,
-    borderWidth: 2,
+  imagePicker: {
+    backgroundColor: '#FFC88d',
+    padding: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  imagePickerText: {
+    color: '#000000',
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 20,
-    width: "100%",
+    width: '100%',
   },
   button: {
-    backgroundColor: "#FFC88d",
+    backgroundColor: '#FFC88d',
     padding: 10,
     borderRadius: 5,
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
     marginHorizontal: 5,
   },
   buttonText: {
-    color: "#000",
-    fontWeight: "bold",
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  addButton: {
+    backgroundColor: '#fef5eb',
+    borderColor: '#FFC88d',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  addButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+  },
+  servicoItem: {
+    padding: 5,
+    borderWidth: 1,
+    borderColor: '#FFC88d',
+    borderRadius: 5,
+    marginBottom: 5,
+    backgroundColor: '#fef5eb',
   },
 });
+
+export default RegisterAccount;

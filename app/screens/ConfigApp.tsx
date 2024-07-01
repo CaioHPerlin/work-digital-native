@@ -35,7 +35,6 @@ const ConfigApp = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
-      
     </View>
   );
 };

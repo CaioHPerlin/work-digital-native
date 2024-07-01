@@ -13,13 +13,15 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Text style={styles.nomeMarca}>nome marca</Text>
-          <TouchableOpacity 
+
+        </View>
+
+        <TouchableOpacity 
             style={styles.filterButton} 
             onPress={() => setPickerVisible(!isPickerVisible)}
           >
             <Text style={styles.filterButtonText}>Filtrar</Text>
           </TouchableOpacity>
-        </View>
 
         {isPickerVisible && (
           <View style={styles.pickerContainer}>
@@ -41,7 +43,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <ListFreelancer/>
+        
       </View>
     </Layout>
   );
@@ -49,7 +51,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
     padding: 20,
     //backgroundColor: '#FFF',
   },
