@@ -8,7 +8,7 @@ import Layout from '../components/Layout';
 export default function HomeScreen() {
   const [selectedValue, setSelectedValue] = useState("A");
   const [isPickerVisible, setPickerVisible] = useState(false);
- 
+  const [searchText, setSearchText] = useState("");
 
   const serviceTypes = [
     "A","Açougueiro", "Administrador de empresas", "Advogado Ambientalista", "Advogado Cível",
@@ -48,11 +48,11 @@ export default function HomeScreen() {
     "Zelador residencial"
   ];
 
-  // ordem alfabética
   const sortedServiceTypes = serviceTypes.sort();
-  //console.log(sortedServiceTypes)
 
-  
+  const filteredServiceTypes = sortedServiceTypes.filter(service => 
+    service.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <Layout>
@@ -62,36 +62,43 @@ export default function HomeScreen() {
         </View>
 
         <TouchableOpacity 
-            style={styles.filterButton} 
-            onPress={() => setPickerVisible(!isPickerVisible)}
-          >
-            <Text style={styles.filterButtonText}>Filtrar</Text>
-          </TouchableOpacity>
+          style={styles.filterButton} 
+          onPress={() => setPickerVisible(!isPickerVisible)}
+        >
+          <Text style={styles.filterButtonText}>Filtrar</Text>
+        </TouchableOpacity>
 
         {isPickerVisible && (
           <View style={styles.pickerContainer}>
             <Text>TIPOS DE SERVIÇO</Text>
-            
-            <Picker
-              selectedValue={selectedValue}
-              style={styles.picker}
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Pesquisar..."
+              value={searchText}
+              onChangeText={setSearchText}
+            />
+            <View style={styles.pickerWrapper}>
               
-              onValueChange={(itemValue) => setSelectedValue(itemValue)}
-            >
-              {sortedServiceTypes.map((service, index) => (
-                <Picker.Item key={index} label={service} value={service} />
-              ))}
-            </Picker>
+              <Picker
+                selectedValue={selectedValue}
+                style={styles.picker}
+                onValueChange={itemValue => setSelectedValue(itemValue)}
+              >
+                
+                
+                {filteredServiceTypes.map((service, index) => (
+                  <Picker.Item key={index} label={service} value={service} />
+                ))}
+              </Picker>
+            </View>
           </View>
         )}
-        </View>
-
+      </View>
     </Layout>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     padding: 20,
@@ -107,8 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textTransform: 'uppercase',
     fontWeight: 'bold',
-    letterSpacing:4,
-   
+    letterSpacing: 4,
   },
   filterButton: {
     backgroundColor: '#FFC88d',
@@ -132,9 +138,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '100%',
   },
-  picker: {
-    height: 50,
+  pickerWrapper: {
+    height: 50, // reduce the height of the picker container
     width: '100%',
   },
-
+  picker: {
+    height: 50, // match the height of the wrapper
+    width: '100%',
+  },
 });
