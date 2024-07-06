@@ -124,6 +124,14 @@ const BecomeAutonomo = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+
+          <TouchableOpacity style={styles.buttonDesativar}>
+            <Text style={styles.buttonText}>Desativar Perfil</Text>
+          </TouchableOpacity>
+     
+
+
+
         <TouchableOpacity
           style={styles.buttonVoltar}
           onPress={() => navigation.navigate("ConfigApp")}
@@ -208,10 +216,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
-   
-  
-   
+    width: 250,
   },
+  
   buttonConfirmar: {
     backgroundColor: "#a3ff7f",
     padding: 15,
@@ -230,6 +237,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+  },
+
+  buttonDesativar: {
+    backgroundColor: "#ff5151",
+    width: 250,
+    padding: 20,
+    marginTop: 10,
+    borderRadius: 5,
+    alignItems: "center",
   },
   buttonText: {
     color: "#000",

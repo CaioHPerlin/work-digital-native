@@ -113,7 +113,7 @@ export default function DadosPessoais({ navigation }) {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ConfigApp')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => alert('alterado com successo') }>

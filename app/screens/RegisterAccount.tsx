@@ -9,38 +9,81 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  KeyboardTypeOptions,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { Textarea, TextareaInput } from "@gluestack-ui/themed";
 import { RadioButton } from "react-native-paper";
 import axios from "axios";
 import Layout from "../components/Layout";
 
-const RegisterAccount = ({ navigation }) => {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [estado, setEstado] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [senha, setSenha] = useState("");
-  const [checked, setChecked] = useState("yesYears");
-  const [estados, setEstados] = useState([]);
-  const [cidades, setCidades] = useState([]);
-  const [loadingEstados, setLoadingEstados] = useState(true);
-  const [loadingCidades, setLoadingCidades] = useState(false);
-  const [isPrestadorVisible, setPrestadorVisible] = useState(false);
-  const [descricao, setDescricao] = useState("");
-  const [servicos, setServicos] = useState([]);
-  const [servicoAtual, setServicoAtual] = useState("");
-  const [icone, setIcone] = useState(null);
-  const [banner1, setBanner1] = useState(null);
-  const [banner2, setBanner2] = useState(null);
+type Estado = {
+  id: number;
+  sigla: string;
+  nome: string;
+};
 
-  const pickImage = async (setImage) => {
+type Cidade = {
+  id: number;
+  nome: string;
+};
+
+type ImagePickerGroupProps = {
+  label: string;
+  image: string | null;
+  onPickImage: () => void;
+};
+
+type PickerOption = { label: string; value: string };
+
+type PickerGroupProps = {
+  label: string;
+  selectedValue: string | undefined;
+  onValueChange: (itemValue: string, itemIndex: number) => void;
+  options: PickerOption[];
+  loading: boolean;
+  prompt?: string;
+  enabled?: boolean;
+};
+
+type InputGroupProps = {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  keyboardType?: string;
+  secureTextEntry?: boolean;
+  multiline?: boolean;
+};
+
+type ButtonProps = {
+  text: string;
+  onPress: () => void;
+};
+
+const RegisterAccount = ({ navigation }: { navigation: any }) => {
+  const [nome, setNome] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [estado, setEstado] = useState<string>("");
+  const [cidade, setCidade] = useState<string>("");
+  const [endereco, setEndereco] = useState<string>("");
+  const [numero, setNumero] = useState<string>("");
+  const [bairro, setBairro] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>("");
+  const [senha, setSenha] = useState<string>("");
+  const [checked, setChecked] = useState<string>("yesYears");
+  const [estados, setEstados] = useState<Estado[]>([]);
+  const [cidades, setCidades] = useState<Cidade[]>([]);
+  const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
+  const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
+  const [isPrestadorVisible, setPrestadorVisible] = useState<boolean>(false);
+  const [descricao, setDescricao] = useState<string>("");
+  const [servicos, setServicos] = useState<string[]>([]);
+  const [servicoAtual, setServicoAtual] = useState<string>("");
+  const [icone, setIcone] = useState<string | null>(null);
+  const [banner1, setBanner1] = useState<string | null>(null);
+  const [banner2, setBanner2] = useState<string | null>(null);
+
+  const pickImage = async (setImage: (uri: string) => void) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -48,8 +91,8 @@ const RegisterAccount = ({ navigation }) => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      setImage(result.uri);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
       Alert.alert("Imagem carregada", "A imagem foi carregada com sucesso!");
     }
   };
@@ -60,7 +103,7 @@ const RegisterAccount = ({ navigation }) => {
         const response = await axios.get(
           "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
         );
-        const sortedStates = response.data.sort((a, b) =>
+        const sortedStates = response.data.sort((a: Estado, b: Estado) =>
           a.nome.localeCompare(b.nome)
         );
         setEstados(sortedStates);
@@ -81,7 +124,7 @@ const RegisterAccount = ({ navigation }) => {
           const response = await axios.get(
             `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
           );
-          const sortedCities = response.data.sort((a, b) =>
+          const sortedCities = response.data.sort((a: Cidade, b: Cidade) =>
             a.nome.localeCompare(b.nome)
           );
           setCidades(sortedCities);
@@ -130,7 +173,6 @@ const RegisterAccount = ({ navigation }) => {
             ) : (
               <Picker
                 selectedValue={estado}
-                style={styles.select}
                 onValueChange={(itemValue) => {
                   setEstado(itemValue);
                   setCidade("");
@@ -246,13 +288,14 @@ const RegisterAccount = ({ navigation }) => {
               <PickerGroup
                 label="Tipo de Serviço"
                 selectedValue={servicoAtual}
-                onValueChange={setServicoAtual}
+                onValueChange={(value) => setServicoAtual(value)}
                 options={[
                   { label: "Selecione um serviço", value: "" },
                   { label: "Serviço 1", value: "servico1" },
                   { label: "Serviço 2", value: "servico2" },
                   { label: "Serviço 3", value: "servico3" },
                 ]}
+                loading={false}
               />
 
               <TouchableOpacity style={styles.addButton} onPress={addServico}>
@@ -278,8 +321,8 @@ const RegisterAccount = ({ navigation }) => {
           )}
 
           <View style={styles.buttonContainer}>
-            <Button text="Cancelar" onPress={handleCancel} />
-            <Button text="Cadastrar" onPress={handleRegister} />
+            <FormButton text="Cancelar" onPress={handleCancel} />
+            <FormButton text="Cadastrar" onPress={handleRegister} />
           </View>
         </ScrollView>
       </View>
@@ -291,21 +334,22 @@ const InputGroup = ({
   label,
   value,
   onChangeText,
-  keyboardType,
-  secureTextEntry,
-  multiline,
-}) => (
+  keyboardType = "default",
+  secureTextEntry = false,
+  multiline = false,
+}: InputGroupProps) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
       value={value}
       onChangeText={onChangeText}
-      keyboardType={keyboardType}
+      keyboardType={keyboardType as KeyboardTypeOptions}
       secureTextEntry={secureTextEntry}
       style={[styles.input, multiline && { height: 100 }]}
       multiline={multiline}
-      underlineColor="transparent"
-      activeUnderlineColor="black"
+      underlineColorAndroid="transparent"
+      autoCapitalize="none"
+      autoCorrect={false}
     />
   </View>
 );
@@ -318,7 +362,7 @@ const PickerGroup = ({
   loading,
   prompt,
   enabled = true,
-}) => (
+}: PickerGroupProps) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
     {loading ? (
@@ -338,7 +382,7 @@ const PickerGroup = ({
   </View>
 );
 
-const ImagePickerGroup = ({ label, image, onPickImage }) => (
+const ImagePickerGroup = ({ label, image, onPickImage }: ImagePickerGroupProps) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
     <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
@@ -348,7 +392,7 @@ const ImagePickerGroup = ({ label, image, onPickImage }) => (
   </View>
 );
 
-const Button = ({ text, onPress }) => (
+const FormButton = ({ text, onPress }: ButtonProps) => (
   <TouchableOpacity style={styles.button} onPress={onPress}>
     <Text style={styles.buttonText}>{text}</Text>
   </TouchableOpacity>
