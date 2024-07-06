@@ -10,23 +10,25 @@ import {
 import { TextInput } from "react-native-paper";
 import Layout from "@/app/components/Layout";
 
-export default function ChangePassword({ navigation }) {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+type ChangePasswordProps = {
+  navigation: any;
+};
+
+export default function ChangePassword({ navigation }: ChangePasswordProps) {
+  const [oldPassword, setOldPassword] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   const handleCancel = () => {
-    // Implementar lógica de cancelamento
     navigation.goBack();
   };
 
   const handleChangePassword = () => {
-    // Implementar lógica de alteração de senha
     if (newPassword !== confirmPassword) {
       alert("As senhas não coincidem");
       return;
     }
-    alert('alterado com sucesso')
+    alert('Alterado com sucesso');
   };
 
   return (

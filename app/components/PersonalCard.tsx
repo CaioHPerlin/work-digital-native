@@ -20,10 +20,9 @@ export default function PersonalCard() {
           <View>
             <Text style={styles.subDados}>Minhas Redes </Text>
             <View style={styles.icons}>
-            <Icon source="whatsapp" color={"green"} size={40} />
+              <Icon source="whatsapp" color={"green"} size={40} />
               <Icon source="instagram" color={"#E1306C"} size={40} />
               <Icon source="facebook" color={"blue"} size={40} />
-              
             </View>
           </View>
         </View>
@@ -35,7 +34,7 @@ export default function PersonalCard() {
 const styles = StyleSheet.create({
   container: {
     paddingRight: 15,
-
+    marginTop: 30,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -46,11 +45,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   dados: {
-
     fontSize: 16,
-    color:'black',
+    color: "black",
     fontWeight: "bold",
-
   },
 
   subDados: {

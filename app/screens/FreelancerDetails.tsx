@@ -1,8 +1,14 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
+type Freelancer = {
+  name: string;
+  role: string;
+  image: string;
+};
+
 const FreelancerDetails = () => {
-  const freelancer = {
+  const freelancer: Freelancer = {
     name: 'João Silva',
     role: 'Desenvolvedor Web',
     image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3LNtU9Vm-wzMbyN6YvwfxsmukZhcKlE5YEQ&s',

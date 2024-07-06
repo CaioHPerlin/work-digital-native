@@ -6,22 +6,23 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
-import { TextInput, RadioButton } from "react-native-paper";
-import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
+import { TextInput } from "react-native-paper";
 import Layout from "../components/Layout";
 
-export default function DadosPessoais({ navigation }) {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [estado, setEstado] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [numero, setNumero] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [telefone, setTelefone] = useState("");
+type DadosPessoaisProps = {
+  navigation: any;
+};
+
+export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
+  const [nome, setNome] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [estado, setEstado] = useState<string>("");
+  const [cidade, setCidade] = useState<string>("");
+  const [endereco, setEndereco] = useState<string>("");
+  const [numero, setNumero] = useState<string>("");
+  const [bairro, setBairro] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>("");
 
   const handleCancel = () => {
     // Implementar lógica de cancelamento
@@ -116,7 +117,7 @@ export default function DadosPessoais({ navigation }) {
             <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => alert('alterado com successo') }>
+            <TouchableOpacity style={styles.button} onPress={() => alert('alterado com sucesso')}>
               <Text style={styles.buttonText}>Alterar</Text>
             </TouchableOpacity>
           </View>
@@ -146,11 +147,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
-  radioGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
   input: {
     backgroundColor: "#fef5eb",
     marginBottom: 10,
@@ -158,13 +154,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: "#000000",
     borderRadius: 5,
-  },
-  picker: {
-    borderColor: "#FFC88d",
-    borderWidth: 1,
-    backgroundColor: "#fef5eb",
-    height: 50,
-    width: "100%",
   },
   buttonContainer: {
     flexDirection: "row",

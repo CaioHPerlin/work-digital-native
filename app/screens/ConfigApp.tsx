@@ -1,7 +1,11 @@
-//import React, { useState } from 'react';
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const ConfigApp = ({ navigation }) => {
+type ConfigAppProps = {
+  navigation: any;
+};
+
+const ConfigApp = ({ navigation }: ConfigAppProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Configurações do Aplicativo</Text>
@@ -15,7 +19,7 @@ const ConfigApp = ({ navigation }) => {
         style={styles.button}
         onPress={() => navigation.navigate("PersonalInfo")}
       >
-        <Text style={styles.buttonText}>teste</Text>
+        <Text style={styles.buttonText}>Teste</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}

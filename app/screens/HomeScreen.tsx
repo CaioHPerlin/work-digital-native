@@ -6,11 +6,11 @@ import ListFreelancer from '../components/ListFreelancer';
 import Layout from '../components/Layout';
 
 export default function HomeScreen() {
-  const [selectedValue, setSelectedValue] = useState("A");
-  const [isPickerVisible, setPickerVisible] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [selectedValue, setSelectedValue] = useState<string>("A");
+  const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>("");
 
-  const serviceTypes = [
+  const serviceTypes: string[] = [
     "A","Açougueiro", "Administrador de empresas", "Advogado Ambientalista", "Advogado Cível",
     "Advogado Criminalista", "Advogado do Consumidor", "Advogado Digital", "Advogado Geral",
     "Advogado Imobiliário", "Advogado Previdenciário", "Advogado Trabalhista", "Agricultor",
@@ -84,8 +84,6 @@ export default function HomeScreen() {
                 style={styles.picker}
                 onValueChange={itemValue => setSelectedValue(itemValue)}
               >
-                
-                
                 {filteredServiceTypes.map((service, index) => (
                   <Picker.Item key={index} label={service} value={service} />
                 ))}
@@ -139,11 +137,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   pickerWrapper: {
-    height: 50, // reduce the height of the picker container
+    height: 50, 
     width: '100%',
   },
   picker: {
-    height: 50, // match the height of the wrapper
+    height: 50,
     width: '100%',
   },
 });

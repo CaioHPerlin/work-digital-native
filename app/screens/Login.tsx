@@ -1,28 +1,28 @@
-import * as React from 'react';
-import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Layout from '../components/Layout';
 
+interface Props {
+  navigation: any;
+}
 
-export default function Login({navigation}) {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
+const Login: React.FC<Props> = ({ navigation }) => {
+  const [email, setEmail] = useState<string>('');
+  const [senha, setSenha] = useState<string>('');
 
   const handleCancel = () => {
-    // Implementar lógica de cancelamento
+    
   };
 
   const handleRegister = () => {
-    // Implementar lógica de registro
+  
   };
 
   return (
-<Layout>
-    <View style={styles.container}>
-     
+    <Layout>
+      <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
-
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
@@ -34,7 +34,6 @@ export default function Login({navigation}) {
             style={styles.input}
           />
         </View>
-
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Senha</Text>
@@ -48,28 +47,24 @@ export default function Login({navigation}) {
         </View>
 
         <View style={styles.buttonContainer}>
-
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sidebar')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.esqueciSenha}>Esquecia a Senha</Text>
-     
-    </View>
+        
+        <Text style={styles.esqueciSenha}>Esqueci a Senha</Text>
+      
+      </View>
     </Layout>
   );
-}
+};
 
 const styles = StyleSheet.create({
-
-
   container: {
     flex: 1,
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    
-    
   },
   title: {
     fontSize: 34,
@@ -85,15 +80,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    backgroundColor:'#fef5eb',
+    backgroundColor: '#fef5eb',
     marginBottom: 10,
-   
-    color:'#000000',
-   
-    borderRadius:5,
-    borderBottomWidth:0
+    color: '#000000',
+    borderRadius: 5,
+    borderBottomWidth: 0
   },
-
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -112,12 +104,14 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
   },
-  esqueciSenha:{
-    color:'#FFC88d',
-    fontSize:16,
-    textAlign:'center',
-    marginTop:10,
-    textTransform:'capitalize',
-    textDecorationLine:'underline'
+  esqueciSenha: {
+    color: '#FFC88d',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 10,
+    textTransform: 'capitalize',
+    textDecorationLine: 'underline'
   },
 });
+
+export default Login;

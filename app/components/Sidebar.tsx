@@ -1,26 +1,26 @@
 import * as React from "react";
 import { Button, View, Text, TouchableOpacity } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useNavigation } from '@react-navigation/native'; // Note que adicionamos `useNavigation`
+import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "../screens/HomeScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import RegisterAccount from "../screens/RegisterAccount";
-import { useState } from "react";
-//import ExitScreen from './screens/ExitScreen';
-import Login from "../screens/Login";
 import ConfigApp from "../screens/ConfigApp";
-import Slider from "./Slider";
-import { Ionicons } from '@expo/vector-icons'; // ícones da Expo para uma seta de volta
+import { Ionicons } from '@expo/vector-icons';
 
-const KbStyles = {
+interface KbStyles {
+  white: string;
+  fundoHeader: string;
+  headerItem: string;
+}
+
+const KbStyles: KbStyles = {
   white: "#FFFFFF",
   fundoHeader: "#EE8424",
   headerItem: "#FFC88d",
 };
 
 const Drawer = createDrawerNavigator();
-export default function Sidebar() {
-  const navigation = useNavigation(); // Inicializando useNavigation
+const Sidebar: React.FC = () => {
+  const navigation = useNavigation();
 
   return (
     <>
@@ -57,4 +57,6 @@ export default function Sidebar() {
       </Drawer.Navigator>
     </>
   );
-}
+};
+
+export default Sidebar;

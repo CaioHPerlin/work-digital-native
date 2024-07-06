@@ -8,21 +8,39 @@ import {
   Image,
   ScrollView,
   Alert,
+  KeyboardTypeOptions,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { Textarea, TextareaInput } from "@gluestack-ui/themed";
 import Layout from "@/app/components/Layout";
 
-const BecomeAutonomo = ({ navigation }) => {
-  const [nome, setNome] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [servico, setServico] = useState("");
-  const [icone, setIcone] = useState(null);
-  const [banner1, setBanner1] = useState(null);
-  const [banner2, setBanner2] = useState(null);
+type BecomeAutonomoProps = {
+  navigation: any;
+};
 
-  const pickImage = async (setImage) => {
+type ImagePickerGroupProps = {
+  label: string;
+  image: string | null;
+  onPickImage: () => void;
+};
+
+type InputGroupProps = {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  keyboardType?: KeyboardTypeOptions;
+};
+
+const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
+  const [nome, setNome] = useState<string>("");
+  const [descricao, setDescricao] = useState<string>("");
+  const [servico, setServico] = useState<string>("");
+  const [icone, setIcone] = useState<string | null>(null);
+  const [banner1, setBanner1] = useState<string | null>(null);
+  const [banner2, setBanner2] = useState<string | null>(null);
+
+  const pickImage = async (setImage: (uri: string) => void) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -30,8 +48,8 @@ const BecomeAutonomo = ({ navigation }) => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      setImage(result.uri);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
       Alert.alert("Imagem carregada", "A imagem foi carregada com sucesso!");
     }
   };
@@ -41,31 +59,22 @@ const BecomeAutonomo = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Tornar-se Autônomo</Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nome Fantasia</Text>
-          <TextInput
-            value={nome}
-            placeholder="Digite o nome fantasia "
-            onChangeText={(text) => setNome(text)}
-            style={styles.input}
-          />
-        </View>
+        <InputGroup
+          label="Nome Fantasia"
+          value={nome}
+          onChangeText={setNome}
+          placeholder="Digite o nome fantasia"
+        />
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Descrição</Text>
-          <Textarea
-            isReadOnly={false}
-            isInvalid={true}
-            isDisabled={false}
-            w="$64"
-          >
-            <TextareaInput
-              style={styles.input}
-              placeholder="Escreva a descrição dos seus serviços"
-              value={descricao}
-              onChangeText={(text) => setDescricao(text)}
-            />
-          </Textarea>
+          <TextInput
+            style={[styles.input, { height: 100 }]}
+            placeholder="Escreva a descrição dos seus serviços"
+            value={descricao}
+            onChangeText={setDescricao}
+            multiline
+          />
         </View>
 
         <View style={styles.inputGroup}>
@@ -82,71 +91,106 @@ const BecomeAutonomo = ({ navigation }) => {
           </Picker>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Ícone</Text>
-          <TouchableOpacity
-            style={styles.imagePicker}
-            onPress={() => pickImage(setIcone)}
-          >
-            <Text style={styles.imagePickerText}>Escolher Ícone</Text>
-          </TouchableOpacity>
-          {icone && <Image source={{ uri: icone }} style={styles.image} />}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Banner 1</Text>
-          <TouchableOpacity
-            style={styles.imagePicker}
-            onPress={() => pickImage(setBanner1)}
-          >
-            <Text style={styles.imagePickerText}>Escolher Banner 1</Text>
-          </TouchableOpacity>
-          {banner1 && <Image source={{ uri: banner1 }} style={styles.image} />}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Banner 2</Text>
-          <TouchableOpacity
-            style={styles.imagePicker}
-            onPress={() => pickImage(setBanner2)}
-          >
-            <Text style={styles.imagePickerText}>Escolher Banner 2</Text>
-          </TouchableOpacity>
-          {banner2 && <Image source={{ uri: banner2 }} style={styles.image} />}
-        </View>
+        <ImagePickerGroup
+          label="Ícone"
+          image={icone}
+          onPickImage={() => pickImage(setIcone)}
+        />
+        <ImagePickerGroup
+          label="Banner 1"
+          image={banner1}
+          onPickImage={() => pickImage(setBanner1)}
+        />
+        <ImagePickerGroup
+          label="Banner 2"
+          image={banner2}
+          onPickImage={() => pickImage(setBanner2)}
+        />
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonConfirmar}>
-            <Text style={styles.buttonText}>Confirmar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonVisualizar}>
-            <Text style={styles.buttonText}>Visualizar</Text>
-          </TouchableOpacity>
+          <FormButton
+            text="Confirmar"
+            style={styles.buttonConfirmar}
+            textStyle={styles.buttonText}
+          />
+          <FormButton
+            text="Visualizar"
+            style={styles.buttonVisualizar}
+            textStyle={styles.buttonText}
+          />
         </View>
 
+        <FormButton
+          text="Desativar Perfil"
+          style={styles.buttonDesativar}
+          textStyle={styles.buttonText}
+        />
 
-          <TouchableOpacity style={styles.buttonDesativar}>
-            <Text style={styles.buttonText}>Desativar Perfil</Text>
-          </TouchableOpacity>
-     
-
-
-
-        <TouchableOpacity
+        <FormButton
+          text="Voltar para Configurações"
           style={styles.buttonVoltar}
+          textStyle={styles.buttonText}
           onPress={() => navigation.navigate("ConfigApp")}
-        >
-          <Text style={styles.buttonText}>Voltar para Configurações</Text>
-        </TouchableOpacity>
+        />
       </ScrollView>
     </Layout>
   );
 };
 
+const InputGroup = ({
+  label,
+  value,
+  onChangeText,
+  placeholder = "",
+  keyboardType = "default",
+}: InputGroupProps) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>{label}</Text>
+    <TextInput
+      value={value}
+      placeholder={placeholder}
+      onChangeText={onChangeText}
+      keyboardType={keyboardType}
+      style={styles.input}
+    />
+  </View>
+);
+
+const FormButton = ({
+  text,
+  onPress,
+  style,
+  textStyle,
+}: {
+  text: string;
+  onPress?: () => void;
+  style: object;
+  textStyle: object;
+}) => (
+  <TouchableOpacity style={style} onPress={onPress}>
+    <Text style={textStyle}>{text}</Text>
+  </TouchableOpacity>
+);
+
+const ImagePickerGroup = ({
+  label,
+  image,
+  onPickImage,
+}: ImagePickerGroupProps) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>{label}</Text>
+    <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
+      <Text style={styles.imagePickerText}>Escolher {label}</Text>
+    </TouchableOpacity>
+    {image && <Image source={{ uri: image }} style={styles.image} />}
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
+    marginTop:20,
     flexGrow: 1,
-    padding: 20,
+    padding: 30,
     alignItems: "center",
   },
   title: {
@@ -159,7 +203,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "100%",
   },
-
   label: {
     fontSize: 16,
     marginBottom: 5,
@@ -208,7 +251,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
-   
   },
   buttonVoltar: {
     backgroundColor: "#FFC88d",
@@ -218,7 +260,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 250,
   },
-  
   buttonConfirmar: {
     backgroundColor: "#a3ff7f",
     padding: 15,
@@ -228,7 +269,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-
   buttonVisualizar: {
     backgroundColor: "#ffec7f",
     padding: 15,
@@ -238,7 +278,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-
   buttonDesativar: {
     backgroundColor: "#ff5151",
     width: 250,
