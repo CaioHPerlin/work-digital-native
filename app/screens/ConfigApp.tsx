@@ -31,6 +31,12 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
         style={styles.button}
         onPress={() => navigation.navigate("ChangePassword")}
       >
+        <Text style={styles.buttonText}>Alterar Cidade</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("ChangeCity")}
+      >
         <Text style={styles.buttonText}>Alterar Senha</Text>
       </TouchableOpacity>
       <TouchableOpacity

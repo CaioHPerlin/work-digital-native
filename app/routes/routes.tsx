@@ -11,6 +11,7 @@ import BecomeAutonomo from "../screens/opcoesConfig/BecomeAutonomo";
 import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
 import ConfigApp from "../screens/ConfigApp";
+import ChangeCity from "../screens/ChangeCity";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -37,6 +38,7 @@ const Routes = () => {
         <Stack.Screen name="BecomeAutonomo" component={BecomeAutonomo} />
         <Stack.Screen name="Sidebar" component={Sidebar} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="ChangeCity" component={ChangeCity} />
         <Stack.Screen name="DadosPessoais" component={DadosPessoais} />
         <Stack.Screen name="ConfigApp" component={ConfigApp} />
       </Stack.Navigator>
