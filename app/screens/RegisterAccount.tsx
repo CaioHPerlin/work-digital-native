@@ -63,6 +63,8 @@ type ButtonProps = {
 const RegisterAccount = ({ navigation }: { navigation: any }) => {
   const [nome, setNome] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [cpf, setCpf] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>("");
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
   const [endereco, setEndereco] = useState<string>("");
@@ -82,6 +84,40 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
   const [icone, setIcone] = useState<string | null>(null);
   const [banner1, setBanner1] = useState<string | null>(null);
   const [banner2, setBanner2] = useState<string | null>(null);
+
+  const Register = async () => {
+    try {
+      const res = await axios.post(
+        "https://work-digital-api.up.railway.app/users",
+        {
+          name: nome,
+          email: email,
+          cpf: cpf,
+          state: estado,
+          city: cidade,
+          street: endereco,
+          number: numero,
+          neighborhood: bairro,
+          phone: telefone,
+          password: senha,
+          birthdate: birthdate,
+        }
+      );
+      if (res.status === 201) {
+        Alert.alert("Sucesso", "Registro realizado com sucesso!");
+        // Navegar para outra tela ou limpar o formulário
+      } else {
+        Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+    }
+  };
+
+  const handleRegister = () => {
+    Register();
+  };
 
   const pickImage = async (setImage: (uri: string) => void) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -142,9 +178,6 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
     // Implementar lógica de cancelamento
   };
 
-  const handleRegister = () => {
-    // Implementar lógica de registro
-  };
 
   const addServico = () => {
     if (servicoAtual) {
@@ -165,6 +198,9 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
             onChangeText={setEmail}
             keyboardType="email-address"
           />
+
+          <InputGroup label="CPF" value={cpf} onChangeText={setCpf} />
+          <InputGroup label="Data de Nascimento" value={birthdate} onChangeText={setBirthdate} />
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
@@ -324,6 +360,7 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
             <FormButton text="Cancelar" onPress={handleCancel} />
             <FormButton text="Cadastrar" onPress={handleRegister} />
           </View>
+
         </ScrollView>
       </View>
     </Layout>
@@ -382,7 +419,11 @@ const PickerGroup = ({
   </View>
 );
 
-const ImagePickerGroup = ({ label, image, onPickImage }: ImagePickerGroupProps) => (
+const ImagePickerGroup = ({
+  label,
+  image,
+  onPickImage,
+}: ImagePickerGroupProps) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
     <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
