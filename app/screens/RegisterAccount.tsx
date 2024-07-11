@@ -87,25 +87,55 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
 
   const Register = async () => {
     try {
-      const res = await axios.post(
+      const userData = {
+        name: nome,
+        email: email,
+        cpf: cpf,
+        state: estado,
+        city: cidade,
+        street: endereco,
+        number: numero,
+        neighborhood: bairro,
+        phone: telefone,
+        password: senha,
+        birthdate: birthdate,
+      };
+
+      console.log("Registering user with data:", userData);
+
+      // Registra usuário normal
+      const userRes = await axios.post(
         "https://work-digital-api.up.railway.app/users",
-        {
-          name: nome,
-          email: email,
-          cpf: cpf,
-          state: estado,
-          city: cidade,
-          street: endereco,
-          number: numero,
-          neighborhood: bairro,
-          phone: telefone,
-          password: senha,
-          birthdate: birthdate,
-        }
+        userData
       );
-      if (res.status === 201) {
-        Alert.alert("Sucesso", "Registro realizado com sucesso!");
-        // Navegar para outra tela ou limpar o formulário
+
+      if (userRes.status === 201) {
+        if (isPrestadorVisible) {
+          // Registra como freelancer
+          const freelancerData = {
+            userId: cpf,
+            role: servicos,
+            description: descricao,
+            icon: icone,
+            banner1: banner1,
+            banner2: banner2,
+          };
+
+          console.log("Registering freelancer with data:", freelancerData);
+
+          const freelancerRes = await axios.post(
+            "https://work-digital-api.up.railway.app/freelancers",
+            freelancerData
+          );
+
+          if (freelancerRes.status === 201) {
+            Alert.alert("Sucesso", "Registro realizado com sucesso!");
+          } else {
+            Alert.alert("Erro", "Falha ao registrar freelancer. Tente novamente.");
+          }
+        } else {
+          Alert.alert("Sucesso", "Registro realizado com sucesso!");
+        }
       } else {
         Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
       }
@@ -116,6 +146,10 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
   };
 
   const handleRegister = () => {
+    if (!nome || !email || !cpf || !estado || !cidade || !endereco || !numero || !bairro || !telefone || !senha || !birthdate) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
     Register();
   };
 
