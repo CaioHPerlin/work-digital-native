@@ -114,11 +114,6 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
           />
         </View>
 
-        <FormButton
-          text="Desativar Perfil"
-          style={styles.buttonDesativar}
-          textStyle={styles.buttonText}
-        />
 
         <FormButton
           text="Voltar para Configurações"
