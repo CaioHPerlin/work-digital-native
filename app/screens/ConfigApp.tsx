@@ -15,12 +15,12 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       >
         <Text style={styles.buttonText}>Dados Pessoais</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("PersonalInfo")}
       >
         <Text style={styles.buttonText}>Teste</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("BecomeAutonomo")}
@@ -29,13 +29,13 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("ChangePassword")}
+        onPress={() => navigation.navigate("ChangeCity")}
       >
         <Text style={styles.buttonText}>Alterar Cidade</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("ChangeCity")}
+        onPress={() => navigation.navigate("ChangePassword")}
       >
         <Text style={styles.buttonText}>Alterar Senha</Text>
       </TouchableOpacity>

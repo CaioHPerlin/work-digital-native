@@ -4,7 +4,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import HomeScreen from "../screens/HomeScreen";
 import ConfigApp from "../screens/ConfigApp";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 interface KbStyles {
   white: string;
@@ -46,7 +46,10 @@ const Sidebar: React.FC = () => {
             borderColor: KbStyles.headerItem,
           },
           headerRight: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Home")} style={{ marginRight: 10 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("PageInicial")}
+              style={{ marginRight: 10 }}
+            >
               <Ionicons name="arrow-back" size={24} color={KbStyles.white} />
             </TouchableOpacity>
           ),

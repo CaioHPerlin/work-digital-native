@@ -60,7 +60,11 @@ type ButtonProps = {
   onPress: () => void;
 };
 
-const RegisterAccount = ({ navigation }: { navigation: any }) => {
+interface Props {
+  navigation: any;
+}
+
+const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [nome, setNome] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [cpf, setCpf] = useState<string>("");
@@ -86,24 +90,23 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
   const [banner2, setBanner2] = useState<string | null>(null);
 
   const Register = async () => {
+    const userData = {
+      name: nome,
+      email: email,
+      password: senha,
+      cpf: cpf,
+      state: estado,
+      city: cidade,
+      neighborhood: bairro,
+      street: endereco,
+      number: numero,
+      phone: telefone,
+      birthdate: birthdate,
+    };
+
+    console.log("Registering user with data:", userData);
+
     try {
-      const userData = {
-        name: nome,
-        email: email,
-        cpf: cpf,
-        state: estado,
-        city: cidade,
-        street: endereco,
-        number: numero,
-        neighborhood: bairro,
-        phone: telefone,
-        password: senha,
-        birthdate: birthdate,
-      };
-
-      console.log("Registering user with data:", userData);
-
-      // Registra usuário normal
       const userRes = await axios.post(
         "https://work-digital-api.up.railway.app/users",
         userData
@@ -111,14 +114,11 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
 
       if (userRes.status === 201) {
         if (isPrestadorVisible) {
-          // Registra como freelancer
           const freelancerData = {
-            userId: cpf,
-            role: servicos,
+            cpf: cpf,
+            roles: servicos,
             description: descricao,
-            icon: icone,
-            banner1: banner1,
-            banner2: banner2,
+            profilePicture: icone,
           };
 
           console.log("Registering freelancer with data:", freelancerData);
@@ -131,22 +131,55 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
           if (freelancerRes.status === 201) {
             Alert.alert("Sucesso", "Registro realizado com sucesso!");
           } else {
-            Alert.alert("Erro", "Falha ao registrar freelancer. Tente novamente.");
+            throw new Error(
+              freelancerRes.data.message ||
+                "Falha ao registrar freelancer. Tente novamente."
+            );
           }
         } else {
           Alert.alert("Sucesso", "Registro realizado com sucesso!");
         }
+        navigation.navigate("Sidebar");
       } else {
-        Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+        throw new Error(userRes.data.message);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // Server responded with a status code out of the range of 2xx
+          Alert.alert(
+            "Erro",
+            `Falha ao registrar. ${error.response.data.message}`
+          );
+        } else if (error.request) {
+          // No response was received
+          Alert.alert("Erro", "Falha ao registrar. Sem resposta do servidor.");
+        } else {
+          // Something happened in setting up the request
+          Alert.alert("Erro", `Falha ao registrar. ${error.message}`);
+        }
+      } else {
+        Alert.alert("Erro", "Falha ao registrar. Erro desconhecido.");
+      }
     }
   };
 
   const handleRegister = () => {
-    if (!nome || !email || !cpf || !estado || !cidade || !endereco || !numero || !bairro || !telefone || !senha || !birthdate) {
+    if (
+      !nome ||
+      !email ||
+      !cpf ||
+      !estado ||
+      !cidade ||
+      !endereco ||
+      !numero ||
+      !bairro ||
+      !telefone ||
+      !senha ||
+      !birthdate
+    ) {
       Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -210,8 +243,8 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
 
   const handleCancel = () => {
     // Implementar lógica de cancelamento
+    navigation.navigate("PageInicial");
   };
-
 
   const addServico = () => {
     if (servicoAtual) {
@@ -234,7 +267,11 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
           />
 
           <InputGroup label="CPF" value={cpf} onChangeText={setCpf} />
-          <InputGroup label="Data de Nascimento" value={birthdate} onChangeText={setBirthdate} />
+          <InputGroup
+            label="Data de Nascimento"
+            value={birthdate}
+            onChangeText={setBirthdate}
+          />
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
@@ -310,12 +347,10 @@ const RegisterAccount = ({ navigation }: { navigation: any }) => {
             secureTextEntry
           />
 
-          
           <View style={styles.buttonContainer}>
             <FormButton text="Cancelar" onPress={handleCancel} />
             <FormButton text="Cadastrar" onPress={handleRegister} />
           </View>
-
         </ScrollView>
       </View>
     </Layout>

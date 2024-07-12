@@ -12,6 +12,7 @@ import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
 import ConfigApp from "../screens/ConfigApp";
 import ChangeCity from "../screens/ChangeCity";
+import FreelancerDetails from "../screens/FreelancerDetails";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -36,6 +37,7 @@ const Routes = () => {
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
         <Stack.Screen name="BecomeAutonomo" component={BecomeAutonomo} />
+        <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
         <Stack.Screen name="Sidebar" component={Sidebar} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="ChangeCity" component={ChangeCity} />

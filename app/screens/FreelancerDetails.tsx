@@ -1,50 +1,41 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React from "react";
+import Layout from "../components/Layout";
+import PersonalCard from "../components/PersonalCard";
+import Description from "../components/Description";
+import BtnPersonal from "../components/BtnPersonal";
+import { Alert } from "react-native";
+import Slider from "../components/Slider";
 
-type Freelancer = {
-  name: string;
+interface Freelancer {
+  id: number;
   role: string;
-  image: string;
-};
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  state: string;
+  description: string;
+}
 
-const FreelancerDetails = () => {
-  const freelancer: Freelancer = {
-    name: 'João Silva',
-    role: 'Desenvolvedor Web',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3LNtU9Vm-wzMbyN6YvwfxsmukZhcKlE5YEQ&s',
-  };
+interface Props {
+  route: any;
+}
+
+const FreelancerDetails: React.FC<Props> = ({ route }) => {
+  let { freelancer } = route.params;
+  console.log(freelancer);
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: freelancer.image }} style={styles.image} />
-      <Text style={styles.nameText}>{freelancer.name}</Text>
-      <Text style={styles.roleText}>{freelancer.role}</Text>
-    </View>
+    <>
+      <Layout>
+        <PersonalCard freelancer={freelancer} />
+
+        <Slider />
+        <Description freelancer={freelancer} />
+        <BtnPersonal freelancer={freelancer} />
+      </Layout>
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  image: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-  },
-  nameText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  roleText: {
-    fontSize: 18,
-    color: '#666',
-  },
-});
 
 export default FreelancerDetails;

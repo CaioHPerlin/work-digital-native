@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Layout from '../components/Layout';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import Layout from "../components/Layout";
 
 interface Props {
   navigation: any;
@@ -10,19 +10,19 @@ const PageInicial: React.FC<Props> = ({ navigation }) => {
   return (
     <Layout>
       <View style={styles.container}>
-        <Text style={styles.title}>Bem-vindo ao Aplicativo</Text>
-        
+        <Text style={styles.title}>12Pulo</Text>
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
-  
+
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('RegisterAccount')}
+            onPress={() => navigation.navigate("RegisterAccount")}
           >
             <Text style={styles.buttonText}>Registrar</Text>
           </TouchableOpacity>
@@ -36,31 +36,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 34,
     marginBottom: 40,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
-    width: '100%',
+    width: "100%",
   },
   button: {
-    backgroundColor: '#FFC88d',
+    backgroundColor: "#FFC88d",
     padding: 15,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     marginHorizontal: 10,
   },
   buttonText: {
-    color: '#000',
-    fontWeight: 'bold',
+    color: "#000",
+    fontWeight: "bold",
   },
 });
 

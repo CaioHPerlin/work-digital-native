@@ -1,22 +1,27 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Description() {
+interface Props {
+  freelancer: {
+    name: string;
+    roles: string[];
+    phone: string;
+    profilePictureUrl: string;
+    description: string;
+  };
+}
+
+const Description: React.FC<Props> = ({ freelancer }) => {
+  const { description } = freelancer;
   return (
-    <View >
-      <Text style={styles.text}>Descrição</Text>
-      <Text style={styles.conteudo}>
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the
-      </Text>
+    <View>
+      <Text style={styles.text}>Sobre </Text>
+      <Text style={styles.conteudo}>{description}</Text>
     </View>
   );
-}
+};
+
+export default Description;
 
 const styles = StyleSheet.create({
   text: {

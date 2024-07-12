@@ -2,21 +2,32 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Icon, MD3Colors } from "react-native-paper";
 
-export default function PersonalCard() {
+interface Props {
+  freelancer: {
+    name: string;
+    roles: string[];
+    phone: string;
+    profilePictureUrl: string;
+  };
+}
+
+const PersonalCard: React.FC<Props> = ({ freelancer }) => {
   return (
     <>
       <View style={styles.container}>
         <Image
           source={{
-            uri: "https://e7.pngegg.com/pngimages/674/156/png-clipart-computer-icons-user-blue-people-icon-logo-silhouette.png",
+            uri: freelancer.profilePictureUrl,
           }}
           style={styles.image}
         />
 
         <View style={styles.text}>
-          <Text style={styles.dados}>Willian Henrique Cardoso Dos Santos </Text>
-          <Text style={styles.subDados}>Desenvolvedor Front End </Text>
-          <Text style={styles.subDados}>67 99999 9999</Text>
+          <Text style={styles.dados}>{freelancer.name}</Text>
+          <Text style={styles.subDados}>
+            {freelancer.roles.map((role) => (role += "; "))}
+          </Text>
+          <Text style={styles.subDados}>{freelancer.phone}</Text>
           <View>
             <Text style={styles.subDados}>Minhas Redes </Text>
             <View style={styles.icons}>
@@ -29,7 +40,7 @@ export default function PersonalCard() {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -65,3 +76,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
+
+export default PersonalCard;
