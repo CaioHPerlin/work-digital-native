@@ -15,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import Layout from "@/app/components/Layout";
 import defaultRoles from "@/constants/roles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type BecomeAutonomoProps = {
   navigation: any;
@@ -56,6 +57,12 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
+      const cpf = await AsyncStorage.getItem("cpf");
+      if (cpf != null) {
+        formData.append("cpf", cpf);
+      } else {
+        throw new Error("CPF não encontrado. Faça login novamente.");
+      }
       formData.append("description", descricao);
       formData.append("roles", JSON.stringify(roles));
 
@@ -75,6 +82,8 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         });
       }
 
+      console.log("FormData:", formData);
+
       const response = await axios.post(
         "https://work-digital-api.up.railway.app/freelancers",
         formData,
@@ -91,7 +100,10 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
       // navigation.navigate('AnotherScreen');
     } catch (error) {
       console.error("Erro ao cadastrar prestador:", error);
-      Alert.alert("Erro", "Ocorreu um erro ao cadastrar o prestador.");
+      Alert.alert(
+        "Erro",
+        "Ocorreu um erro ao cadastrar o prestador. Verifique sua conexão de internet e tente novamente."
+      );
     }
   };
 

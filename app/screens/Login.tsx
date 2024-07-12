@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 import Layout from "../components/Layout";
 import axios from "axios";
@@ -13,25 +14,28 @@ const Login: React.FC<Props> = ({ navigation }) => {
   const [senha, setSenha] = useState<string>("");
 
   const handleLogin = async () => {
-    axios({
-      method: "post",
-      url: "https://work-digital-api.up.railway.app/users/auth",
-      data: {
-        email: email,
-        password: senha,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        if (res.data.token) {
-          return navigation.navigate("Sidebar");
+    try {
+      const response = await axios.post(
+        "https://work-digital-api.up.railway.app/users/auth",
+        {
+          email: email,
+          password: senha,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch((err) => {
-        alert("Verifique suas informações de login.");
-      });
+      );
+
+      if (response.data.token) {
+        await AsyncStorage.setItem("cpf", response.data.user.cpf);
+        navigation.navigate("Sidebar");
+      }
+    } catch (error) {
+      alert("Verifique suas informações de login.");
+      console.error("Error logging in:", error);
+    }
   };
 
   return (
