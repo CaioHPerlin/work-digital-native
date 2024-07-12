@@ -33,7 +33,7 @@ type InputGroupProps = {
 };
 
 const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
-  const [nome, setNome] = useState<string>("");
+
   const [descricao, setDescricao] = useState<string>("");
   const [servico, setServico] = useState<string>("");
   const [icone, setIcone] = useState<string | null>(null);
@@ -59,12 +59,6 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Tornar-se Autônomo</Text>
 
-        <InputGroup
-          label="Nome Fantasia"
-          value={nome}
-          onChangeText={setNome}
-          placeholder="Digite o nome fantasia"
-        />
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Descrição</Text>
