@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 const { width, height } = Dimensions.get('window');
 const carouselItem = require('../../assets/carousel.json');
-const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
+const viewConfigRef = { viewAreaCoveragePercentThreshold: 100 };
 
 interface CarouselItems {
   title: string;
   url: string;
-  promo: string;
+
 }
 export default function Slider() {
   let flatListRef = useRef<FlatList<CarouselItems> | null>();
@@ -39,10 +39,7 @@ export default function Slider() {
         activeOpacity={1}
       >
         <Image source={{ uri: item.url }} style={styles.image} />
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>{item.title}</Text>
-          <Text style={styles.footerText}>{item.promo}</Text>
-        </View>
+
       </TouchableOpacity>
     );
   };
@@ -86,14 +83,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    padding:0,
   },
   carousel: {
-    maxHeight: 300,
+    maxHeight: '100%',
+    
+  
   },
   image: {
     width,
-    height: 250,
-    resizeMode: 'cover',
+    height:'100%',
+   
+    
   },
   footer: {
     flexDirection: 'row',
@@ -114,8 +115,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   circle: {
-    width: 10,
-    height: 10,
+    width: 5,
+    height: 5,
     backgroundColor: 'grey',
     borderRadius: 50,
     marginHorizontal: 5,

@@ -1,10 +1,11 @@
 import React from "react";
+import { View, StyleSheet } from "react-native";
 import Layout from "../components/Layout";
 import PersonalCard from "../components/PersonalCard";
 import Description from "../components/Description";
 import BtnPersonal from "../components/BtnPersonal";
 import { Alert } from "react-native";
-import Slider from "../components/Slider";
+import SliderDestaque from "../components/SliderDestaque";
 
 interface Freelancer {
   id: number;
@@ -29,13 +30,29 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
     <>
       <Layout>
         <PersonalCard freelancer={freelancer} />
-
-        <Slider />
+        <View style={styles.container}>
+          <SliderDestaque />
+          <SliderDestaque  />
+        </View>
         <Description freelancer={freelancer} />
         <BtnPersonal freelancer={freelancer} />
       </Layout>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 0.5,
+    flexWrap:'wrap',
+   
+    flexDirection:'row',
+    
+  },
+
+  containerIteins:{
+    marginRight:50,
+  }
+});
 
 export default FreelancerDetails;

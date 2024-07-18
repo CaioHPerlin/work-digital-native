@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children, style }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop:30,
   },
 });
 

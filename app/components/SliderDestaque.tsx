@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Text,
   Modal,
   Button,
 } from "react-native";
@@ -17,17 +18,30 @@ const SliderDestaque: React.FC = () => {
       <View style={styles.avatarContainer}>
         <TouchableOpacity onPress={() => setPickerVisible(true)}>
           <Avatar.Image
-            size={80}
+            size={60}
             source={require("../../assets/images/favicon.png")}
           />
+          <Text>Destaque</Text>
         </TouchableOpacity>
       </View>
 
       {isPickerVisible && (
-        <>
+        
+        <Modal
+         transparent={true}
+         style= {styles.modalContainer}
+         animationType="slide"
+         >
+            <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
           <Slider />
-          <Button title="Minimizar" onPress={() => setPickerVisible(false)} />
-        </>
+          <TouchableOpacity  onPress={() => setPickerVisible(false)} style={styles.modalButton}>
+            <Text>Fechar</Text>
+            </TouchableOpacity>
+            </View>
+            </View>
+            </Modal>
+        
       )}
     </>
   );
@@ -37,20 +51,28 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignItems: "center",
     marginVertical: 20,
+    margin:20,
   },
   modalContainer: {
     flex: 1,
+    height:'100%',
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: "90%",
+    height:600,
+    width: "100%",
     backgroundColor: "white",
     borderRadius: 10,
-    padding: 20,
+   
     alignItems: "center",
   },
+
+    modalButton: {
+        padding: 15,
+        backgroundColor: "#FFC88d"
+    },
 });
 
 export default SliderDestaque;
