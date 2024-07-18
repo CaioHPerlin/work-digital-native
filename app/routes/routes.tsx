@@ -13,6 +13,8 @@ import DadosPessoais from "../screens/DadosPessoais";
 import ConfigApp from "../screens/ConfigApp";
 import ChangeCity from "../screens/ChangeCity";
 import FreelancerDetails from "../screens/FreelancerDetails";
+import SliderDestaque from "../components/SliderDestaque";
+import Slider from "../components/Slider";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -43,6 +45,8 @@ const Routes = () => {
         <Stack.Screen name="ChangeCity" component={ChangeCity} />
         <Stack.Screen name="DadosPessoais" component={DadosPessoais} />
         <Stack.Screen name="ConfigApp" component={ConfigApp} />
+        <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
+        <Stack.Screen name="Slider" component={Slider} />
       </Stack.Navigator>
     </>
   );

@@ -39,7 +39,10 @@ export default function Slider() {
         activeOpacity={1}
       >
         <Image source={{ uri: item.url }} style={styles.image} />
-
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>{item.title}</Text>
+          <Text style={styles.footerText}>{item.promo}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -81,9 +84,8 @@ export default function Slider() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.9,
-    margin:0,
- 
+    flex: 1,
+    backgroundColor: '#fff',
   },
   carousel: {
     maxHeight: 300,
@@ -93,12 +95,23 @@ const styles = StyleSheet.create({
     height: 250,
     resizeMode: 'cover',
   },
-
-
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: 50,
+    paddingHorizontal: 40,
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  footerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   dotView: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: -30,
+    marginVertical: 20,
   },
   circle: {
     width: 10,

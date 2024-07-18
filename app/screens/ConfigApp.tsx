@@ -14,14 +14,14 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
         disabled={true}
         onPress={() => navigation.navigate("DadosPessoais")}
       >
-        <Text style={styles.buttonText}>Dados Pessoais</Text>
+      <Text style={styles.buttonText}>Dados Pessoais</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity
+       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("PersonalInfo")}
+        onPress={() => navigation.navigate("SliderDestaque")}
       >
         <Text style={styles.buttonText}>Teste</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity> 
       <TouchableOpacity
         style={styles.buttonDisabled}
         disabled={true}
