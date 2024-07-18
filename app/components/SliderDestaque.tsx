@@ -26,22 +26,23 @@ const SliderDestaque: React.FC = () => {
       </View>
 
       {isPickerVisible && (
-        
         <Modal
-         transparent={true}
-         style= {styles.modalContainer}
-         animationType="slide"
-         >
-            <View style={styles.modalContainer}>
+          transparent={true}
+          style={styles.modalContainer}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-          <Slider />
-          <TouchableOpacity  onPress={() => setPickerVisible(false)} style={styles.modalButton}>
-            <Text>Fechar</Text>
-            </TouchableOpacity>
+              <Slider />
+              <TouchableOpacity
+                onPress={() => setPickerVisible(false)}
+                style={styles.modalButton}
+              >
+                <Text>Fechar</Text>
+              </TouchableOpacity>
             </View>
-            </View>
-            </Modal>
-        
+          </View>
+        </Modal>
       )}
     </>
   );
@@ -51,28 +52,28 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignItems: "center",
     marginVertical: 20,
-    margin:20,
+    margin: 20,
   },
   modalContainer: {
     flex: 1,
-    height:'100%',
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    height:600,
+    height: 600,
     width: "100%",
     backgroundColor: "white",
     borderRadius: 10,
-   
+
     alignItems: "center",
   },
 
-    modalButton: {
-        padding: 15,
-        backgroundColor: "#FFC88d"
-    },
+  modalButton: {
+    padding: 15,
+    backgroundColor: "#FFC88d",
+  },
 });
 
 export default SliderDestaque;

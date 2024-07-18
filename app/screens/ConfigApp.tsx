@@ -43,6 +43,14 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       >
         <Text style={styles.buttonText}>Alterar Senha</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.buttonDisabled}
+        
+        onPress={() => navigation.navigate("ManageDestak")}
+      >
+        <Text style={styles.buttonText}>Gerenciar Destaque</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("Home")}
