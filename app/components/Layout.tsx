@@ -11,7 +11,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, style }) => {
   return (
     <LinearGradient
-      colors={['#ff84003b', '#ffc88d3a']} // Defina as cores do gradiente aqui
+      colors={['#ff84003b', 'rgba(255, 200, 141, 0.227)']} // Defina as cores do gradiente aqui
       style={[styles.container, style]}
       start={{ x: 0.5, y: 0.5 }}
       end={{ x: 1, y: 1 }}

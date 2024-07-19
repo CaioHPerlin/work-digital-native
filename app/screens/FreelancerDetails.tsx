@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import Layout from "../components/Layout";
 import PersonalCard from "../components/PersonalCard";
 import Description from "../components/Description";
 import BtnPersonal from "../components/BtnPersonal";
-import { Alert } from "react-native";
 import SliderDestaque from "../components/SliderDestaque";
 
 interface Freelancer {
@@ -26,13 +25,41 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   let { freelancer } = route.params;
   console.log(freelancer);
 
+  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+  const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
+      setPickerVisible(true);
+    }, 10000000000000000000); // Altere o destaque a cada x segundos (GAMBIARRA)
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  const handleLastItemVisible = () => {
+    setTimeout(() => {
+      setPickerVisible(false);
+      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
+      setPickerVisible(true); 
+    }, 4000); //Altere o destaque a cada x segundos (GAMBIARRA)
+
+  };
   return (
     <>
       <Layout>
         <PersonalCard freelancer={freelancer} />
         <View style={styles.container}>
-          <SliderDestaque />
-          <SliderDestaque  />
+          {[0, 1].map((index) => (
+            <SliderDestaque
+              key={index}
+              isPickerVisible={currentHighlightIndex === index && isPickerVisible}
+              setPickerVisible={setPickerVisible}
+              index={index}
+              onLastItemVisible={handleLastItemVisible}
+            />
+          ))}
         </View>
         <Description freelancer={freelancer} />
         <BtnPersonal freelancer={freelancer} />
@@ -44,14 +71,11 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 0.5,
-    flexWrap:'wrap',
-   
-    flexDirection:'row',
-    
+    flexWrap: 'wrap',
+    flexDirection: 'row',
   },
-
-  containerIteins:{
-    marginRight:50,
+  containerIteins: {
+    marginRight: 50,
   }
 });
 
