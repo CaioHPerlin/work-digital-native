@@ -53,8 +53,12 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
         <View style={styles.container}>
           {Array.from({ length: numberOfHighlights }, (_, index) => (
             <SliderDestaque
+              list={freelancer.highlights}
+              name={highlight.roleName}
               key={index}
-              isPickerVisible={currentHighlightIndex === index && isPickerVisible}
+              isPickerVisible={
+                currentHighlightIndex === index && isPickerVisible
+              }
               setPickerVisible={setPickerVisible}
               index={index}
               onLastItemVisible={handleLastItemVisible}
@@ -71,12 +75,12 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 0.5,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    flexWrap: "wrap",
+    flexDirection: "row",
   },
   containerIteins: {
     marginRight: 50,
-  }
+  },
 });
 
 export default FreelancerDetails;
