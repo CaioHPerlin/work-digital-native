@@ -70,20 +70,19 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         const uriParts = icone.split(".");
         const fileType = uriParts[uriParts.length - 1];
 
-        const photo: any = {
+        const photo = {
           uri: icone,
           name: `profile.${fileType}`,
           type: `image/${fileType}`,
         };
 
-        formData.append("photo", {
-          ...photo,
-          uri: icone.replace("file://", ""),
-        });
+        formData.append("photo", photo);
       }
 
+      // Debugging: Log FormData to ensure it's correct
       console.log("FormData:", formData);
 
+      // Post request with appropriate headers
       const response = await axios.post(
         "https://app-api-pied.vercel.app/freelancers",
         formData,
@@ -137,7 +136,15 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
           >
             <Picker.Item label="Selecione um serviço" value="" />
             {defaultRoles.map((role: string) => (
-              <Picker.Item label={role} value={role} key={role} />
+              <Picker.Item
+                label={role}
+                value={role}
+                key={role}
+                enabled={role.length > 1}
+                style={
+                  role.length > 1 ? { color: "#000" } : { color: "#aeaeae" }
+                }
+              />
             ))}
           </Picker>
         </View>
@@ -160,11 +167,11 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         </View>
 
         <ImagePickerGroup label="Ícone" image={icone} onPickImage={pickImage} />
-        <FormButton
+        {/*}<FormButton
           text="Gerenciar Destaque"
           style={styles.buttonDestak}
           onPress={() => navigation.navigate("ManageDestak")}
-        />
+        />{*/}
         <View style={styles.buttonContainer}>
           <FormButton
             text="Confirmar"

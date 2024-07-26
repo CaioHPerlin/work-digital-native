@@ -24,9 +24,12 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
 
         <View style={styles.text}>
           <Text style={styles.dados}>{freelancer.name}</Text>
-          <Text style={styles.subDados}>
-            {freelancer.roles.map((role) => (role += "; "))}
-          </Text>
+          {freelancer.roles.map((role) => (
+            <Text style={styles.subDados} key={role}>
+              {role}
+            </Text>
+          ))}
+
           <Text style={styles.subDados}>{freelancer.phone}</Text>
           <View>
             <Text style={styles.subDados}>Minhas Redes </Text>
