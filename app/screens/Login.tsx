@@ -19,7 +19,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://work-digital-api.up.railway.app/users/auth",
+        "https://app-api-pied.vercel.app/users/auth",
         {
           email: email,
           password: senha,

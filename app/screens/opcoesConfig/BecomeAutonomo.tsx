@@ -85,7 +85,7 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
       console.log("FormData:", formData);
 
       const response = await axios.post(
-        "https://work-digital-api.up.railway.app/freelancers",
+        "https://app-api-pied.vercel.app/freelancers",
         formData,
         {
           headers: {

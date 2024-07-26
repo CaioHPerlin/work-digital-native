@@ -108,7 +108,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     try {
       const userRes = await axios.post(
-        "https://work-digital-api.up.railway.app/users",
+        "https://app-api-pied.vercel.app/users",
         userData
       );
 
@@ -124,7 +124,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           console.log("Registering freelancer with data:", freelancerData);
 
           const freelancerRes = await axios.post(
-            "https://work-digital-api.up.railway.app/freelancers",
+            "https://app-api-pied.vercel.app/freelancers",
             freelancerData
           );
 

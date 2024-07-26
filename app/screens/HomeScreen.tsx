@@ -40,7 +40,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const fetchFreelancers = async () => {
       try {
         const response = await axios.get(
-          `https://work-digital-api.up.railway.app/freelancers?role=${selectedValue}`
+          `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
         );
         setFreelancers(response.data);
       } catch (error) {
