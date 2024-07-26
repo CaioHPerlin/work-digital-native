@@ -1,26 +1,22 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
 
-
+import ToastManager, { Toast } from 'toastify-react-native'
 
 type ConfigAppProps = {
   navigation: any;
 };
 
+const Teste =()=>{
+  Toast.success('funciona')
+}
 
 const ConfigApp = ({ navigation }: ConfigAppProps) => {
 
   return (
     <View style={styles.container}>
-      
+      <ToastManager></ToastManager>
       <Text style={styles.title}>Configurações do Aplicativo</Text>
-      <TouchableOpacity
-        style={styles.button}
-        ////disabled={true}
-        onPress={() => navigation.navigate("Types")}
-      >
-      <Text style={styles.buttonText}>toastify</Text>
-      </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         ////disabled={true}
@@ -54,9 +50,9 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       <TouchableOpacity
         style={styles.button}
         
-
+        onPress={Teste}
       >
-        <Text style={styles.buttonText}>Gerenciar Destaque</Text>
+        <Text style={styles.buttonText}>Teste</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
