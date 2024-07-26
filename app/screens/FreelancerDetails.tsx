@@ -25,33 +25,33 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   let { freelancer } = route.params;
   console.log(freelancer);
 
+  const numberOfHighlights = 3; //NUMERO DE DESTAQUE
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
+      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % numberOfHighlights); // Use a variável aqui
       setPickerVisible(true);
-    }, 10000000000000000000); // Altere o destaque a cada x segundos (GAMBIARRA)
+    }, 10000000000); 
 
     return () => clearInterval(interval);
   }, []);
 
-
   const handleLastItemVisible = () => {
     setTimeout(() => {
       setPickerVisible(false);
-      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
+      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % numberOfHighlights); // Use a variável aqui
       setPickerVisible(true); 
-    }, 4000); //Altere o destaque a cada x segundos (GAMBIARRA)
-
+    }, 4000); 
   };
+
   return (
     <>
       <Layout>
         <PersonalCard freelancer={freelancer} />
         <View style={styles.container}>
-          {[0, 1].map((index) => (
+          {Array.from({ length: numberOfHighlights }, (_, index) => (
             <SliderDestaque
               key={index}
               isPickerVisible={currentHighlightIndex === index && isPickerVisible}

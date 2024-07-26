@@ -31,7 +31,7 @@ const Slider: React.FC<SliderProps> = ({ onLastItemVisible }) => {
   const onViewRef = useRef(({ changed }: { changed: any }) => {
     if (changed[0].isViewable) {
       setCurrentIndex(changed[0].index);
-      if (changed[0].index === carouselItem.length - 1) {
+      if (changed[1].index === carouselItem.length - 1) {
         onLastItemVisible();
       }
     }
