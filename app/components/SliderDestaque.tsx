@@ -8,6 +8,7 @@ interface SliderDestaqueProps {
   list: string[];
   isPickerVisible: boolean;
   setPickerVisible: (visible: boolean) => void;
+  name: string;
   index: number;
   onLastItemVisible: () => void;
 }
@@ -15,6 +16,7 @@ interface SliderDestaqueProps {
 const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   isPickerVisible,
   setPickerVisible,
+  name,
   index,
   onLastItemVisible,
 }) => {
@@ -28,7 +30,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
               source={require("../../assets/images/favicon.png")}
             />
           </View>
-          <Text>Destaque {index + 1}</Text>
+          <Text>{name}</Text>
         </TouchableOpacity>
       </View>
 
