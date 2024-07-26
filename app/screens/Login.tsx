@@ -44,6 +44,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
 
   if (isLoading) {
     return (
+      <Layout>
       <View style={styles.container}>
         <Animatable.Text
           animation="bounce"
@@ -53,6 +54,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
           12pulo
         </Animatable.Text>
       </View>
+      </Layout>
     );
   }
 
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 34,
-    color: "#FFC88d",
+    color: "#feb96f",
   },
 });
 

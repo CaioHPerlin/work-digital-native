@@ -168,11 +168,7 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
             style={styles.buttonConfirmar}
             textStyle={styles.buttonText}
           />
-          <FormButton
-            text="Visualizar"
-            style={styles.buttonVisualizar}
-            textStyle={styles.buttonText}
-          />
+          {/*<FormButton text="Visualizar" style={styles.buttonVisualizar textStyle={styles.buttonText}/>*/}
         </View>
 
         <FormButton
@@ -289,7 +285,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: "50%",
     width: "100%",
   },
   buttonVoltar: {
@@ -298,15 +294,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
-    width: 250,
+    width: "97%",
+    
+   
+    
   },
   buttonConfirmar: {
     backgroundColor: "#a3ff7f",
-    padding: 15,
+    padding: 20,
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
-    flex: 1,
+    width: "97%",
     marginHorizontal: 5,
   },
   buttonVisualizar: {

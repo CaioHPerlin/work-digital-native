@@ -16,15 +16,10 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       >
       <Text style={styles.buttonText}>Dados Pessoais</Text>
       </TouchableOpacity>
-       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("SliderDestaque")}
-      >
-        <Text style={styles.buttonText}>Teste</Text>
-      </TouchableOpacity> 
+
       <TouchableOpacity
         style={styles.buttonDisabled}
-        disabled={true}
+        
         onPress={() => navigation.navigate("BecomeAutonomo")}
       >
         <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
@@ -45,7 +40,7 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.buttonDisabled}
+        style={styles.button}
         
         onPress={() => navigation.navigate("ManageDestak")}
       >

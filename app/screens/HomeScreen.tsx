@@ -3,10 +3,10 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import * as Animatable from "react-native-animatable";
 
 import ListFreelancer from "../components/ListFreelancer";
 import Layout from "../components/Layout";
@@ -35,9 +35,11 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchFreelancers = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(
           `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
@@ -45,6 +47,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         setFreelancers(response.data);
       } catch (error) {
         console.error("Erro ao buscar freelancers:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -66,61 +70,73 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <Layout>
-      <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.nomeMarca}>12Pulo</Text>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Animatable.Text
+            animation="bounce"
+            iterationCount="infinite"
+            style={styles.loadingText}
+          >
+            12Pulo
+          </Animatable.Text>
         </View>
-        <View style={styles.pickerContainer}>
-          <Text style={styles.label}>TIPOS DE SERVIÇO</Text>
-          <TextInput
-            style={styles.searchBar}
-            placeholder="Pesquisar..."
-            value={searchText}
-            onChangeText={handleSearch}
-          />
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={selectedValue}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSelectedValue(itemValue)}
+      ) : (
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.nomeMarca}>12Pulo</Text>
+          </View>
+          <View style={styles.pickerContainer}>
+            <Text style={styles.label}>TIPOS DE SERVIÇO</Text>
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Pesquisar..."
+              value={searchText}
+              onChangeText={handleSearch}
+            />
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedValue}
+                style={styles.picker}
+                onValueChange={(itemValue) => setSelectedValue(itemValue)}
+              >
+                {showPickerMessage && (
+                  <Picker.Item label="Selecione um serviço" value="" />
+                )}
+                {filteredServiceTypes.map((service, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={service}
+                    value={service}
+                    enabled={service.length > 1}
+                    style={
+                      service.length > 1
+                        ? { color: "#000" }
+                        : { color: "#aeaeae" }
+                    }
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+          {selectedValue ? (
+            <ListFreelancer data={freelancers} navigation={navigation} />
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
               {showPickerMessage && (
-                <Picker.Item label="Selecione um serviço" value="" />
+                <Text style={{ textAlign: "center" }}>
+                  Selecione um serviço acima para buscar por prestadores!
+                </Text>
               )}
-              {filteredServiceTypes.map((service, index) => (
-                <Picker.Item
-                  key={index}
-                  label={service}
-                  value={service}
-                  enabled={service.length > 1}
-                  style={
-                    service.length > 1
-                      ? { color: "#000" }
-                      : { color: "#aeaeae" }
-                  }
-                />
-              ))}
-            </Picker>
-          </View>
+            </View>
+          )}
         </View>
-        {selectedValue ? (
-          <ListFreelancer data={freelancers} navigation={navigation} />
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {showPickerMessage && (
-              <Text style={{ textAlign: "center" }}>
-                Selecione um serviço acima para buscar por prestadores!
-              </Text>
-            )}
-          </View>
-        )}
-      </View>
+      )}
     </Layout>
   );
 };
@@ -164,6 +180,15 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: "100%",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 34,
+    color: "#feb96f",
   },
 });
 
