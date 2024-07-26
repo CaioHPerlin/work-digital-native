@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 import Layout from "../components/Layout";
 import axios from "axios";
+import * as Animatable from "react-native-animatable";
 
 interface Props {
   navigation: any;
@@ -12,8 +13,10 @@ interface Props {
 const Login: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         "https://work-digital-api.up.railway.app/users/auth",
@@ -27,7 +30,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
           },
         }
       );
-
       if (response.data.token) {
         await AsyncStorage.setItem("cpf", response.data.user.cpf);
         navigation.navigate("Sidebar");
@@ -35,8 +37,24 @@ const Login: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       alert("Verifique suas informações de login.");
       console.error("Error logging in:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          style={styles.loadingText}
+        >
+          12pulo
+        </Animatable.Text>
+      </View>
+    );
+  }
 
   return (
     <Layout>
@@ -129,6 +147,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textTransform: "capitalize",
     textDecorationLine: "underline",
+  },
+  loadingText: {
+    fontSize: 34,
+    color: "#FFC88d",
   },
 });
 
