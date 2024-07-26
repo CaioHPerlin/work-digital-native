@@ -160,7 +160,11 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         </View>
 
         <ImagePickerGroup label="Ícone" image={icone} onPickImage={pickImage} />
-
+        <FormButton
+          text="Gerenciar Destaque"
+          style={styles.buttonDestak}
+          onPress={() => navigation.navigate("ManageDestak")}
+        />
         <View style={styles.buttonContainer}>
           <FormButton
             text="Confirmar"
@@ -285,7 +289,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: "50%",
+    marginTop: "35%",
     width: "100%",
   },
   buttonVoltar: {
@@ -295,9 +299,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     width: "97%",
-    
-   
-    
+  },
+  buttonDestak: {
+    backgroundColor: "#FFC88d",
+    padding: 20,
+    marginTop: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    width: "97%",
   },
   buttonConfirmar: {
     backgroundColor: "#a3ff7f",

@@ -1,39 +1,51 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
+
+
 type ConfigAppProps = {
   navigation: any;
 };
 
+
 const ConfigApp = ({ navigation }: ConfigAppProps) => {
+
   return (
     <View style={styles.container}>
+      
       <Text style={styles.title}>Configurações do Aplicativo</Text>
       <TouchableOpacity
-        style={styles.buttonDisabled}
-        disabled={true}
+        style={styles.button}
+        ////disabled={true}
+        onPress={() => navigation.navigate("Types")}
+      >
+      <Text style={styles.buttonText}>toastify</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        ////disabled={true}
         onPress={() => navigation.navigate("DadosPessoais")}
       >
       <Text style={styles.buttonText}>Dados Pessoais</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.buttonDisabled}
+        style={styles.button}
         
         onPress={() => navigation.navigate("BecomeAutonomo")}
       >
         <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.buttonDisabled}
-        disabled={true}
+        style={styles.button}
+        //disabled={true}
         onPress={() => navigation.navigate("ChangeCity")}
       >
         <Text style={styles.buttonText}>Alterar Cidade</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.buttonDisabled}
-        disabled={true}
+        style={styles.button}
+        //disabled={true}
         onPress={() => navigation.navigate("ChangePassword")}
       >
         <Text style={styles.buttonText}>Alterar Senha</Text>
@@ -42,7 +54,7 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       <TouchableOpacity
         style={styles.button}
         
-        onPress={() => navigation.navigate("ManageDestak")}
+
       >
         <Text style={styles.buttonText}>Gerenciar Destaque</Text>
       </TouchableOpacity>
