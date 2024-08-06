@@ -167,11 +167,11 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         </View>
 
         <ImagePickerGroup label="Ícone" image={icone} onPickImage={pickImage} />
-        {/*}<FormButton
+        <FormButton
           text="Gerenciar Destaque"
           style={styles.buttonDestak}
           onPress={() => navigation.navigate("ManageDestak")}
-        />{*/}
+        />
         <View style={styles.buttonContainer}>
           <FormButton
             text="Confirmar"

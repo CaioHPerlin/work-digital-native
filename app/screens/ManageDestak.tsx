@@ -74,7 +74,6 @@ const ManageDestak: React.FC = () => {
         renderItem={({ item }) => (
           <DestakItem
             nome={item.nome}
-            banner={item.banner}
             imagens={item.imagens}
             onAddImage={(image) => addImageToDestaque(item.id, image)}
             onRemoveImage={(index) => removeImageFromDestaque(item.id, index)}
