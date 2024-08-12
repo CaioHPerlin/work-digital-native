@@ -4,61 +4,17 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Image,
   ScrollView,
   Alert,
   ActivityIndicator,
   KeyboardTypeOptions,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { RadioButton } from "react-native-paper";
 import axios from "axios";
 import Layout from "../components/Layout";
-
-type Estado = {
-  id: number;
-  sigla: string;
-  nome: string;
-};
-
-type Cidade = {
-  id: number;
-  nome: string;
-};
-
-type ImagePickerGroupProps = {
-  label: string;
-  image: string | null;
-  onPickImage: () => void;
-};
-
-type PickerOption = { label: string; value: string };
-
-type PickerGroupProps = {
-  label: string;
-  selectedValue: string | undefined;
-  onValueChange: (itemValue: string, itemIndex: number) => void;
-  options: PickerOption[];
-  loading: boolean;
-  prompt?: string;
-  enabled?: boolean;
-};
-
-type InputGroupProps = {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  keyboardType?: string;
-  secureTextEntry?: boolean;
-  multiline?: boolean;
-};
-
-type ButtonProps = {
-  text: string;
-  onPress: () => void;
-};
 
 interface Props {
   navigation: any;
@@ -76,97 +32,12 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [bairro, setBairro] = useState<string>("");
   const [telefone, setTelefone] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
-  const [checked, setChecked] = useState<string>("yesYears");
-  const [estados, setEstados] = useState<Estado[]>([]);
-  const [cidades, setCidades] = useState<Cidade[]>([]);
+  const [estados, setEstados] = useState<[]>([]);
+  const [cidades, setCidades] = useState<[]>([]);
   const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
   const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
-  const [isPrestadorVisible, setPrestadorVisible] = useState<boolean>(false);
-  const [descricao, setDescricao] = useState<string>("");
-  const [servicos, setServicos] = useState<string[]>([]);
-  const [servicoAtual, setServicoAtual] = useState<string>("");
-  const [icone, setIcone] = useState<string | null>(null);
-  const [banner1, setBanner1] = useState<string | null>(null);
-  const [banner2, setBanner2] = useState<string | null>(null);
 
-  const Register = async () => {
-    const userData = {
-      name: nome,
-      email: email,
-      password: senha,
-      cpf: cpf,
-      state: estado,
-      city: cidade,
-      neighborhood: bairro,
-      street: endereco,
-      number: numero,
-      phone: telefone,
-      birthdate: birthdate,
-    };
-
-    console.log("Registering user with data:", userData);
-
-    try {
-      const userRes = await axios.post(
-        "https://app-api-pied.vercel.app/users",
-        userData
-      );
-
-      if (userRes.status === 201) {
-        if (isPrestadorVisible) {
-          const freelancerData = {
-            cpf: cpf,
-            roles: servicos,
-            description: descricao,
-            profilePicture: icone,
-          };
-
-          console.log("Registering freelancer with data:", freelancerData);
-
-          const freelancerRes = await axios.post(
-            "https://app-api-pied.vercel.app/freelancers",
-            freelancerData
-          );
-
-          if (freelancerRes.status === 201) {
-            Alert.alert("Sucesso", "Registro realizado com sucesso!");
-          } else {
-            throw new Error(
-              freelancerRes.data.message ||
-                "Falha ao registrar freelancer. Tente novamente."
-            );
-          }
-        } else {
-          Alert.alert("Sucesso", "Registro realizado com sucesso!");
-        }
-        navigation.navigate("Sidebar");
-      } else {
-        throw new Error(userRes.data.message);
-      }
-    } catch (error) {
-      console.error(error);
-
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Server responded with a status code out of the range of 2xx
-          Alert.alert(
-            "Erro",
-            `Falha ao registrar. ${error.response.data.message}`
-          );
-        } else if (error.request) {
-          // No response was received
-          Alert.alert("Erro", "Falha ao registrar. Sem resposta do servidor.");
-        } else {
-          // Something happened in setting up the request
-          Alert.alert("Erro", `Falha ao registrar. ${error.message}`);
-        }
-      } else {
-        Alert.alert("Erro", "Falha ao registrar. Erro desconhecido.");
-      }
-    }
-  };
-
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (
       !nome ||
       !email ||
@@ -183,21 +54,41 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-    Register();
+
+    const userData = {
+      name: nome,
+      email: email,
+      password: senha,
+      cpf: cpf,
+      state: estado,
+      city: cidade,
+      neighborhood: bairro,
+      street: endereco,
+      number: numero,
+      phone: telefone,
+      birthdate: birthdate,
+    };
+
+    try {
+      const userRes = await axios.post(
+        "https://app-api-pied.vercel.app/users",
+        userData
+      );
+
+      if (userRes.status === 201) {
+        Alert.alert("Sucesso", "Registro realizado com sucesso!");
+        navigation.navigate("Sidebar");
+      } else {
+        throw new Error(userRes.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+    }
   };
 
-  const pickImage = async (setImage: (uri: string) => void) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      Alert.alert("Imagem carregada", "A imagem foi carregada com sucesso!");
-    }
+  const handleCancel = () => {
+    navigation.navigate("PageInicial");
   };
 
   useEffect(() => {
@@ -206,10 +97,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
         const response = await axios.get(
           "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
         );
-        const sortedStates = response.data.sort((a: Estado, b: Estado) =>
-          a.nome.localeCompare(b.nome)
-        );
-        setEstados(sortedStates);
+        setEstados(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
         setLoadingEstados(false);
       } catch (error) {
         console.error(error);
@@ -227,10 +115,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           const response = await axios.get(
             `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
           );
-          const sortedCities = response.data.sort((a: Cidade, b: Cidade) =>
-            a.nome.localeCompare(b.nome)
-          );
-          setCidades(sortedCities);
+          setCidades(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
           setLoadingCidades(false);
         } catch (error) {
           console.error(error);
@@ -241,37 +126,44 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     }
   }, [estado]);
 
-  const handleCancel = () => {
-    // Implementar lógica de cancelamento
-    navigation.navigate("PageInicial");
-  };
-
-  const addServico = () => {
-    if (servicoAtual) {
-      setServicos([...servicos, servicoAtual]);
-      setServicoAtual("");
-    }
-  };
-
   return (
-    <Layout>
+  
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Cadastro</Text>
-          <InputGroup label="Nome" value={nome} onChangeText={setNome} />
-          <InputGroup
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
 
-          <InputGroup label="CPF" value={cpf} onChangeText={setCpf} />
-          <InputGroup
-            label="Data de Nascimento"
-            value={birthdate}
-            onChangeText={setBirthdate}
-          />
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nome</Text>
+            <TextInput
+              value={nome}
+              onChangeText={setNome}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>CPF</Text>
+            <TextInput value={cpf} onChangeText={setCpf} style={styles.input} />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Data de Nascimento</Text>
+            <TextInput
+              value={birthdate}
+              onChangeText={setBirthdate}
+              style={styles.input}
+            />
+          </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
@@ -305,7 +197,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             ) : (
               <Picker
                 selectedValue={cidade}
-                onValueChange={(itemValue) => setCidade(itemValue)}
+                onValueChange={setCidade}
                 style={styles.picker}
                 enabled={estado !== ""}
               >
@@ -321,113 +213,67 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             )}
           </View>
 
-          <InputGroup
-            label="Endereço"
-            value={endereco}
-            onChangeText={setEndereco}
-          />
-          <InputGroup
-            label="Número"
-            value={numero}
-            onChangeText={setNumero}
-            keyboardType="numeric"
-          />
-          <InputGroup label="Bairro" value={bairro} onChangeText={setBairro} />
-          <InputGroup
-            label="Telefone"
-            value={telefone}
-            onChangeText={setTelefone}
-            keyboardType="phone-pad"
-          />
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Endereço</Text>
+            <TextInput
+              value={endereco}
+              onChangeText={setEndereco}
+              style={styles.input}
+            />
+          </View>
 
-          <InputGroup
-            label="Senha"
-            value={senha}
-            onChangeText={setSenha}
-            secureTextEntry
-          />
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Número</Text>
+            <TextInput
+              value={numero}
+              onChangeText={setNumero}
+              keyboardType="numeric"
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Bairro</Text>
+            <TextInput
+              value={bairro}
+              onChangeText={setBairro}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Telefone</Text>
+            <TextInput
+              value={telefone}
+              onChangeText={setTelefone}
+              keyboardType="phone-pad"
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Senha</Text>
+            <TextInput
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry
+              style={styles.input}
+            />
+          </View>
 
           <View style={styles.buttonContainer}>
-            <FormButton text="Cancelar" onPress={handleCancel} />
-            <FormButton text="Cadastrar" onPress={handleRegister} />
+            <TouchableOpacity style={styles.button} onPress={handleCancel}>
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Cadastrar</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
-    </Layout>
+  
   );
 };
-
-const InputGroup = ({
-  label,
-  value,
-  onChangeText,
-  keyboardType = "default",
-  secureTextEntry = false,
-  multiline = false,
-}: InputGroupProps) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput
-      value={value}
-      onChangeText={onChangeText}
-      keyboardType={keyboardType as KeyboardTypeOptions}
-      secureTextEntry={secureTextEntry}
-      style={[styles.input, multiline && { height: 100 }]}
-      multiline={multiline}
-      underlineColorAndroid="transparent"
-      autoCapitalize="none"
-      autoCorrect={false}
-    />
-  </View>
-);
-
-const PickerGroup = ({
-  label,
-  selectedValue,
-  onValueChange,
-  options,
-  loading,
-  prompt,
-  enabled = true,
-}: PickerGroupProps) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    {loading ? (
-      <ActivityIndicator size="large" color="#FFC88d" />
-    ) : (
-      <Picker
-        selectedValue={selectedValue}
-        onValueChange={onValueChange}
-        style={styles.picker}
-        enabled={enabled}
-      >
-        {options.map((option, index) => (
-          <Picker.Item key={index} label={option.label} value={option.value} />
-        ))}
-      </Picker>
-    )}
-  </View>
-);
-
-const ImagePickerGroup = ({
-  label,
-  image,
-  onPickImage,
-}: ImagePickerGroupProps) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
-      <Text style={styles.imagePickerText}>Escolher {label}</Text>
-    </TouchableOpacity>
-    {image && <Image source={{ uri: image }} style={styles.image} />}
-  </View>
-);
-
-const FormButton = ({ text, onPress }: ButtonProps) => (
-  <TouchableOpacity style={styles.button} onPress={onPress}>
-    <Text style={styles.buttonText}>{text}</Text>
-  </TouchableOpacity>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -436,104 +282,72 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  ScrollView:{
+ 
+    padding: 20,
+    justifyContent: "center",
+    width:"100%",
+    alignItems:"center"
+  },
   title: {
-    fontSize: 34,
+    color: "#2d47f0",
+    fontSize: 30,
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "TitanOne-Regular",
+    margin: 2,
   },
+
   inputGroup: {
     marginBottom: 10,
     width: "100%",
   },
+
   label: {
     fontSize: 16,
     marginBottom: 5,
+    fontWeight: "bold",
   },
-  switch: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  radioGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10,
-  },
+
   input: {
-    backgroundColor: "#fef5eb",
-    borderColor: "#FFC88d",
+    borderColor: "black",
     borderWidth: 1,
+    marginBottom: 10,
     color: "#000000",
     borderRadius: 5,
-    marginBottom: 10,
-    height: 50,
-    paddingHorizontal: 10,
   },
+
   picker: {
-    backgroundColor: "#fef5eb",
-    borderColor: "#FFC88d",
+    borderColor: "black",
     borderWidth: 1,
     marginBottom: 10,
-    height: 50,
-    justifyContent: "center",
-  },
-  imagePicker: {
-    backgroundColor: "#FFC88d",
-    padding: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  imagePickerText: {
     color: "#000000",
+    borderRadius: 5,
   },
+
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
     width: "100%",
   },
+
   button: {
-    backgroundColor: "#FFC88d",
-    padding: 10,
+    backgroundColor: "#2d47f0",
+    padding: 18,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
+
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontWeight: "bold",
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginTop: 10,
-    borderRadius: 5,
-  },
-  addButton: {
-    backgroundColor: "#fef5eb",
-    borderColor: "#FFC88d",
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  addButtonText: {
-    color: "#000",
-    fontWeight: "bold",
-  },
-  servicoItem: {
-    padding: 5,
-    borderWidth: 1,
-    borderColor: "#FFC88d",
-    borderRadius: 5,
-    marginBottom: 5,
-    backgroundColor: "#fef5eb",
-  },
+
 });
 
 export default RegisterAccount;

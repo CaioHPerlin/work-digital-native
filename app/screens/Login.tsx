@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
-
 import axios from "axios";
 import * as Animatable from "react-native-animatable";
-
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +18,20 @@ const Login: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [loaded, error] = useFonts({
+    "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -55,24 +68,10 @@ const Login: React.FC<Props> = ({ navigation }) => {
           iterationCount="infinite"
           style={styles.loadingText}
         >
-          12pulo
+          Carregando...
         </Animatable.Text>
       </View>
     );
-  }
-
-  const [loaded, error] = useFonts({
-    "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
-  });
-
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
   }
 
   return (
@@ -80,7 +79,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
       <View style={styles.inlineText}>
         <Animatable.Text
           animation="bounce"
-
           delay={500}
           style={styles.title}
         >
@@ -89,7 +87,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
 
         <Animatable.Text
           animation="bounce"
-
           delay={1000}
           style={styles.titleSubR}
         >
@@ -97,7 +94,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
         <Animatable.Text
           animation="bounce"
-
           delay={3500}
           style={styles.title}
         >
@@ -105,17 +101,14 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
         <Animatable.Text
           animation="bounce"
-
           delay={1000}
           style={styles.titleSub}
         >
           ndo
         </Animatable.Text>
 
-
         <Animatable.Text
           animation="bounce"
-
           delay={1500}
           style={styles.title}
         >
@@ -123,7 +116,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
         <Animatable.Text
           animation="bounce"
-
           delay={2000}
           style={styles.title}
         >
@@ -131,7 +123,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
         <Animatable.Text
           animation="bounce"
-
           delay={2500}
           style={styles.title}
         >
@@ -139,7 +130,6 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
         <Animatable.Text
           animation="bounce"
-
           delay={3000}
           style={styles.title}
         >
@@ -177,7 +167,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterAccount")}>
           <Text style={styles.buttonText}>CADASTRAR</Text>
         </TouchableOpacity>
       </View>
@@ -212,7 +202,6 @@ const styles = StyleSheet.create({
     marginLeft:0,
     marginRight:0
   },
-
   titleSubR: {
     color: "#2d47f0",
     fontSize: 30,
@@ -220,7 +209,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "TitanOne-Regular",
     margin: 2,
-   
     marginRight:0
   },
   colorEspecific: {
