@@ -32,6 +32,7 @@ interface Freelancer {
   description: string;
   profile_picture: string;
   picture_folder: string;
+  roles: string[];
 }
 
 interface Props {
@@ -44,8 +45,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [loaded, error] = useFonts({
     "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
   });
@@ -64,10 +65,12 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const fetchFreelancers = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
+        const response = await axios.get('https://app-api-pied.vercel.app/freelancers');
+        // Filtra freelancers baseados no selectedValue
+        const filteredFreelancers = response.data.filter((freelancer: Freelancer) =>
+          freelancer.roles.includes(selectedValue)
         );
-        setFreelancers(response.data);
+        setFreelancers(filteredFreelancers);
       } catch (error) {
         console.error("Erro ao buscar freelancers:", error);
       } finally {
@@ -106,7 +109,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <>
-    <Header />
+      <Header />
       <Animatable.Text animation="fadeInDown" style={styles.headerContainer}>
         1<Text style={styles.colorEspecific}>2</Text> PUL
         <Text style={styles.colorEspecific}>O</Text>
@@ -114,9 +117,14 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.container}>
         <Animatable.View animation="bounceIn" style={styles.pickerContainer}>
-        
           <TouchableOpacity style={styles.searchBar} onPress={handleModalOpen}>
-            <Text style={{ color: selectedValue ? "#000" : "#ffffff", textAlign:"center", fontWeight:"700" }}>
+            <Text
+              style={{
+                color: selectedValue ? "#ffffff" : "#ffffff",
+                textAlign: "center",
+                fontWeight: "700",
+              }}
+            >
               {selectedValue || "Selecione um serviço"}
             </Text>
           </TouchableOpacity>
@@ -193,7 +201,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-
   headerContainer: {
     color: "#2d47f0",
     fontSize: 30,
@@ -205,12 +212,6 @@ const styles = StyleSheet.create({
   colorEspecific: {
     color: "#f27e26",
   },
-
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "#000000",
-  },
   pickerContainer: {
     alignItems: "center",
     marginVertical: 5,
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
     borderColor: "#f27e26",
     borderWidth: 2,
     paddingHorizontal: 8,
-
     justifyContent: "center",
     width: "100%",
     borderRadius: 5,

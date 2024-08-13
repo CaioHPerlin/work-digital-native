@@ -33,6 +33,7 @@ const Routes = () => {
         initialRouteName="Login"
         screenOptions={{
           headerShown: false,
+          
         }}
       >
         <Stack.Screen name="PageInicial" component={PageInicial} />
@@ -50,7 +51,7 @@ const Routes = () => {
         <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
         <Stack.Screen name="Slider" component={Slider} />
         <Stack.Screen name="ManageDestak" component={ManageDestak} />
-        
+        <Stack.Screen name="Header" component = {Header}/>
 
         
       </Stack.Navigator>

@@ -88,7 +88,7 @@ export default function ChangeCity({ navigation }: ChangeCityProps) {
   };
 
   return (
-    <Layout>
+    <>
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Alterar Cidade</Text>
@@ -151,7 +151,7 @@ export default function ChangeCity({ navigation }: ChangeCityProps) {
           </View>
         </ScrollView>
       </View>
-    </Layout>
+    </>
   );
 }
 
@@ -165,9 +165,12 @@ const styles = StyleSheet.create({
 
   },
   title: {
-    fontSize: 24,
+    color: "#2d47f0",
+    fontSize: 28,
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "TitanOne-Regular",
+    margin: 2,
   },
   inputGroup: {
     marginBottom: 10,
@@ -176,9 +179,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    fontWeight:"bold"
   },
   picker: {
-    backgroundColor: "#fef5eb",
+    backgroundColor: "#fffefd",
     borderColor: "#FFC88d",
     borderWidth: 1,
     marginBottom: 10,
@@ -193,15 +197,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#FFC88d",
-    padding: 10,
+    backgroundColor: "#2d47f0",
+    padding: 18,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontWeight: "bold",
   },
 });

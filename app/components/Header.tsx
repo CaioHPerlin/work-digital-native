@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-type HeaderProps = {
-  navigation: any;
-};
+import { useNavigation } from "@react-navigation/native";
 
 
-const Header= ({ navigation }: HeaderProps) =>  {
+const Header = () =>  {
+  const navigation = useNavigation();
   
   return (
     <View style={styles.headerContainer}>

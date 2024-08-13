@@ -27,7 +27,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
   };
 
   const handleBackPress = () => {
-    navigation.navigate("Sidebar");
+    navigation.navigate("HomeScreen");
   };
 
   return (

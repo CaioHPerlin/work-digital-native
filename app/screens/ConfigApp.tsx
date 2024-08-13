@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
-
+import Header from "../components/Header";
 import ToastManager, { Toast } from 'toastify-react-native'
 
 type ConfigAppProps = {
   navigation: any;
 };
-
+ 
 const Teste =()=>{
   Toast.success('funciona')
 }
@@ -14,9 +14,13 @@ const Teste =()=>{
 const ConfigApp = ({ navigation }: ConfigAppProps) => {
 
   return (
+
+    <>
+       <Header/>
     <View style={styles.container}>
+   
       <ToastManager></ToastManager>
-      <Header />
+      
       <Text style={styles.title}>Configurações do Aplicativo</Text>
       <TouchableOpacity
         style={styles.button}
@@ -57,11 +61,12 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate("HomeScreen")}
       >
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
     </View>
+    </>
   );
 };
 
@@ -74,9 +79,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 20,
+    fontFamily: "TitanOne-Regular",
+    color:"#f27e26"
   },
   button: {
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
+    borderColor: "#f27e26",
+    borderWidth: 2,
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
@@ -92,7 +101,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   buttonText: {
-    color: "#000",
+    color: "#ffffff",
     fontWeight: "bold",
   },
 });

@@ -112,7 +112,7 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
   };
 
   return (
-    <Layout>
+    <>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Tornar-se Autônomo</Text>
 
@@ -166,12 +166,12 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
           </View>
         </View>
 
-        <ImagePickerGroup label="Ícone" image={icone} onPickImage={pickImage} />
-        <FormButton
-          text="Gerenciar Destaque"
-          style={styles.buttonDestak}
-          onPress={() => navigation.navigate("ManageDestak")}
-        />
+        <ImagePickerGroup label="Avatar" image={icone} onPickImage={pickImage} />
+        <TouchableOpacity style={styles.buttonDestak} onPress={() => navigation.navigate("ManageDestak")}>
+          <Text style = {styles.buttonText}>Gerenciar Destaque</Text>
+          
+          
+          </TouchableOpacity>
         <View style={styles.buttonContainer}>
           <FormButton
             text="Confirmar"
@@ -189,7 +189,7 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
           onPress={() => navigation.navigate("ConfigApp")}
         />
       </ScrollView>
-    </Layout>
+    </>
   );
 };
 
@@ -244,16 +244,19 @@ const ImagePickerGroup = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: 25,
     flexGrow: 1,
     padding: 30,
     alignItems: "center",
+    backgroundColor:"#fff"
   },
   title: {
-    fontSize: 34,
+    color: "#2d47f0",
+    fontSize: 28,
     marginBottom: 20,
     textAlign: "center",
-    color: "#000000",
+    fontFamily: "TitanOne-Regular",
+    margin: 2,
   },
   inputGroup: {
     marginBottom: 15,
@@ -262,30 +265,33 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color: "#000000",
+    fontWeight: "bold",
   },
   input: {
-    borderColor: "#FFC88d",
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 5,
     padding: 15,
-    backgroundColor: "#fef5eb",
+    backgroundColor: "#ffffff",
   },
   picker: {
-    borderColor: "#FFC88d",
+    borderColor: "#000",
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
-    backgroundColor: "#fef5eb",
+    backgroundColor: "#ffffff",
   },
   imagePicker: {
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
     padding: 20,
     borderRadius: 5,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   imagePickerText: {
-    color: "#000000",
+    color: "#fff",
+    fontWeight: "bold",
   },
   image: {
     width: 100,
@@ -300,41 +306,39 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   buttonVoltar: {
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
     padding: 20,
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
     width: "97%",
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   buttonDestak: {
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
     padding: 20,
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
-    width: "97%",
+    width: "100%",
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   buttonConfirmar: {
-    backgroundColor: "#a3ff7f",
+    backgroundColor: "#2d47f0",
     padding: 20,
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
     width: "97%",
     marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
-  buttonVisualizar: {
-    backgroundColor: "#ffec7f",
-    padding: 15,
-    marginTop: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    flex: 1,
-    marginHorizontal: 5,
-  },
+
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontWeight: "bold",
   },
   rolesContainer: {
@@ -345,11 +349,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 5,
+    color:"#fff"
   },
   selectedRoleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
+    color:"#fff",
     padding: 5,
     marginRight: 5,
     marginBottom: 5,
@@ -357,6 +363,9 @@ const styles = StyleSheet.create({
   },
   selectedRole: {
     marginRight: 5,
+    color:"#fff",
+    fontWeight:"700",
+    padding:10,
   },
   deleteButton: {
     backgroundColor: "#f54242",

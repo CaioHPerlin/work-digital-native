@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { TextInput } from "react-native-paper";
-import Layout from "../components/Layout";
+//import Layout from "../components/Layout";
 
 type DadosPessoaisProps = {
   navigation: any;
@@ -33,7 +33,7 @@ export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
   };
 
   return (
-    <Layout>
+    <>
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Dados Pessoais</Text>
@@ -123,21 +123,25 @@ export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
           </View>
         </ScrollView>
       </View>
-    </Layout>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop:25,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
-    fontSize: 34,
+    color: "#2d47f0",
+    fontSize: 30,
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "TitanOne-Regular",
+    margin: 2,
   },
   inputGroup: {
     marginBottom: 10,
@@ -146,12 +150,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    fontWeight: "bold",
   },
   input: {
-    backgroundColor: "#fef5eb",
-    marginBottom: 10,
-    borderColor: "#FFC88d",
+    borderColor: "black",
     borderWidth: 1,
+    marginBottom: 10,
     color: "#000000",
     borderRadius: 5,
   },
@@ -162,15 +166,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: "#FFC88d",
-    padding: 10,
+    backgroundColor: "#2d47f0",
+    padding: 18,
     borderRadius: 5,
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontWeight: "bold",
   },
 });
