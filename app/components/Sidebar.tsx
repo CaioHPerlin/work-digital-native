@@ -13,8 +13,8 @@ interface KbStyles {
 }
 
 const KbStyles: KbStyles = {
-  white: "#FFFFFF",
-  fundoHeader: "#EE8424",
+  white: "#f27e26",
+  fundoHeader: "#2d47f0",
   headerItem: "#FFC88d",
 };
 

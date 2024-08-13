@@ -4,14 +4,22 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import * as Animatable from "react-native-animatable";
-
 import ListFreelancer from "../components/ListFreelancer";
-import Layout from "../components/Layout";
+import Header from "../components/Header";
 import axios from "axios";
 import roles from "@/constants/roles";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import Icon from "react-native-vector-icons/FontAwesome";
+
+SplashScreen.preventAutoHideAsync();
 
 interface Freelancer {
   id: number;
@@ -35,7 +43,22 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loaded, error] = useFonts({
+    "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   useEffect(() => {
     const fetchFreelancers = async () => {
@@ -68,76 +91,100 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     setShowPickerMessage(text === "");
   };
 
+  const handleModalOpen = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleItemSelect = (item: string) => {
+    setSelectedValue(item);
+    handleModalClose();
+  };
+
   return (
-    <Layout>
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Animatable.Text
-            animation="bounce"
-            iterationCount="infinite"
-            style={styles.loadingText}
-          >
-            12Pulo
-          </Animatable.Text>
-        </View>
-      ) : (
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.nomeMarca}>12Pulo</Text>
-          </View>
-          <View style={styles.pickerContainer}>
-            <Text style={styles.label}>TIPOS DE SERVIÇO</Text>
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Pesquisar..."
-              value={searchText}
-              onChangeText={handleSearch}
-            />
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={selectedValue}
-                style={styles.picker}
-                onValueChange={(itemValue) => setSelectedValue(itemValue)}
+    <>
+    <Header />
+      <Animatable.Text animation="fadeInDown" style={styles.headerContainer}>
+        1<Text style={styles.colorEspecific}>2</Text> PUL
+        <Text style={styles.colorEspecific}>O</Text>
+      </Animatable.Text>
+
+      <View style={styles.container}>
+        <Animatable.View animation="bounceIn" style={styles.pickerContainer}>
+        
+          <TouchableOpacity style={styles.searchBar} onPress={handleModalOpen}>
+            <Text style={{ color: selectedValue ? "#000" : "#ffffff", textAlign:"center", fontWeight:"700" }}>
+              {selectedValue || "Selecione um serviço"}
+            </Text>
+          </TouchableOpacity>
+        </Animatable.View>
+
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={handleModalClose}
+        >
+          <TouchableWithoutFeedback onPress={handleModalClose}>
+            <View style={styles.modalBackground}>
+              <Animatable.View
+                animation="slideInUp"
+                duration={400}
+                style={styles.modalContainer}
               >
-                {showPickerMessage && (
-                  <Picker.Item label="Selecione um serviço" value="" />
-                )}
-                {filteredServiceTypes.map((service, index) => (
-                  <Picker.Item
-                    key={index}
-                    label={service}
-                    value={service}
-                    enabled={service.length > 1}
-                    style={
-                      service.length > 1
-                        ? { color: "#000" }
-                        : { color: "#aeaeae" }
-                    }
+                <View style={styles.searchInputContainer}>
+                  <TextInput
+                    style={styles.modalSearchBar}
+                    placeholder="Buscar Um Profissional"
+                    placeholderTextColor="#FFF"
+                    value={searchText}
+                    onChangeText={handleSearch}
                   />
-                ))}
-              </Picker>
+                  <Icon
+                    name="search"
+                    size={20}
+                    color="#FFF"
+                    style={styles.searchIcon}
+                  />
+                </View>
+
+                <FlatList
+                  data={filteredServiceTypes}
+                  keyExtractor={(item) => item}
+                  renderItem={({ item }) => (
+                    <ScrollView>
+                      <TouchableOpacity
+                        style={styles.modalItem}
+                        onPress={() => handleItemSelect(item)}
+                      >
+                        <Text style={styles.modalItemText}>{item}</Text>
+                      </TouchableOpacity>
+                    </ScrollView>
+                  )}
+                />
+              </Animatable.View>
             </View>
-          </View>
-          {selectedValue ? (
+          </TouchableWithoutFeedback>
+        </Modal>
+
+        {selectedValue ? (
+          <Animatable.View animation="fadeInUp">
             <ListFreelancer data={freelancers} navigation={navigation} />
-          ) : (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {showPickerMessage && (
-                <Text style={{ textAlign: "center" }}>
-                  Selecione um serviço acima para buscar por prestadores!
-                </Text>
-              )}
-            </View>
-          )}
-        </View>
-      )}
-    </Layout>
+          </Animatable.View>
+        ) : (
+          <View style={styles.noSelectionContainer}>
+            {showPickerMessage && (
+              <Text style={{ textAlign: "center" }}>
+                Selecione um serviço acima para buscar por prestadores!
+              </Text>
+            )}
+          </View>
+        )}
+      </View>
+    </>
   );
 };
 
@@ -146,16 +193,19 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
+    color: "#2d47f0",
+    fontSize: 30,
+    marginTop: "9%",
+    textAlign: "center",
+    fontFamily: "TitanOne-Regular",
+    margin: 2,
   },
-  nomeMarca: {
-    fontSize: 25,
-    fontWeight: "bold",
+  colorEspecific: {
+    color: "#f27e26",
   },
+
   label: {
     fontSize: 16,
     marginBottom: 5,
@@ -163,32 +213,65 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     alignItems: "center",
-    marginVertical: 20,
+    marginVertical: 5,
   },
   searchBar: {
-    height: 40,
-    borderColor: "#CCC",
-    borderWidth: 1,
+    height: 50,
+    borderColor: "#f27e26",
+    borderWidth: 2,
     paddingHorizontal: 8,
-    marginBottom: 10,
+
+    justifyContent: "center",
     width: "100%",
+    borderRadius: 5,
+    backgroundColor: "#2d47f0",
   },
-  pickerWrapper: {
-    height: 50,
-    width: "100%",
-  },
-  picker: {
-    height: 50,
-    width: "100%",
-  },
-  loadingContainer: {
+  modalBackground: {
     flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
-  loadingText: {
-    fontSize: 34,
-    color: "#feb96f",
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 20,
+    alignItems: "center",
+    elevation: 20,
+    height: "50%",
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2d47f0",
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    height: 50,
+    marginBottom: 10,
+    width: "100%",
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  modalSearchBar: {
+    flex: 1,
+    color: "#FFF",
+  },
+  modalItem: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    width: "100%",
+  },
+  modalItemText: {
+    fontSize: 16,
+    textAlign: "justify",
+  },
+  noSelectionContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

@@ -16,7 +16,7 @@ import FreelancerDetails from "../screens/FreelancerDetails";
 import SliderDestaque from "../components/SliderDestaque";
 import Slider from "../components/Slider";
 import ManageDestak from "../screens/ManageDestak";
-
+import Header from "../components/Header";
 
 const KbStyles = {
   white: "#FFFFFF",
@@ -50,6 +50,8 @@ const Routes = () => {
         <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
         <Stack.Screen name="Slider" component={Slider} />
         <Stack.Screen name="ManageDestak" component={ManageDestak} />
+        
+
         
       </Stack.Navigator>
     </>

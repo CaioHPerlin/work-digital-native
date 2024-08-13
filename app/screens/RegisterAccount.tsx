@@ -115,7 +115,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           const response = await axios.get(
             `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
           );
-          setCidades(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
+          setCidades(
+            response.data.sort((a, b) => a.nome.localeCompare(b.nome))
+          );
           setLoadingCidades(false);
         } catch (error) {
           console.error(error);
@@ -127,151 +129,163 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   }, [estado]);
 
   return (
-  
-      <View style={styles.container}>
-        <ScrollView>
-          <Text style={styles.title}>Cadastro</Text>
+    <View style={styles.container}>
+      <ScrollView>
+        <Text style={styles.title}>Cadastro</Text>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome</Text>
-            <TextInput
-              value={nome}
-              onChangeText={setNome}
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            label="Nome"
+            value={nome}
+            onChangeText={setNome}
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>CPF</Text>
-            <TextInput value={cpf} onChangeText={setCpf} style={styles.input} />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>CPF</Text>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Data de Nascimento</Text>
-            <TextInput
-              value={birthdate}
-              onChangeText={setBirthdate}
-              style={styles.input}
-            />
-          </View>
+          <TextInput
+            label="CPF"
+            value={cpf}
+            onChangeText={setCpf}
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Estado</Text>
-            {loadingEstados ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={estado}
-                onValueChange={(itemValue) => {
-                  setEstado(itemValue);
-                  setCidade("");
-                }}
-                style={styles.picker}
-              >
-                <Picker.Item label="Selecione um estado" value="" />
-                {estados.map((estado) => (
-                  <Picker.Item
-                    key={estado.id}
-                    label={estado.nome}
-                    value={estado.sigla}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Data de Nascimento</Text>
+          <TextInput
+            label="Data de Nascimento"
+            value={birthdate}
+            onChangeText={setBirthdate}
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cidade</Text>
-            {loadingCidades ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={cidade}
-                onValueChange={setCidade}
-                style={styles.picker}
-                enabled={estado !== ""}
-              >
-                <Picker.Item label="Selecione uma cidade" value="" />
-                {cidades.map((cidade) => (
-                  <Picker.Item
-                    key={cidade.id}
-                    label={cidade.nome}
-                    value={cidade.nome}
-                  />
-                ))}
-              </Picker>
-            )}
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Estado</Text>
+          {loadingEstados ? (
+            <ActivityIndicator size="large" color="#FFC88d" />
+          ) : (
+            <Picker
+              selectedValue={estado}
+              onValueChange={(itemValue) => {
+                setEstado(itemValue);
+                setCidade("");
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione um estado" value="" />
+              {estados.map((estado) => (
+                <Picker.Item
+                  key={estado.id}
+                  label={estado.nome}
+                  value={estado.sigla}
+                />
+              ))}
+            </Picker>
+          )}
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Endereço</Text>
-            <TextInput
-              value={endereco}
-              onChangeText={setEndereco}
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Cidade</Text>
+          {loadingCidades ? (
+            <ActivityIndicator size="large" color="#FFC88d" />
+          ) : (
+            <Picker
+              selectedValue={cidade}
+              onValueChange={setCidade}
+              style={styles.picker}
+              enabled={estado !== ""}
+            >
+              <Picker.Item label="Selecione uma cidade" value="" />
+              {cidades.map((cidade) => (
+                <Picker.Item
+                  key={cidade.id}
+                  label={cidade.nome}
+                  value={cidade.nome}
+                />
+              ))}
+            </Picker>
+          )}
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Número</Text>
-            <TextInput
-              value={numero}
-              onChangeText={setNumero}
-              keyboardType="numeric"
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Endereço</Text>
+          <TextInput
+            label= "Endereço"
+            value={endereco}
+            onChangeText={setEndereco}
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Bairro</Text>
-            <TextInput
-              value={bairro}
-              onChangeText={setBairro}
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Número</Text>
+          <TextInput
+          label= "Número"
+            value={numero}
+            onChangeText={setNumero}
+            keyboardType="numeric"
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Telefone</Text>
-            <TextInput
-              value={telefone}
-              onChangeText={setTelefone}
-              keyboardType="phone-pad"
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Bairro</Text>
+          <TextInput
+            label= "Bairro"
+            value={bairro}
+            onChangeText={setBairro}
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Senha</Text>
-            <TextInput
-              value={senha}
-              onChangeText={setSenha}
-              secureTextEntry
-              style={styles.input}
-            />
-          </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput
+            label= "Telefone"
+            value={telefone}
+            onChangeText={setTelefone}
+            keyboardType="phone-pad"
+            style={styles.input}
+          />
+        </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            label= "Senha"
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <Text style={styles.buttonText}>Cancelar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Cadastrar</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -282,12 +296,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  ScrollView:{
- 
+  ScrollView: {
     padding: 20,
     justifyContent: "center",
-    width:"100%",
-    alignItems:"center"
+    width: "100%",
+
+    alignItems: "center",
   },
   title: {
     color: "#2d47f0",
@@ -347,7 +361,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-
 });
 
 export default RegisterAccount;

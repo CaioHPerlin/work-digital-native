@@ -16,6 +16,7 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
   return (
     <View style={styles.container}>
       <ToastManager></ToastManager>
+      <Header />
       <Text style={styles.title}>Configurações do Aplicativo</Text>
       <TouchableOpacity
         style={styles.button}

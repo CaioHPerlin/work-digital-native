@@ -50,7 +50,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
       );
       if (response.data.token) {
         await AsyncStorage.setItem("cpf", response.data.user.cpf);
-        navigation.navigate("Sidebar");
+        navigation.navigate("HomeScreen");
       }
     } catch (error) {
       alert("Verifique suas informações de login.");
