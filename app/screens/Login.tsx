@@ -7,7 +7,6 @@ import * as Animatable from "react-native-animatable";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
-
 SplashScreen.preventAutoHideAsync();
 
 interface Props {
@@ -77,11 +76,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.inlineText}>
-        <Animatable.Text
-          animation="bounce"
-          delay={500}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={500} style={styles.title}>
           Bem
         </Animatable.Text>
 
@@ -92,11 +87,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
         >
           v
         </Animatable.Text>
-        <Animatable.Text
-          animation="bounce"
-          delay={3500}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={3500} style={styles.title}>
           <Text style={styles.colorEspecific}>i</Text>
         </Animatable.Text>
         <Animatable.Text
@@ -107,32 +98,16 @@ const Login: React.FC<Props> = ({ navigation }) => {
           ndo
         </Animatable.Text>
 
-        <Animatable.Text
-          animation="bounce"
-          delay={1500}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={1500} style={styles.title}>
           ao
         </Animatable.Text>
-        <Animatable.Text
-          animation="bounce"
-          delay={2000}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={2000} style={styles.title}>
           1
         </Animatable.Text>
-        <Animatable.Text
-          animation="bounce"
-          delay={2500}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={2500} style={styles.title}>
           <Text style={styles.colorEspecific}>2</Text>
         </Animatable.Text>
-        <Animatable.Text
-          animation="bounce"
-          delay={3000}
-          style={styles.title}
-        >
+        <Animatable.Text animation="bounce" delay={3000} style={styles.title}>
           PUL
           <Text style={styles.colorEspecific}>O</Text>
         </Animatable.Text>
@@ -167,7 +142,10 @@ const Login: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterAccount")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("RegisterAccount")}
+        >
           <Text style={styles.buttonText}>CADASTRAR</Text>
         </TouchableOpacity>
       </View>
@@ -199,8 +177,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "TitanOne-Regular",
     margin: 2,
-    marginLeft:0,
-    marginRight:0
+    marginLeft: 0,
+    marginRight: 0,
   },
   titleSubR: {
     color: "#2d47f0",
@@ -209,7 +187,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "TitanOne-Regular",
     margin: 2,
-    marginRight:0
+    marginRight: 0,
   },
   colorEspecific: {
     color: "#f27e26",
@@ -228,6 +206,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   inlineText: {
+    width: "100%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",

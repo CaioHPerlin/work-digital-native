@@ -106,7 +106,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <>
-    <Header />
+      <Header />
       <Animatable.Text animation="fadeInDown" style={styles.headerContainer}>
         1<Text style={styles.colorEspecific}>2</Text> PUL
         <Text style={styles.colorEspecific}>O</Text>
@@ -114,9 +114,14 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.container}>
         <Animatable.View animation="bounceIn" style={styles.pickerContainer}>
-        
           <TouchableOpacity style={styles.searchBar} onPress={handleModalOpen}>
-            <Text style={{ color: selectedValue ? "#000" : "#ffffff", textAlign:"center", fontWeight:"700" }}>
+            <Text
+              style={{
+                color: "#ffffff",
+                textAlign: "center",
+                fontWeight: "700",
+              }}
+            >
               {selectedValue || "Selecione um serviço"}
             </Text>
           </TouchableOpacity>
@@ -158,9 +163,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     <ScrollView>
                       <TouchableOpacity
                         style={styles.modalItem}
-                        onPress={() => handleItemSelect(item)}
+                        onPress={() =>
+                          item.length > 1 ? handleItemSelect(item) : ""
+                        }
                       >
-                        <Text style={styles.modalItemText}>{item}</Text>
+                        <Text
+                          style={
+                            item.length > 1
+                              ? styles.modalItemText
+                              : { ...styles.modalItemText, color: "#828282" }
+                          }
+                        >
+                          {item}
+                        </Text>
                       </TouchableOpacity>
                     </ScrollView>
                   )}
