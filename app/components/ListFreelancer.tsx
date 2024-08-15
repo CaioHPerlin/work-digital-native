@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,12 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 
 interface Freelancer {
   id: number;
-  role: string;
+  role: string[];
   name: string;
   phone: string;
   email: string;
@@ -34,12 +35,16 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
     navigation.navigate("FreelancerDetails", { freelancer });
   };
 
+  useEffect(() => {
+    data.map((freelancer) => console.log(freelancer));
+  }, [data]);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }: { item: Freelancer }) => (
+        keyExtractor={(freelancer) => freelancer.id.toString()}
+        renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => navigateToDetails(item)}
             style={styles.itemContainer}
@@ -57,7 +62,7 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
           </TouchableOpacity>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -65,19 +70,21 @@ export default ListFreelancer;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: "100%",
     paddingTop: 20,
   },
+  flatlist: {
+    flex: 1,
+  },
   itemContainer: {
-    width: "100%",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
     margin: 5,
     borderColor: "#FFC88d",
-    borderWidth: 1,
+    borderWidth: 2,
     backgroundColor: "#ffffff",
-    borderBottomColor: "transparent",
     borderRadius: 5,
   },
   textContainer: {

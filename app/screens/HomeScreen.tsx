@@ -78,7 +78,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     if (selectedValue) {
       fetchFreelancers();
     }
-    alert(selectedValue);
   }, [selectedValue]);
 
   const sortedServiceTypes = roles.sort();
