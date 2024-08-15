@@ -69,7 +69,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         );
         setFreelancers(response.data);
       } catch (error) {
-        console.error("Erro ao buscar freelancers:", error);
+        alert("Erro ao buscar freelancers:" + error);
       } finally {
         setIsLoading(false);
       }
@@ -78,6 +78,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     if (selectedValue) {
       fetchFreelancers();
     }
+    alert(selectedValue);
   }, [selectedValue]);
 
   const sortedServiceTypes = roles.sort();
@@ -157,6 +158,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
 
                 <FlatList
+                  style={{ width: "100%" }}
                   data={filteredServiceTypes}
                   keyExtractor={(item) => item}
                   renderItem={({ item }) => (
