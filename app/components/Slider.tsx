@@ -1,39 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
   Image,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const carouselItem = require('../../assets/carousel.json');
-const viewConfigRef = { viewAreaCoveragePercentThreshold: 50 };
+const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
 
 interface CarouselItems {
   title: string;
   url: string;
+  promo: string;
 }
 
-interface SliderProps {
-  onLastItemVisible: () => void;
-}
-
-const Slider: React.FC<SliderProps> = ({ onLastItemVisible }) => {
+export default function Slider() {
   let flatListRef = useRef<FlatList<CarouselItems> | null>();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Only needed if want to know the index
   const onViewRef = useRef(({ changed }: { changed: any }) => {
     if (changed[0].isViewable) {
       setCurrentIndex(changed[0].index);
-      if (changed[0].index === carouselItem.length - 1) {
-        onLastItemVisible();
-      }
     }
   });
 
@@ -43,30 +34,32 @@ const Slider: React.FC<SliderProps> = ({ onLastItemVisible }) => {
 
   const renderItems: React.FC<{ item: CarouselItems }> = ({ item }) => {
     return (
-      <TouchableOpacity
-        onPress={() => console.log('clicked')}
-        activeOpacity={1}
-      >
+      <View>
         <Image source={{ uri: item.url }} style={styles.image} />
-      </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <View style={styles.dotView}>
-        {carouselItem.map(({}, index: number) => (
-          <TouchableOpacity
+      
+      {/* Barra de progresso na parte superior */}
+      <View style={styles.progressBarContainer}>
+        {carouselItem.map((_, index: number) => (
+          <View
             key={index.toString()}
             style={[
-              styles.circle,
-              { backgroundColor: index == currentIndex ? 'black' : 'grey' },
+              styles.progressBar,
+              {
+                width: `${100 / carouselItem.length}%`,
+                backgroundColor: index <= currentIndex ? 'black' : 'grey',
+              },
             ]}
-            onPress={() => scrollToIndex(index)}
           />
         ))}
       </View>
+
       <FlatList
         data={carouselItem}
         renderItem={renderItems}
@@ -81,7 +74,6 @@ const Slider: React.FC<SliderProps> = ({ onLastItemVisible }) => {
         viewabilityConfig={viewConfigRef}
         onViewableItemsChanged={onViewRef.current}
       />
-
     </View>
   );
 }
@@ -89,42 +81,26 @@ const Slider: React.FC<SliderProps> = ({ onLastItemVisible }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 0,
+    backgroundColor: 'transparent',
+  },
+  progressBarContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    right: 0,
+    height: 5,
+    zIndex: 10,
+  },
+  progressBar: {
+    height: '100%',
   },
   carousel: {
-    maxHeight: '100%',
+    marginTop: 0, // Ajuste o valor conforme necessário para não sobrepor a barra de progresso
   },
   image: {
     width,
     height: '100%',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 50,
-    paddingHorizontal: 40,
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  footerText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  dotView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 5,
-  },
-  circle: {
-    maxWidth:'90%',
-    width: 5,
-    height: 5,
-    backgroundColor: 'grey',
-
-    marginHorizontal: 5,
+    resizeMode: 'cover',
   },
 });
-
-export default Slider;

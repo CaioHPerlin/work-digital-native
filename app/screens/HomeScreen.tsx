@@ -8,7 +8,6 @@ import {
   FlatList,
   Modal,
   TouchableWithoutFeedback,
-  ScrollView,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import ListFreelancer from "../components/ListFreelancer";
@@ -42,6 +41,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [filteredFreelancers, setFilteredFreelancers] = useState<Freelancer[]>([]);
   const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
@@ -68,6 +68,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
         );
         setFreelancers(response.data);
+        setFilteredFreelancers(response.data);
       } catch (error) {
         alert("Erro ao buscar freelancers:" + error);
       } finally {
@@ -80,10 +81,21 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [selectedValue]);
 
+  useEffect(() => {
+    if (searchText) {
+      const filtered = freelancers.filter((freelancer) =>
+        freelancer.name.toLowerCase().startsWith(searchText.toLowerCase())
+      );
+      setFilteredFreelancers(filtered);
+    } else {
+      setFilteredFreelancers(freelancers);
+    }
+  }, [searchText, freelancers]);
+
   const sortedServiceTypes = roles.sort();
 
   const filteredServiceTypes = sortedServiceTypes.filter((service) =>
-    service.toLowerCase().includes(searchText.toLowerCase())
+    service.toLowerCase().startsWith(searchText.toLowerCase())
   );
 
   const handleSearch = (text: string) => {
@@ -105,8 +117,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <>
-      <Header />
+    <View style={styles.backColor}>
       <Animatable.Text animation="fadeInDown" style={styles.headerContainer}>
         1<Text style={styles.colorEspecific}>2</Text> PUL
         <Text style={styles.colorEspecific}>O</Text>
@@ -161,24 +172,22 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                   data={filteredServiceTypes}
                   keyExtractor={(item) => item}
                   renderItem={({ item }) => (
-                    <ScrollView>
-                      <TouchableOpacity
-                        style={styles.modalItem}
-                        onPress={() =>
-                          item.length > 1 ? handleItemSelect(item) : ""
+                    <TouchableOpacity
+                      style={styles.modalItem}
+                      onPress={() =>
+                        item.length > 1 ? handleItemSelect(item) : ""
+                      }
+                    >
+                      <Text
+                        style={
+                          item.length > 1
+                            ? styles.modalItemText
+                            : { ...styles.modalItemText, color: "#f27e26" }
                         }
                       >
-                        <Text
-                          style={
-                            item.length > 1
-                              ? styles.modalItemText
-                              : { ...styles.modalItemText, color: "#828282" }
-                          }
-                        >
-                          {item}
-                        </Text>
-                      </TouchableOpacity>
-                    </ScrollView>
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
                   )}
                 />
               </Animatable.View>
@@ -188,7 +197,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {selectedValue ? (
           <Animatable.View animation="fadeInUp">
-            <ListFreelancer data={freelancers} navigation={navigation} />
+            <ListFreelancer data={filteredFreelancers} navigation={navigation} />
           </Animatable.View>
         ) : (
           <View style={styles.noSelectionContainer}>
@@ -200,16 +209,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         )}
       </View>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  backColor: {
+    backgroundColor: "#fff",
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
   },
-
   headerContainer: {
     color: "#2d47f0",
     fontSize: 30,
@@ -221,7 +233,6 @@ const styles = StyleSheet.create({
   colorEspecific: {
     color: "#f27e26",
   },
-
   label: {
     fontSize: 16,
     marginBottom: 5,
@@ -236,7 +247,6 @@ const styles = StyleSheet.create({
     borderColor: "#f27e26",
     borderWidth: 2,
     paddingHorizontal: 8,
-
     justifyContent: "center",
     width: "100%",
     borderRadius: 5,
@@ -255,7 +265,10 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     elevation: 20,
-    height: "50%",
+    height: "80%",
+    borderColor: "#f27e26",
+    borderWidth: 2,
+    
   },
   searchInputContainer: {
     flexDirection: "row",

@@ -28,28 +28,13 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
-      setPickerVisible(true);
-    }, 10000000000000000000); // Altere o destaque a cada x segundos (GAMBIARRA)
-
-    return () => clearInterval(interval);
-  }, []);
 
 
-  const handleLastItemVisible = () => {
-    setTimeout(() => {
-      setPickerVisible(false);
-      setCurrentHighlightIndex((prevIndex) => (prevIndex + 1) % 2); // nesse momento está assumindo que há 2 destaques LEMBRAR DE MUDAR ESSA VARIAVEL
-      setPickerVisible(true); 
-    }, 4000); //Altere o destaque a cada x segundos (GAMBIARRA)
 
-  };
   
   return (
     <>
-      <Layout>
+
         <PersonalCard freelancer={freelancer} />
         <View style={styles.container}>
           {[0, 1].map((index) => (
@@ -58,13 +43,13 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
               isPickerVisible={currentHighlightIndex === index && isPickerVisible}
               setPickerVisible={setPickerVisible}
               index={index}
-              onLastItemVisible={handleLastItemVisible}
+              //onLastItemVisible={handleLastItemVisible}
             />
           ))}
         </View>
         <Description freelancer={freelancer} />
         <BtnPersonal freelancer={freelancer} />
-      </Layout>
+   
     </>
   );
 };

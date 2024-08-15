@@ -16,7 +16,7 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
   return (
 
     <>
-       <Header/>
+
     <View style={styles.container}>
    
       <ToastManager></ToastManager>

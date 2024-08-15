@@ -48,14 +48,14 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({ isPickerVisible, setPic
                 onPress={() => setPickerVisible(false)}
                 style={styles.modalButton}
               >
-                <Text>Fechar</Text>
+                <Text style={styles.buttonText}>Fechar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => setPickerVisible(false)}
                 style={styles.modalButtonChat}
               >
-                <Text>Chat</Text>
+                <Text style={styles.buttonText}>Chat</Text>
               </TouchableOpacity>
               </View>
             </View>
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   modalContent: {
     height: '100%',
     width: "100%",
-    backgroundColor: 'rgb(255, 233, 209)',
+    backgroundColor: 'transparent',
     borderRadius: 10,
     alignItems: "center",
   },
@@ -96,16 +96,32 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalButton: {
-    padding: 15,
-    backgroundColor: "#FFC88d",
+    backgroundColor: "#2d47f0",
+    padding: 18,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   modalButtonChat: {
-    padding: 15,
-    backgroundColor: "#64aefc",
+    backgroundColor: "#2d47f0",
+    padding: 18,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   borderAvatar: {
     borderWidth: 3,
-    borderColor: "#ffa03a",
+    borderColor: "#f27e26",
     alignItems:'center',
     borderRadius: 100,
     paddingVertical:4

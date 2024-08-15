@@ -6,7 +6,6 @@ import Login from "../screens/Login";
 import HomeScreen from "../screens/HomeScreen";
 import PersonalInfo from "../screens/PersonalInfo";
 import PageInicial from "../screens/PageInicial";
-import Sidebar from "../components/Sidebar";
 import BecomeAutonomo from "../screens/opcoesConfig/BecomeAutonomo";
 import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
@@ -17,45 +16,102 @@ import SliderDestaque from "../components/SliderDestaque";
 import Slider from "../components/Slider";
 import ManageDestak from "../screens/ManageDestak";
 import Header from "../components/Header";
-
-const KbStyles = {
-  white: "#FFFFFF",
-  fundoHeader: "#EE8424",
-  headerItem: "#FFC88d",
-};
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importa FontAwesome
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
 const Routes = () => {
   return (
-    <>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-          
-        }}
-      >
-        <Stack.Screen name="PageInicial" component={PageInicial} />
-        <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
-        <Stack.Screen name="BecomeAutonomo" component={BecomeAutonomo} />
-        <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
-        <Stack.Screen name="Sidebar" component={Sidebar} />
-        <Stack.Screen name="ChangePassword" component={ChangePassword} />
-        <Stack.Screen name="ChangeCity" component={ChangeCity} />
-        <Stack.Screen name="DadosPessoais" component={DadosPessoais} />
-        <Stack.Screen name="ConfigApp" component={ConfigApp} />
-        <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
-        <Stack.Screen name="Slider" component={Slider} />
-        <Stack.Screen name="ManageDestak" component={ManageDestak} />
-        <Stack.Screen name="Header" component = {Header}/>
+    <Stack.Navigator
+      initialRouteName="Login"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="PageInicial" component={PageInicial} />
+      <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="HomeScreen">
+        {() => (
+          <Drawer.Navigator
+            screenOptions={{
+              header: () => <Header />, // Usa o Header personalizado aqui
+              drawerStyle: {
+                backgroundColor: '#2d47f0',
+                width: 240,
+              },
+              headerStyle: {
+                height: 80,
+                backgroundColor: '#2d47f0',
+              },
+              headerTitleStyle: {
+                color: '#f27e26',
+              },
+              drawerActiveBackgroundColor: '#FFC88d',
+              drawerInactiveTintColor: 'white',
+              drawerActiveTintColor: 'white',
+              drawerItemStyle: {
+                borderWidth: 2,
+                borderColor: '#FFC88d',
+              },
+            }}
+          >
+            <Drawer.Screen 
+              name="Home" 
+              component={HomeScreen} 
+              options={{
+                drawerIcon: ({ color, size }) => (
+                  <Icon name="home" color={color} size={size} />
+                ),
+              }}
+            />
 
-        
-      </Stack.Navigator>
-    </>
+            <Drawer.Screen 
+              name="Dados Pessoais" 
+              component={DadosPessoais} 
+              options={{
+                drawerIcon: ({ color, size }) => (
+                  <Icon name="user" color={color} size={size} />
+                ),
+              }}
+            />
+            <Drawer.Screen 
+              name="Tornar-se Autônomo" 
+              component={BecomeAutonomo} 
+              options={{
+                drawerIcon: ({ color, size }) => (
+                  <Icon name="briefcase" color={color} size={size} />
+                ),
+              }}
+            />
+            <Drawer.Screen 
+              name="Alterar Cidade" 
+              component={ChangeCity} 
+              options={{
+                drawerIcon: ({ color, size }) => (
+                  <Icon name="map-marker" color={color} size={size} />
+                ),
+              }}
+            />
+            <Drawer.Screen 
+              name="Alterar Senha" 
+              component={ChangePassword} 
+              options={{
+                drawerIcon: ({ color, size }) => (
+                  <Icon name="lock" color={color} size={size} />
+                ),
+              }}
+            />
+
+          </Drawer.Navigator>
+        )}
+      </Stack.Screen>
+      <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
+      <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
+      <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
+      <Stack.Screen name="Slider" component={Slider} />
+    </Stack.Navigator>
   );
 };
 

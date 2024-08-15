@@ -39,8 +39,10 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         style={styles.buttonWhats}
         onPress={handleWhatsAppPress}
       >
+    
         <Icon source="whatsapp" color={"white"} size={30} />
         <Text style={styles.buttonText}>WhatsApp</Text>
+   
       </TouchableOpacity>
     </View>
   );
@@ -56,20 +58,29 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   button: {
-    backgroundColor: "#FFC88d",
-    padding: 10,
+    backgroundColor: "#2d47f0",
+    padding: 18,
     borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#f27e26",
   },
   buttonWhats: {
     backgroundColor: "#25D366",
     flexDirection: "row",
+    flex: 1,
+    justifyContent:'center',
     alignItems: "center",
-    padding: 10,
+    padding: 18,
     borderRadius: 5,
   },
+
   buttonText: {
     margin: 5,
     color: "#ffffff",
     fontSize: 16,
+    fontWeight: "bold"
   },
 });
