@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(255, 221, 31, 0.5)",
   },
   modalContent: {
     height: '100%',
