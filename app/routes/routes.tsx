@@ -5,7 +5,7 @@ import RegisterAccount from "../screens/RegisterAccount";
 import Login from "../screens/Login";
 import HomeScreen from "../screens/HomeScreen";
 import PersonalInfo from "../screens/PersonalInfo";
-import PageInicial from "../screens/PageInicial";
+
 import BecomeAutonomo from "../screens/opcoesConfig/BecomeAutonomo";
 import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
@@ -29,7 +29,7 @@ const Routes = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="PageInicial" component={PageInicial} />
+     
       <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="HomeScreen">

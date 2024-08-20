@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import DestakItem from '../components/DestakItem';
 import * as ImagePicker from 'expo-image-picker';
-import Layout from '../components/Layout';
+
 
 interface Destaque {
   id: number;
@@ -53,7 +53,7 @@ const ManageDestak: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <>
     <View style={styles.container}>
       <Text style={styles.title}>Gerenciar Destaques</Text>
       <TextInput
@@ -83,7 +83,7 @@ const ManageDestak: React.FC = () => {
         style={styles.destaqueList}
       />
     </View>
-    </Layout>
+    </>
   );
 };
 

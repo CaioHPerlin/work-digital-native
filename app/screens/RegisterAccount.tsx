@@ -88,7 +88,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleCancel = () => {
-    navigation.navigate("PageInicial");
+    navigation.navigate("Login");
   };
 
   useEffect(() => {
