@@ -8,10 +8,10 @@ import {
   FlatList,
   Modal,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import ListFreelancer from "../components/ListFreelancer";
-import Header from "../components/Header";
 import axios from "axios";
 import roles from "@/constants/roles";
 import { useFonts } from "expo-font";
@@ -29,31 +29,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
-  const [filteredFreelancers, setFilteredFreelancers] = useState<Freelancer[]>(
-    []
-  );
-  const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const [loaded, error] = useFonts({
     "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
   });
-
-  const fetchFreelancers = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
-      );
-      console.log(response.data);
-      setFilteredFreelancers(response.data);
-    } catch (error) {
-      alert("Erro ao buscar freelancers:" + error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (loaded || error) {
@@ -61,53 +43,42 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [loaded, error]);
 
-  if (!loaded && !error) {
-    return null;
-  }
+  const fetchFreelancers = async (role: string) => {
+    if (!role) return;
 
-  useEffect(() => {
-    if (selectedValue) {
-      fetchFreelancers();
-    }
-  }, [selectedValue]);
-
-  useEffect(() => {
-    if (searchText) {
-      const filtered = freelancers.filter((freelancer) =>
-        freelancer.name.toLowerCase().startsWith(searchText.toLowerCase())
+    setIsLoading(true);
+    setApiError(null);
+    try {
+      const response = await axios.get(
+        `https://app-api-pied.vercel.app/freelancers?role=${role}`
       );
-      setFilteredFreelancers(filtered);
-    } else {
-      setFilteredFreelancers(freelancers);
+      setFreelancers(response.data);
+    } catch (error) {
+      setApiError("Erro ao buscar freelancers. Tente novamente.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [searchText, freelancers]);
-
-  const sortedServiceTypes = roles.sort();
-
-  const filteredServiceTypes = sortedServiceTypes.filter((service) =>
-    service.toLowerCase().startsWith(searchText.toLowerCase())
-  );
-
-  const handleSearch = (text: string) => {
-    setSearchText(text);
-    setShowPickerMessage(text === "");
-  };
-
-  const handleModalOpen = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleModalClose = () => {
-    if (selectedValue) {
-      fetchFreelancers();
-    }
-    setIsModalVisible(false);
   };
 
   const handleItemSelect = (item: string) => {
     setSelectedValue(item);
-    handleModalClose();
+    setIsModalVisible(false);
+    fetchFreelancers(item); // Fetch freelancers immediately after selection
   };
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+  };
+
+  const filteredServiceTypes = roles
+    .sort()
+    .filter((service) =>
+      service.toLowerCase().startsWith(searchText.toLowerCase())
+    );
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   return (
     <View style={styles.backColor}>
@@ -118,7 +89,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.container}>
         <Animatable.View animation="bounceIn" style={styles.pickerContainer}>
-          <TouchableOpacity style={styles.searchBar} onPress={handleModalOpen}>
+          <TouchableOpacity
+            style={styles.searchBar}
+            onPress={() => setIsModalVisible(true)}
+          >
             <Text
               style={{
                 color: "#ffffff",
@@ -135,9 +109,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           visible={isModalVisible}
           transparent={true}
           animationType="fade"
-          onRequestClose={handleModalClose}
+          onRequestClose={() => setIsModalVisible(false)}
         >
-          <TouchableWithoutFeedback onPress={handleModalClose}>
+          <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
             <View style={styles.modalBackground}>
               <Animatable.View
                 animation="slideInUp"
@@ -167,19 +141,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={styles.modalItem}
-                      onPress={() =>
-                        item.length > 1 ? handleItemSelect(item) : ""
-                      }
+                      onPress={() => handleItemSelect(item)}
                     >
-                      <Text
-                        style={
-                          item.length > 1
-                            ? styles.modalItemText
-                            : { ...styles.modalItemText, color: "#f27e26" }
-                        }
-                      >
-                        {item}
-                      </Text>
+                      <Text style={styles.modalItemText}>{item}</Text>
                     </TouchableOpacity>
                   )}
                 />
@@ -188,24 +152,21 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </TouchableWithoutFeedback>
         </Modal>
 
-        {selectedValue ? (
-          isLoading ? (
-            <Text style={{ textAlign: "center" }}>Carregando...</Text>
-          ) : (
-            <Animatable.View animation="fadeInUp">
-              <ListFreelancer
-                data={filteredFreelancers}
-                navigation={navigation}
-              />
-            </Animatable.View>
-          )
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#2d47f0" />
+        ) : apiError ? (
+          <Text style={{ textAlign: "center", color: "red" }}>{apiError}</Text>
+        ) : freelancers.length > 0 ? (
+          <Animatable.View animation="fadeInUp">
+            <ListFreelancer data={freelancers} navigation={navigation} />
+          </Animatable.View>
         ) : (
           <View style={styles.noSelectionContainer}>
-            {showPickerMessage && (
-              <Text style={{ textAlign: "center" }}>
-                Selecione um serviço acima para buscar por prestadores!
-              </Text>
-            )}
+            <Text style={{ textAlign: "center" }}>
+              {selectedValue
+                ? "Nenhum freelancer encontrado."
+                : "Selecione um serviço acima para buscar por prestadores!"}
+            </Text>
           </View>
         )}
       </View>
@@ -232,11 +193,6 @@ const styles = StyleSheet.create({
   },
   colorEspecific: {
     color: "#f27e26",
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "#000000",
   },
   pickerContainer: {
     alignItems: "center",
