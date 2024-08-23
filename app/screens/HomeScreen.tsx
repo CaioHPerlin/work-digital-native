@@ -22,7 +22,7 @@ SplashScreen.preventAutoHideAsync();
 
 interface Freelancer {
   id: number;
-  role: string;
+  role: string[];
   name: string;
   phone: string;
   email: string;
@@ -41,7 +41,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
-  const [filteredFreelancers, setFilteredFreelancers] = useState<Freelancer[]>([]);
+  const [filteredFreelancers, setFilteredFreelancers] = useState<Freelancer[]>(
+    []
+  );
   const [showPickerMessage, setShowPickerMessage] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
@@ -197,7 +199,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {selectedValue ? (
           <Animatable.View animation="fadeInUp">
-            <ListFreelancer data={filteredFreelancers} navigation={navigation} />
+            <ListFreelancer
+              data={filteredFreelancers}
+              navigation={navigation}
+            />
           </Animatable.View>
         ) : (
           <View style={styles.noSelectionContainer}>
@@ -268,7 +273,6 @@ const styles = StyleSheet.create({
     height: "80%",
     borderColor: "#f27e26",
     borderWidth: 2,
-    
   },
   searchInputContainer: {
     flexDirection: "row",

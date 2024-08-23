@@ -4,284 +4,271 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ScrollView,
   Alert,
-  ActivityIndicator,
-  KeyboardTypeOptions,
 } from "react-native";
-import { TextInput } from "react-native-paper";
-import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import Layout from "../components/Layout";
+import InputField from "../components/InputField";
+import PickerField from "../components/PickerField";
+import Formatter from "@/utils/formatter";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// API EXPECTED JSON:
+// name: "John Doe";
+// cpf: "606.917.340-62";
+// email: "teste@example.com";
+// password: "admin";
+// state: "Rio Grande do Sul";
+// city: "Porto Alegre";
+// neighborhood: "Moinhos de Vento";
+// street: "Av. I";
+// number: "606";
+// phone: "6799780609";
+// birthdate: "1991-12-12";
+
+interface FormData {
+  email: string;
+  password: string;
+  name: string;
+  cpf: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+  street: string;
+  number: string;
+  phone: string;
+  birthdate: string;
+}
+
+interface LocationData {
+  id: string;
+  nome: string;
+  sigla?: string;
+}
 
 interface Props {
   navigation: any;
 }
 
 const RegisterAccount: React.FC<Props> = ({ navigation }) => {
-  const [nome, setNome] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [cpf, setCpf] = useState<string>("");
-  const [birthdate, setBirthdate] = useState<string>("");
-  const [estado, setEstado] = useState<string>("");
-  const [cidade, setCidade] = useState<string>("");
-  const [endereco, setEndereco] = useState<string>("");
-  const [numero, setNumero] = useState<string>("");
-  const [bairro, setBairro] = useState<string>("");
-  const [telefone, setTelefone] = useState<string>("");
-  const [senha, setSenha] = useState<string>("");
-  const [estados, setEstados] = useState<[]>([]);
-  const [cidades, setCidades] = useState<[]>([]);
-  const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
-  const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+    name: "",
+    cpf: "",
+    state: "",
+    city: "",
+    neighborhood: "",
+    street: "",
+    number: "",
+    phone: "",
+    birthdate: "",
+  });
+
+  const [states, setStates] = useState<LocationData[]>([]);
+  const [cities, setCities] = useState<LocationData[]>([]);
+  const [loadingStates, setLoadingStates] = useState<boolean>(true);
+  const [loadingCities, setLoadingCities] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const setValue = (name: keyof FormData, value: string) => {
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
 
   const handleRegister = async () => {
-    if (
-      !nome ||
-      !email ||
-      !cpf ||
-      !estado ||
-      !cidade ||
-      !endereco ||
-      !numero ||
-      !bairro ||
-      !telefone ||
-      !senha ||
-      !birthdate
-    ) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos obrigatórios.");
+    if (Object.values(formData).some((field) => !field)) {
+      Alert.alert(
+        "Falha ao registrar",
+        "Por favor, preencha todos os campos obrigatórios."
+      );
       return;
     }
+    setIsLoading(true);
 
-    const userData = {
-      name: nome,
-      email: email,
-      password: senha,
-      cpf: cpf,
-      state: estado,
-      city: cidade,
-      neighborhood: bairro,
-      street: endereco,
-      number: numero,
-      phone: telefone,
+    // Adicionar validação de input (numero, data de nascimento, etc)
+
+    // Limpar o input
+    const birthdate = Formatter.formatDate(formData.birthdate);
+    const phone = Formatter.formatPhone(formData.phone);
+
+    const data = {
+      ...formData,
       birthdate: birthdate,
+      phone: phone,
     };
 
     try {
       const userRes = await axios.post(
         "https://app-api-pied.vercel.app/users",
-        userData
+        data
       );
 
       if (userRes.status === 201) {
         Alert.alert("Sucesso", "Registro realizado com sucesso!");
-        navigation.navigate("Sidebar");
-      } else {
-        throw new Error(userRes.data.message);
+        await AsyncStorage.setItem("cpf", data.cpf);
+        navigation.navigate("HomeScreen");
       }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Erro", "Falha ao registrar. Tente novamente.");
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Falha ao registrar. Tente novamente.";
+      console.error(errorMessage);
+      Alert.alert("Falha ao registrar", errorMessage);
     }
-  };
-
-  const handleCancel = () => {
-    navigation.navigate("Login");
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    const fetchEstados = async () => {
+    const fetchStates = async () => {
       try {
         const response = await axios.get(
           "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
         );
-        setEstados(response.data.sort((a, b) => a.nome.localeCompare(b.nome)));
-        setLoadingEstados(false);
+        setStates(
+          response.data.sort((a: any, b: any) => a.nome.localeCompare(b.nome))
+        );
       } catch (error) {
         console.error(error);
-        setLoadingEstados(false);
+      } finally {
+        setLoadingStates(false);
       }
     };
-    fetchEstados();
+
+    fetchStates();
   }, []);
 
   useEffect(() => {
-    if (estado) {
-      setLoadingCidades(true);
-      const fetchCidades = async () => {
+    if (formData.state) {
+      setLoadingCities(true);
+      const fetchCities = async () => {
         try {
           const response = await axios.get(
-            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
+            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.state}/municipios`
           );
-          setCidades(
-            response.data.sort((a, b) => a.nome.localeCompare(b.nome))
+          setCities(
+            response.data.sort((a: any, b: any) => a.nome.localeCompare(b.nome))
           );
-          setLoadingCidades(false);
         } catch (error) {
           console.error(error);
-          setLoadingCidades(false);
+        } finally {
+          setLoadingCities(false);
         }
       };
-      fetchCidades();
+
+      fetchCities();
     }
-  }, [estado]);
+  }, [formData.state]);
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Cadastro</Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nome</Text>
-          <TextInput
-            label="Nome"
-            value={nome}
-            onChangeText={setNome}
-            style={styles.input}
-          />
-        </View>
+        <InputField
+          label="Nome"
+          value={formData.name}
+          onChangeText={(value: string) => setValue("name", value)}
+        />
+        <InputField
+          label="Email"
+          value={formData.email}
+          onChangeText={(value: string) => setValue("email", value)}
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
+        <InputField
+          maxLength={14}
+          label="CPF"
+          value={formData.cpf}
+          mask="cpf"
+          placeholder="XXX.XXX.XXX-XX"
+          onChangeText={(value: string) => setValue("cpf", value)}
+          keyboardType="numeric"
+        />
+        <InputField
+          maxLength={10}
+          label="Data de Nascimento"
+          mask="date"
+          placeholder="XX/XX/XXXX"
+          value={formData.birthdate}
+          onChangeText={(value: string) => setValue("birthdate", value)}
+          keyboardType="numeric"
+        />
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            style={styles.input}
-          />
-        </View>
+        <PickerField
+          label="Estado"
+          selectedValue={formData.state}
+          onValueChange={(value: string) => {
+            setValue("state", value);
+            setValue("city", "");
+          }}
+          data={states}
+          loading={loadingStates}
+        />
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>CPF</Text>
+        <PickerField
+          label="Cidade"
+          selectedValue={formData.city}
+          onValueChange={(value: string) => setValue("city", value)}
+          data={cities}
+          loading={loadingCities}
+          enabled={!!formData.state}
+        />
 
-          <TextInput
-            label="CPF"
-            value={cpf}
-            onChangeText={setCpf}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Data de Nascimento</Text>
-          <TextInput
-            label="Data de Nascimento"
-            value={birthdate}
-            onChangeText={setBirthdate}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Estado</Text>
-          {loadingEstados ? (
-            <ActivityIndicator size="large" color="#FFC88d" />
-          ) : (
-            <Picker
-              selectedValue={estado}
-              onValueChange={(itemValue) => {
-                setEstado(itemValue);
-                setCidade("");
-              }}
-              style={styles.picker}
-            >
-              <Picker.Item label="Selecione um estado" value="" />
-              {estados.map((estado) => (
-                <Picker.Item
-                  key={estado.id}
-                  label={estado.nome}
-                  value={estado.sigla}
-                />
-              ))}
-            </Picker>
-          )}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Cidade</Text>
-          {loadingCidades ? (
-            <ActivityIndicator size="large" color="#FFC88d" />
-          ) : (
-            <Picker
-              selectedValue={cidade}
-              onValueChange={setCidade}
-              style={styles.picker}
-              enabled={estado !== ""}
-            >
-              <Picker.Item label="Selecione uma cidade" value="" />
-              {cidades.map((cidade) => (
-                <Picker.Item
-                  key={cidade.id}
-                  label={cidade.nome}
-                  value={cidade.nome}
-                />
-              ))}
-            </Picker>
-          )}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Endereço</Text>
-          <TextInput
-            label= "Endereço"
-            value={endereco}
-            onChangeText={setEndereco}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Número</Text>
-          <TextInput
-          label= "Número"
-            value={numero}
-            onChangeText={setNumero}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Bairro</Text>
-          <TextInput
-            label= "Bairro"
-            value={bairro}
-            onChangeText={setBairro}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Telefone</Text>
-          <TextInput
-            label= "Telefone"
-            value={telefone}
-            onChangeText={setTelefone}
-            keyboardType="phone-pad"
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Senha</Text>
-          <TextInput
-            label= "Senha"
-            value={senha}
-            onChangeText={setSenha}
-            secureTextEntry
-            style={styles.input}
-          />
-        </View>
+        <InputField
+          autoCapitalize="words"
+          label="Rua"
+          value={formData.street}
+          onChangeText={(value: string) => setValue("street", value)}
+        />
+        <InputField
+          label="Número"
+          value={formData.number}
+          onChangeText={(value: string) => setValue("number", value)}
+          keyboardType="numeric"
+        />
+        <InputField
+          label="Bairro"
+          value={formData.neighborhood}
+          onChangeText={(value: string) => setValue("neighborhood", value)}
+        />
+        <InputField
+          maxLength={15}
+          label="Telefone"
+          mask="phone"
+          placeholder="(XX) XXXX-XXXX"
+          value={formData.phone}
+          onChangeText={(value: string) => setValue("phone", value)}
+          keyboardType="phone-pad"
+          textContentType="telephoneNumber"
+        />
+        <InputField
+          label="Senha"
+          value={formData.password}
+          onChangeText={(value: string) => setValue("password", value)}
+          secureTextEntry
+          autoCapitalize="none"
+          textContentType="password"
+        />
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleCancel}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Login")}
+            disabled={isLoading}
+          >
             <Text style={styles.buttonText}>Cancelar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleRegister}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>
+              {isLoading ? "Cadastrando..." : "Cadastrar"}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -293,15 +280,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    marginTop:25,
+    marginTop: 25,
     justifyContent: "center",
-    alignItems: "center",
-  },
-  ScrollView: {
-    padding: 20,
-    justifyContent: "center",
-    width: "100%",
-
     alignItems: "center",
   },
   title: {
@@ -312,52 +292,19 @@ const styles = StyleSheet.create({
     fontFamily: "TitanOne-Regular",
     margin: 2,
   },
-
-  inputGroup: {
-    marginBottom: 10,
-    width: "100%",
-  },
-
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: "bold",
-  },
-
-  input: {
-    borderColor: "black",
-    borderWidth: 1,
-    marginBottom: 10,
-    color: "#000000",
-    borderRadius: 5,
-  },
-
-  picker: {
-    borderColor: "black",
-    borderWidth: 1,
-    marginBottom: 10,
-    color: "#000000",
-    borderRadius: 5,
-  },
-
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
     width: "100%",
   },
-
   button: {
     backgroundColor: "#2d47f0",
-    padding: 18,
+    padding: 10,
     borderRadius: 5,
+    width: "48%",
     alignItems: "center",
-    flex: 1,
-    marginHorizontal: 5,
-    borderWidth: 2,
-    borderColor: "#f27e26",
   },
-
   buttonText: {
     color: "#fff",
     fontWeight: "bold",

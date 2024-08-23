@@ -6,6 +6,7 @@ import axios from "axios";
 import * as Animatable from "react-native-animatable";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import InputField from "../components/InputField";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,9 +23,18 @@ const Login: React.FC<Props> = ({ navigation }) => {
     "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
   });
 
+  const checkLogin = async () => {
+    const storedCpf = await AsyncStorage.getItem("cpf");
+    if (storedCpf) {
+      console.log(storedCpf);
+      navigation.navigate("HomeScreen");
+    }
+  };
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
+      checkLogin();
     }
   }, [loaded, error]);
 
@@ -113,27 +123,23 @@ const Login: React.FC<Props> = ({ navigation }) => {
         </Animatable.Text>
       </View>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          keyboardType="email-address"
-          style={styles.input}
-        />
-      </View>
+      <InputField
+        keyboardType="email-address"
+        textContentType="emailAddress"
+        autoCorrect={false}
+        autoCapitalize="none"
+        label="Email"
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Senha</Text>
-        <TextInput
-          label="Senha"
-          value={senha}
-          onChangeText={(text) => setSenha(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-      </View>
+      <InputField
+        label="Senha"
+        value={senha}
+        onChangeText={(text) => setSenha(text)}
+        secureTextEntry
+        autoCapitalize="none"
+      />
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#2d47f0",
-    fontSize: 30,
+    fontSize: 28,
     marginBottom: 20,
     textAlign: "center",
     fontFamily: "TitanOne-Regular",

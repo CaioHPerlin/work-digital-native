@@ -114,10 +114,16 @@ export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.goBack()}
+            >
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => alert('alterado com sucesso')}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => alert("alterado com sucesso")}
+            >
               <Text style={styles.buttonText}>Alterar</Text>
             </TouchableOpacity>
           </View>
@@ -130,7 +136,7 @@ export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:25,
+    marginTop: 25,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",

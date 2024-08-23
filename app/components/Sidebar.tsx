@@ -1,6 +1,10 @@
 import * as React from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useNavigation } from "@react-navigation/native";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from "@react-navigation/drawer";
 import HomeScreen from "../screens/HomeScreen";
 import ConfigApp from "../screens/ConfigApp";
 import DadosPessoais from "../screens/DadosPessoais";
@@ -21,8 +25,6 @@ const KbStyles: KbStyles = {
 const Drawer = createDrawerNavigator();
 
 const Sidebar: React.FC = () => {
-  const navigation = useNavigation();
-
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -46,68 +48,68 @@ const Sidebar: React.FC = () => {
         },
       }}
     >
-      <Drawer.Screen 
-        name="Home" 
-        component={HomeScreen} 
+      <Drawer.Screen
+        name="Home"
+        component={HomeScreen}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Configurações" 
-        component={ConfigApp} 
+      <Drawer.Screen
+        name="Configurações"
+        component={ConfigApp}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Dados Pessoais" 
-        component={DadosPessoais} 
+      <Drawer.Screen
+        name="Dados Pessoais"
+        component={DadosPessoais}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Tornar-se Autônomo" 
-        component={ConfigApp} 
+      <Drawer.Screen
+        name="Tornar-se Autônomo"
+        component={ConfigApp}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="briefcase-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Alterar Cidade" 
-        component={ConfigApp} 
+      <Drawer.Screen
+        name="Alterar Cidade"
+        component={ConfigApp}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="location-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Alterar Senha" 
-        component={ConfigApp} 
+      <Drawer.Screen
+        name="Alterar Senha"
+        component={ConfigApp}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="lock-closed-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-      <Drawer.Screen 
-        name="Teste" 
-        component={ConfigApp} 
+      <Drawer.Screen
+        name="Teste"
+        component={ConfigApp}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="flask-outline" color={color} size={size} />
           ),
-        }} 
+        }}
       />
     </Drawer.Navigator>
   );
