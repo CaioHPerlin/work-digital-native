@@ -105,7 +105,10 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
       if (userRes.status === 201) {
         Alert.alert("Sucesso", "Registro realizado com sucesso!");
-        await AsyncStorage.setItem("cpf", data.cpf);
+        await Promise.all([
+          AsyncStorage.setItem("cpf", data.cpf),
+          AsyncStorage.setItem("id", String(userRes.data.user.id)),
+        ]);
         navigation.navigate("HomeScreen");
       }
     } catch (error: any) {
@@ -114,8 +117,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
         "Falha ao registrar. Tente novamente.";
       console.error(errorMessage);
       Alert.alert("Falha ao registrar", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -166,6 +170,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
         <InputField
           label="Nome"
+          autoCapitalize="words"
           value={formData.name}
           onChangeText={(value: string) => setValue("name", value)}
         />

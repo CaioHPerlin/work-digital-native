@@ -17,21 +17,9 @@ import roles from "@/constants/roles";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { Freelancer } from "../types";
 
 SplashScreen.preventAutoHideAsync();
-
-interface Freelancer {
-  id: number;
-  role: string[];
-  name: string;
-  phone: string;
-  email: string;
-  city: string;
-  state: string;
-  description: string;
-  profile_picture: string;
-  picture_folder: string;
-}
 
 interface Props {
   navigation: any;
@@ -52,6 +40,21 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
   });
 
+  const fetchFreelancers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
+      );
+      console.log(response.data);
+      setFilteredFreelancers(response.data);
+    } catch (error) {
+      alert("Erro ao buscar freelancers:" + error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -63,21 +66,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   useEffect(() => {
-    const fetchFreelancers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(
-          `https://app-api-pied.vercel.app/freelancers?role=${selectedValue}`
-        );
-        setFreelancers(response.data);
-        setFilteredFreelancers(response.data);
-      } catch (error) {
-        alert("Erro ao buscar freelancers:" + error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (selectedValue) {
       fetchFreelancers();
     }
@@ -110,6 +98,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleModalClose = () => {
+    if (selectedValue) {
+      fetchFreelancers();
+    }
     setIsModalVisible(false);
   };
 
@@ -198,12 +189,16 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         </Modal>
 
         {selectedValue ? (
-          <Animatable.View animation="fadeInUp">
-            <ListFreelancer
-              data={filteredFreelancers}
-              navigation={navigation}
-            />
-          </Animatable.View>
+          isLoading ? (
+            <Text style={{ textAlign: "center" }}>Carregando...</Text>
+          ) : (
+            <Animatable.View animation="fadeInUp">
+              <ListFreelancer
+                data={filteredFreelancers}
+                navigation={navigation}
+              />
+            </Animatable.View>
+          )
         ) : (
           <View style={styles.noSelectionContainer}>
             {showPickerMessage && (

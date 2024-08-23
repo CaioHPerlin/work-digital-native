@@ -1,41 +1,60 @@
-import React, { useState, useRef, useEffect } from "react";
+import { getConversationById, sendMessage } from "@/api/conversationApi";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
-  TouchableOpacity,
+  Button,
   FlatList,
-  KeyboardAvoidingView,
+  StyleSheet,
   Platform,
+  TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import * as Animatable from "react-native-animatable";
 
-type Message = {
+interface Message {
   id: string;
-  text: string;
-  sender: "self" | "other";
-};
+  sender: string;
+  content: string;
+}
 
-const initialMessages: Message[] = [
-  { id: "1", text: "Olá!", sender: "other" },
-  { id: "2", text: "Oi, tudo bem?", sender: "self" },
-];
+interface ChatScreenProps {
+  route: { params: { conversationId: string } };
+}
 
-const ChatScreen: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [messageText, setMessageText] = useState("");
+interface Conversation {
+  id: string;
+  user_id: string;
+  freelancer_id: string;
+  freelancer_name?: string;
+}
+
+const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
+  const { conversationId } = route.params;
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [conversation, setConversation] = useState<Conversation>();
+  const [loading, setLoading] = useState(false);
   const flatListRef = useRef<FlatList<Message>>(null);
 
-  const handleSend = () => {
-    if (messageText.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now().toString(), text: messageText, sender: "self" },
-      ]);
-      setMessageText("");
-    }
-  };
+  useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        setLoading(true);
+        const result = await getConversationById(conversationId);
+        setMessages(result.messages);
+        setConversation(result.conversation);
+      } catch (error) {
+        console.error("Error fetching conversation:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversation();
+  }, [conversationId]);
 
   useEffect(() => {
     // Scroll to the bottom
@@ -44,25 +63,68 @@ const ChatScreen: React.FC = () => {
     }
   }, [messages]);
 
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) {
+      return;
+    }
+
+    if (!conversation) {
+      return;
+    }
+    try {
+      const message = newMessage;
+      setNewMessage("");
+      const senderId = await conversation.user_id;
+
+      const response = await sendMessage(conversationId, senderId, newMessage);
+
+      // Use the response to update state
+      const { messageId } = response;
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: messageId.toString(),
+          sender: senderId,
+          content: newMessage,
+        },
+      ]);
+      console.log(messages);
+
+      // Scroll to the bottom
+      if (flatListRef.current) {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
   const renderItem = ({ item }: { item: Message }) => (
-    <View
+    <Animatable.View
+      animation={"fadeInUp"}
+      duration={200}
       style={[
         styles.message,
-        item.sender === "self" ? styles.selfMessage : styles.otherMessage,
+        item.sender !== conversation?.freelancer_id
+          ? styles.selfMessage
+          : styles.otherMessage,
       ]}
     >
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
+      <Text style={styles.messageText}>{item.content}</Text>
+    </Animatable.View>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Chat</Text>
+        <Text style={styles.headerText}>
+          {loading ? "Carregando..." : conversation?.freelancer_name}
+        </Text>
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.chatContainer}
+        style={{ ...styles.chatContainer, opacity: conversation ? 1 : 0.5 }}
       >
         <FlatList
           ref={flatListRef}
@@ -74,12 +136,16 @@ const ChatScreen: React.FC = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            value={messageText}
-            onChangeText={setMessageText}
+            value={newMessage}
+            onChangeText={setNewMessage}
             placeholder="Type a message..."
             placeholderTextColor="#888"
           />
-          <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
+          <TouchableOpacity
+            onPress={handleSendMessage}
+            disabled={loading && conversation != undefined}
+            style={styles.sendButton}
+          >
             <Icon name="send" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -96,8 +162,8 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#2d47f0",
     paddingTop: 50,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingHorizontal: 40,
   },
   headerText: {
     color: "#f27e26",

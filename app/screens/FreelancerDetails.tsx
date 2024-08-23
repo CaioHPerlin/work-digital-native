@@ -6,17 +6,6 @@ import Description from "../components/Description";
 import BtnPersonal from "../components/BtnPersonal";
 import SliderDestaque from "../components/SliderDestaque";
 
-interface Freelancer {
-  id: number;
-  role: string;
-  name: string;
-  phone: string;
-  email: string;
-  city: string;
-  state: string;
-  description: string;
-}
-
 interface Props {
   route: any;
 }
@@ -27,29 +16,22 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
-
-
-
-
-  
   return (
     <>
-
-        <PersonalCard freelancer={freelancer} />
-        <View style={styles.container}>
-          {[0, 1].map((index) => (
-            <SliderDestaque
-              key={index}
-              isPickerVisible={currentHighlightIndex === index && isPickerVisible}
-              setPickerVisible={setPickerVisible}
-              index={index}
-              //onLastItemVisible={handleLastItemVisible}
-            />
-          ))}
-        </View>
-        <Description freelancer={freelancer} />
-        <BtnPersonal freelancer={freelancer} />
-   
+      <PersonalCard freelancer={freelancer} />
+      <View style={styles.container}>
+        {[0, 1].map((index) => (
+          <SliderDestaque
+            key={index}
+            isPickerVisible={currentHighlightIndex === index && isPickerVisible}
+            setPickerVisible={setPickerVisible}
+            index={index}
+            //onLastItemVisible={handleLastItemVisible}
+          />
+        ))}
+      </View>
+      <Description freelancer={freelancer} />
+      <BtnPersonal freelancer={freelancer} />
     </>
   );
 };
@@ -57,12 +39,12 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 0.5,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    flexWrap: "wrap",
+    flexDirection: "row",
   },
   containerIteins: {
     marginRight: 50,
-  }
+  },
 });
 
 export default FreelancerDetails;

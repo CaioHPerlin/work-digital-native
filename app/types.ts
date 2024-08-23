@@ -12,7 +12,7 @@ export type RootStackParamList = {
   SliderDestaque: undefined;
   Slider: undefined;
   ChatList: undefined;
-  Chat: undefined;
+  ChatScreen: { conversationId: string };
 };
 
 export type DrawerParamList = {
@@ -25,6 +25,28 @@ export type DrawerParamList = {
   Teste: undefined;
 };
 
-export type DrawerNavigationPropType = DrawerNavigationProp<DrawerParamList>;
+export type CustomStackNavigationProp = StackNavigationProp<RootStackParamList>;
 
-export type NavigationPropType = DrawerNavigationPropType; // Adjust if needed
+export type Freelancer = {
+  id: number;
+  user_id: string;
+  roles: string[];
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  state: string;
+  highlights: any;
+  description: string;
+  profile_picture: string;
+  picture_folder: string;
+};
+
+export type Conversation = {
+  id: string;
+  user_id?: string;
+  freelancer_id?: string;
+  freelancer_name?: string;
+  user_name?: string;
+  freelancer_profile_id?: string;
+};

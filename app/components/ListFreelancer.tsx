@@ -8,19 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-
-interface Freelancer {
-  id: number;
-  role: string[];
-  name: string;
-  phone: string;
-  email: string;
-  city: string;
-  state: string;
-  description: string;
-  profile_picture: string;
-  picture_folder: string;
-}
+import { Freelancer } from "../types";
 
 interface ListFreelancerProps {
   data: Freelancer[];
@@ -41,27 +29,33 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={data}
-        keyExtractor={(freelancer) => freelancer.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => navigateToDetails(item)}
-            style={styles.itemContainer}
-          >
-            <Image
-              source={{
-                uri: `https://res.cloudinary.com/dwngturuh/image/upload/profile-pictures/${item.id}.jpg`,
-              }}
-              style={styles.image}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.nameText}>{item.name}</Text>
-              <Text style={styles.roleText}>{item.role}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+      {data.length === 0 ? (
+        <Text style={{ textAlign: "center" }}>
+          Nenhum freelancer encontrado.
+        </Text>
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(freelancer) => freelancer.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => navigateToDetails(item)}
+              style={styles.itemContainer}
+            >
+              <Image
+                source={{
+                  uri: `https://res.cloudinary.com/dwngturuh/image/upload/profile-pictures/${item.id}.jpg`,
+                }}
+                style={styles.image}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.nameText}>{item.name}</Text>
+                <Text style={styles.roleText}>{item.roles.join(", ")}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 };

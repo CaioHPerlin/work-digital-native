@@ -24,6 +24,7 @@ import ChatList from "../screens/ChatList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
+import ChatScreen from "../screens/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -33,7 +34,10 @@ const DrawerContent = (props: any) => {
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("cpf");
+      await Promise.all([
+        AsyncStorage.removeItem("cpf"),
+        AsyncStorage.removeItem("id"),
+      ]);
       navigation.navigate("Login");
     } catch (error) {
       console.error("Failed to log out", error);
@@ -155,6 +159,13 @@ const Routes = () => {
       <Stack.Screen
         name="ChatList"
         component={ChatList}
+        options={{
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="ChatScreen"
+        children={(props: any) => <ChatScreen {...props} />}
         options={{
           animation: "slide_from_right",
         }}

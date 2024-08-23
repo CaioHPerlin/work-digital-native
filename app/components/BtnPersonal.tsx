@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,23 @@ import {
   TouchableOpacity,
   GestureResponderEvent,
   Linking,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { Icon } from "react-native-paper";
+import { CustomStackNavigationProp, Freelancer } from "../types";
+import { startConversation } from "@/api/conversationApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {
-  freelancer: {
-    phone: string;
-  };
+  freelancer: Freelancer;
 }
 
 const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
+  const [loading, setLoading] = useState(false);
   const { phone } = freelancer;
-  const navigation = useNavigation();
+  const navigation = useNavigation<CustomStackNavigationProp>();
 
   const handleWhatsAppPress = () => {
     const whatsappLink = `https://wa.me/+55${phone}`;
@@ -30,19 +33,46 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
     navigation.navigate("HomeScreen");
   };
 
+  const handleStartConversation = async () => {
+    setLoading(true);
+    try {
+      const userId = await AsyncStorage.getItem("id");
+      if (!userId) {
+        return Alert.alert(
+          "Falha na funcionalidade.",
+          "Tente repetir o processo de login"
+        );
+      }
+      const result = await startConversation(userId, freelancer.user_id);
+      const conversationId = result.conversationId;
+      navigation.navigate("ChatScreen", { conversationId }); // Navigate to the chat screen
+    } catch (error) {
+      Alert.alert("Error", "Could not start conversation. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button} onPress={handleBackPress}>
+      {/* <TouchableOpacity style={styles.button} onPress={handleBackPress}>
         <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.buttonWhats}
         onPress={handleWhatsAppPress}
       >
-    
         <Icon source="whatsapp" color={"white"} size={30} />
         <Text style={styles.buttonText}>WhatsApp</Text>
-   
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        disabled={loading}
+        onPress={handleStartConversation}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Aguarde..." : "Conversar"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -71,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#25D366",
     flexDirection: "row",
     flex: 1,
-    justifyContent:'center',
+    justifyContent: "center",
     alignItems: "center",
     padding: 18,
     borderRadius: 5,
@@ -81,6 +111,6 @@ const styles = StyleSheet.create({
     margin: 5,
     color: "#ffffff",
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
 });

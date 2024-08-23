@@ -24,9 +24,12 @@ const Login: React.FC<Props> = ({ navigation }) => {
   });
 
   const checkLogin = async () => {
-    const storedCpf = await AsyncStorage.getItem("cpf");
-    if (storedCpf) {
-      console.log(storedCpf);
+    const [cpf, id] = await Promise.all([
+      AsyncStorage.getItem("cpf"),
+      AsyncStorage.getItem("id"),
+    ]);
+    if (cpf) {
+      console.log(cpf, id);
       navigation.navigate("HomeScreen");
     }
   };
@@ -58,7 +61,11 @@ const Login: React.FC<Props> = ({ navigation }) => {
         }
       );
       if (response.data.token) {
-        await AsyncStorage.setItem("cpf", response.data.user.cpf);
+        await Promise.all([
+          AsyncStorage.setItem("cpf", response.data.user.cpf),
+          AsyncStorage.setItem("id", String(response.data.user.id)),
+        ]);
+        console.log(response.data.user.cpf, response.data.user.id);
         navigation.navigate("HomeScreen");
       }
     } catch (error) {
