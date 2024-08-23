@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Button, Image, FlatList, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Layout from './Layout';
+
 
 interface DestakItemProps {
   nome: string;
@@ -36,7 +36,7 @@ const DestakItem: React.FC<DestakItemProps> = ({ nome, banner, imagens, onAddIma
   };
 
   return (
-    <Layout>
+  
     <View style={styles.destaqueContainer}>
       <Text style={styles.destaqueTitle}>{nome}</Text>
       <Image source={{ uri: banner }} style={styles.banner} />
@@ -54,8 +54,7 @@ const DestakItem: React.FC<DestakItemProps> = ({ nome, banner, imagens, onAddIma
         style={styles.imageList}
       />
     </View>
-    </Layout>
-  );
+      );
 };
 
 const styles = StyleSheet.create({

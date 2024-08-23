@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -31,6 +31,15 @@ export default function Slider() {
   const scrollToIndex = (index: number) => {
     flatListRef.current?.scrollToIndex({ animated: true, index: index });
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % carouselItem.length;
+      scrollToIndex(nextIndex);
+    }, 3000); // Muda a imagem a cada 3 segundos
+
+    return () => clearInterval(interval); // Limpa o intervalo quando o componente desmonta
+  }, [currentIndex]);
 
   const renderItems: React.FC<{ item: CarouselItems }> = ({ item }) => {
     return (
@@ -96,7 +105,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   carousel: {
-    marginTop: 0, // Ajuste o valor conforme necessário para não sobrepor a barra de progresso
+    marginTop: 0, 
   },
   image: {
     width,
