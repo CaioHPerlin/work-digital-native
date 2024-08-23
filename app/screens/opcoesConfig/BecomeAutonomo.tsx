@@ -13,9 +13,9 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import Layout from "@/app/components/Layout";
 import defaultRoles from "@/constants/roles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DrawerActions } from "@react-navigation/native";
 
 type BecomeAutonomoProps = {
   navigation: any;
@@ -39,6 +39,7 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
   const [descricao, setDescricao] = useState<string>("");
   const [roles, setRoles] = useState<string[]>([]);
   const [icone, setIcone] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -50,11 +51,11 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
 
     if (!result.canceled) {
       setIcone(result.assets[0].uri);
-      Alert.alert("Imagem carregada", "A imagem foi carregada com sucesso!");
     }
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const formData = new FormData();
       const cpf = await AsyncStorage.getItem("cpf");
@@ -94,15 +95,36 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
       );
 
       console.log("Freelancer created:", response.data);
-      Alert.alert("Sucesso", "Prestador cadastrado com sucesso!");
-      // Optionally navigate to another screen upon successful submission
-      // navigation.navigate('AnotherScreen');
-    } catch (error) {
-      console.error("Erro ao cadastrar prestador:", error);
       Alert.alert(
-        "Erro",
-        "Ocorreu um erro ao cadastrar o prestador. Verifique sua conexão de internet e tente novamente."
+        "Sucesso",
+        "Você se tornou um prestador da nossa plataforma!"
       );
+      navigation.navigate("Home");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Error becoming freelancer:",
+          error.response?.data || error.message
+        );
+        if (
+          error.response?.data.message == "Perfil de prestador já cadastrado."
+        ) {
+          Alert.alert(
+            "Falha ao tornar-se prestador",
+            "Este perfil já é um autônomo cadastrado."
+          );
+        } else {
+          Alert.alert(
+            "Falha ao tornar-se prestador",
+            error.response?.data.message
+          );
+        }
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -166,15 +188,21 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
           </View>
         </View>
 
-        <ImagePickerGroup label="Avatar" image={icone} onPickImage={pickImage} />
-        <TouchableOpacity style={styles.buttonDestak} onPress={() => navigation.navigate("ManageDestak")}>
-          <Text style = {styles.buttonText}>Gerenciar Destaque</Text>
-          
-          
-          </TouchableOpacity>
+        <ImagePickerGroup
+          label="Avatar"
+          image={icone}
+          onPickImage={pickImage}
+        />
+        {/* <TouchableOpacity
+          style={styles.buttonDestak}
+          onPress={() => navigation.navigate("ManageDestak")}
+        >
+          <Text style={styles.buttonText}>Gerenciar Destaque</Text>
+        </TouchableOpacity> */}
         <View style={styles.buttonContainer}>
           <FormButton
-            text="Confirmar"
+            disabled={loading}
+            text={loading ? "Criando perfil..." : "Confirmar"}
             onPress={handleSubmit}
             style={styles.buttonConfirmar}
             textStyle={styles.buttonText}
@@ -183,10 +211,13 @@ const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
         </View>
 
         <FormButton
-          text="Voltar para Configurações"
+          text="Voltar"
           style={styles.buttonVoltar}
           textStyle={styles.buttonText}
-          onPress={() => navigation.navigate("ConfigApp")}
+          onPress={() => {
+            navigation.navigate("Home");
+            navigation.dispatch(DrawerActions.openDrawer());
+          }}
         />
       </ScrollView>
     </>
@@ -217,13 +248,15 @@ const FormButton = ({
   onPress,
   style,
   textStyle,
+  disabled,
 }: {
   text: string;
   onPress?: () => void;
   style: object;
   textStyle: object;
+  disabled: boolean;
 }) => (
-  <TouchableOpacity style={style} onPress={onPress}>
+  <TouchableOpacity style={style} onPress={onPress} disabled={disabled}>
     <Text style={textStyle}>{text}</Text>
   </TouchableOpacity>
 );
@@ -248,7 +281,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 30,
     alignItems: "center",
-    backgroundColor:"#fff"
+    backgroundColor: "#fff",
   },
   title: {
     color: "#2d47f0",
@@ -349,13 +382,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 5,
-    color:"#fff"
+    color: "#fff",
   },
   selectedRoleContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#2d47f0",
-    color:"#fff",
+    color: "#fff",
     padding: 5,
     marginRight: 5,
     marginBottom: 5,
@@ -363,9 +396,9 @@ const styles = StyleSheet.create({
   },
   selectedRole: {
     marginRight: 5,
-    color:"#fff",
-    fontWeight:"700",
-    padding:10,
+    color: "#fff",
+    fontWeight: "700",
+    padding: 10,
   },
   deleteButton: {
     backgroundColor: "#f54242",
