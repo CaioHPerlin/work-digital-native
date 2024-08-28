@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "work-digital",
-    "slug": "work-digital",
+    "name": "12Pulo",
+    "slug": "12pulo",
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -46,7 +46,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ed2cd3b6-c322-43c2-9c43-abd7a678271a"
+        "projectId": "91689b3b-2681-4b3d-b96a-91cec062af14"
       }
     }
   }
