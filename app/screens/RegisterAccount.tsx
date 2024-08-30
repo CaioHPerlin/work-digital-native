@@ -10,116 +10,59 @@ import {
 import axios from "axios";
 import InputField from "../components/InputField";
 import PickerField from "../components/PickerField";
-import Formatter from "@/utils/formatter";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SignUpUser } from "@/interfaces/Auth";
+import Location from "@/interfaces/Location";
+import { supabase } from "@/lib/supabase";
+import { z } from "zod";
 
-// API EXPECTED JSON:
-// name: "John Doe";
-// cpf: "606.917.340-62";
-// email: "teste@example.com";
-// password: "admin";
-// state: "Rio Grande do Sul";
-// city: "Porto Alegre";
-// neighborhood: "Moinhos de Vento";
-// street: "Av. I";
-// number: "606";
-// phone: "6799780609";
-// birthdate: "1991-12-12";
-
-interface FormData {
-  email: string;
-  password: string;
-  name: string;
-  cpf: string;
-  state: string;
-  city: string;
-  neighborhood: string;
-  street: string;
-  number: string;
-  phone: string;
-  birthdate: string;
-}
-
-interface LocationData {
-  id: string;
-  nome: string;
-  sigla?: string;
-}
+const signUpSchema = z.object({
+  name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
+  email: z.string().email("Formato de e-mail inválido"),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+  state: z.string().min(1, { message: "Estado é obrigatório" }),
+  city: z.string().min(1, { message: "Cidade é obrigatória" }),
+});
 
 interface Props {
   navigation: any;
 }
 
 const RegisterAccount: React.FC<Props> = ({ navigation }) => {
-  const [formData, setFormData] = useState<FormData>({
+  const [user, setUser] = useState<SignUpUser>({
+    name: "",
     email: "",
     password: "",
-    name: "",
-    cpf: "",
     state: "",
     city: "",
-    neighborhood: "",
-    street: "",
-    number: "",
-    phone: "",
-    birthdate: "",
   });
 
-  const [states, setStates] = useState<LocationData[]>([]);
-  const [cities, setCities] = useState<LocationData[]>([]);
+  const [states, setStates] = useState<Location[]>([]);
+  const [cities, setCities] = useState<Location[]>([]);
   const [loadingStates, setLoadingStates] = useState<boolean>(true);
   const [loadingCities, setLoadingCities] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const setValue = (name: keyof FormData, value: string) => {
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
+  const handleSignUp = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email: user.email,
+      password: user.password,
+      options: {
+        data: {
+          name: user.name,
+          email: user.email,
+          state: user.state,
+          city: user.city,
+          is_freelancer: false,
+        },
+      },
+    });
 
-  const handleRegister = async () => {
-    if (Object.values(formData).some((field) => !field)) {
-      Alert.alert(
-        "Falha ao registrar",
-        "Por favor, preencha todos os campos obrigatórios."
-      );
-      return;
-    }
-    setIsLoading(true);
-
-    // Adicionar validação de input (numero, data de nascimento, etc)
-
-    // Limpar o input
-    const birthdate = Formatter.formatDate(formData.birthdate);
-    const phone = Formatter.formatPhone(formData.phone);
-
-    const data = {
-      ...formData,
-      birthdate: birthdate,
-      phone: phone,
-    };
-
-    try {
-      const userRes = await axios.post(
-        "https://app-api-pied.vercel.app/users",
-        data
-      );
-
-      if (userRes.status === 201) {
-        Alert.alert("Sucesso", "Registro realizado com sucesso!");
-        await Promise.all([
-          AsyncStorage.setItem("cpf", data.cpf),
-          AsyncStorage.setItem("id", String(userRes.data.user.id)),
-        ]);
-        navigation.navigate("HomeScreen");
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        "Falha ao registrar. Tente novamente.";
-      console.error(errorMessage);
-      Alert.alert("Falha ao registrar", errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    if (error) Alert.alert(error.message);
+    Alert.alert(JSON.stringify(data));
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -142,12 +85,12 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (formData.state) {
+    if (user.state) {
       setLoadingCities(true);
       const fetchCities = async () => {
         try {
           const response = await axios.get(
-            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${formData.state}/municipios`
+            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${user.state}/municipios`
           );
           setCities(
             response.data.sort((a: any, b: any) => a.nome.localeCompare(b.nome))
@@ -161,118 +104,65 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
       fetchCities();
     }
-  }, [formData.state]);
+  }, [user.state]);
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Cadastro</Text>
-
         <InputField
-          label="Nome"
+          label="Nome Completo"
+          value={user.name}
+          onChangeText={(text) => setUser({ ...user, name: text })}
           autoCapitalize="words"
-          value={formData.name}
-          onChangeText={(value: string) => setValue("name", value)}
+          keyboardType="default"
         />
         <InputField
-          label="Email"
-          value={formData.email}
-          onChangeText={(value: string) => setValue("email", value)}
-          keyboardType="email-address"
-          textContentType="emailAddress"
-          autoCorrect={false}
+          label="E-mail"
+          value={user.email}
+          onChangeText={(text) => setUser({ ...user, email: text })}
           autoCapitalize="none"
+          keyboardType="email-address"
         />
         <InputField
-          maxLength={14}
-          label="CPF"
-          value={formData.cpf}
-          mask="cpf"
-          placeholder="XXX.XXX.XXX-XX"
-          onChangeText={(value: string) => setValue("cpf", value)}
-          keyboardType="numeric"
-        />
-        <InputField
-          maxLength={10}
-          label="Data de Nascimento"
-          mask="date"
-          placeholder="XX/XX/XXXX"
-          value={formData.birthdate}
-          onChangeText={(value: string) => setValue("birthdate", value)}
-          keyboardType="numeric"
+          label="Senha"
+          value={user.password}
+          onChangeText={(text) => setUser({ ...user, password: text })}
+          secureTextEntry
+          autoCapitalize="none"
         />
 
         <PickerField
           label="Estado"
-          selectedValue={formData.state}
-          onValueChange={(value: string) => {
-            setValue("state", value);
-            setValue("city", "");
-          }}
+          selectedValue={user.state}
+          onValueChange={(text: string) => setUser({ ...user, state: text })}
           data={states}
           loading={loadingStates}
         />
 
         <PickerField
           label="Cidade"
-          selectedValue={formData.city}
-          onValueChange={(value: string) => setValue("city", value)}
+          selectedValue={user.city}
+          onValueChange={(text: string) => setUser({ ...user, city: text })}
           data={cities}
           loading={loadingCities}
-          enabled={!!formData.state}
+          enabled={!!user.state}
         />
-
-        <InputField
-          autoCapitalize="words"
-          label="Rua"
-          value={formData.street}
-          onChangeText={(value: string) => setValue("street", value)}
-        />
-        <InputField
-          label="Número"
-          value={formData.number}
-          onChangeText={(value: string) => setValue("number", value)}
-          keyboardType="numeric"
-        />
-        <InputField
-          label="Bairro"
-          value={formData.neighborhood}
-          onChangeText={(value: string) => setValue("neighborhood", value)}
-        />
-        <InputField
-          maxLength={15}
-          label="Telefone"
-          mask="phone"
-          placeholder="(XX) XXXX-XXXX"
-          value={formData.phone}
-          onChangeText={(value: string) => setValue("phone", value)}
-          keyboardType="phone-pad"
-          textContentType="telephoneNumber"
-        />
-        <InputField
-          label="Senha"
-          value={formData.password}
-          onChangeText={(value: string) => setValue("password", value)}
-          secureTextEntry
-          autoCapitalize="none"
-          textContentType="password"
-        />
-
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("Login")}
-            disabled={isLoading}
+            disabled={loading}
           >
             <Text style={styles.buttonText}>Cancelar</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={handleRegister}
-            disabled={isLoading}
+            onPress={handleSignUp}
+            disabled={loading}
           >
             <Text style={styles.buttonText}>
-              {isLoading ? "Cadastrando..." : "Cadastrar"}
+              {loading ? "Cadastrando..." : "Cadastrar"}
             </Text>
           </TouchableOpacity>
         </View>
