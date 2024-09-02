@@ -35,14 +35,6 @@ const Drawer = createDrawerNavigator();
 
 const DrawerContent = (props: any) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
-  // const [user, setUser] = React.useState<any>({});
-
-  // React.useEffect(() => {
-  //   const getUser = async () => {
-  //     const { data, error } = await supabase.auth.getUser();
-  //     setUser(data.user);
-  //   };
-  // }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut({ scope: "local" });
@@ -75,6 +67,35 @@ interface RoutesProps {
 }
 
 const Routes: React.FC<RoutesProps> = ({ session }) => {
+  const [isFreelancer, setIsFreelancer] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkFreelancerState = async () => {
+      if (!session) {
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("is_freelancer")
+        .eq("id", session?.user.id);
+
+      if (error) {
+        return;
+      }
+
+      if (data && data.length > 0) {
+        setIsFreelancer(data[0].is_freelancer);
+        console.log(data[0].is_freelancer);
+      } else {
+        setIsFreelancer(false);
+        console.log(false);
+      }
+    };
+
+    checkFreelancerState();
+  }, [session?.user.id]);
+
   return (
     <Stack.Navigator
       initialRouteName={session ? "HomeScreen" : "Login"} // Redirect based on session
@@ -92,7 +113,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={({ route }) => ({
                 header: () => <Header title={route.name} />,
-                drawerStyle: { backgroundColor: "#2d47f0", width: 280 },
+                drawerStyle: { backgroundColor: "#2d47f0", width: 310 },
                 headerStyle: { height: 80, backgroundColor: "#2d47f0" },
                 headerTitleStyle: { color: "#f27e26" },
                 drawerActiveBackgroundColor: "#FFC88d",
@@ -137,10 +158,20 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                   ),
                 }}
               />
-              {!session.user.user_metadata.is_freelancer && (
+              {!isFreelancer ? (
                 <Drawer.Screen
                   name="Prestar Serviços"
                   component={BecomeAutonomo}
+                  options={{
+                    drawerIcon: ({ color, size }) => (
+                      <Icon name="briefcase" color={color} size={size} />
+                    ),
+                  }}
+                />
+              ) : (
+                <Drawer.Screen
+                  name="Meu Perfil de Prestador"
+                  component={HomeScreen}
                   options={{
                     drawerIcon: ({ color, size }) => (
                       <Icon name="briefcase" color={color} size={size} />
