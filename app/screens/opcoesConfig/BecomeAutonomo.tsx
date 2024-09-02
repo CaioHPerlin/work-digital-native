@@ -158,7 +158,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
         cpf: fullData.cpf,
         phone_number: fullData.phoneNumber,
         birthdate: fullData.birthDate,
-        profile_picture_url: `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${userId}.jpg`,
+        profile_picture_url: data.profilePhoto
+          ? `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${userId}.jpg`
+          : null,
         roles: fullData.roles,
         description: fullData.description,
       },

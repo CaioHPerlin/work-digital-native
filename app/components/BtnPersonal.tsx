@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,43 +10,86 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 import { Icon } from "react-native-paper";
-import { CustomStackNavigationProp, Freelancer } from "../types";
-import { startConversation } from "@/api/conversationApi";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CustomStackNavigationProp, FlattenedProfile } from "../types";
+import { supabase } from "../../lib/supabase";
 
 interface Props {
-  freelancer: Freelancer;
+  freelancer: FlattenedProfile;
 }
 
 const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
+  const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { phone_number } = freelancer;
   const navigation = useNavigation<CustomStackNavigationProp>();
 
-  const handleWhatsAppPress = () => {
-    const whatsappLink = `https://wa.me/+55${phone_number}`;
-    Linking.openURL(whatsappLink);
-  };
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUserId(data.session?.user.id || "");
+    };
 
-  const handleBackPress = () => {
-    navigation.navigate("HomeScreen");
+    fetchUserId();
+  }, []);
+
+  const handleWhatsAppPress = () => {
+    const formattedNumber = phone_number.replace(/\D/g, ""); // Removes non-numeric characters
+    const whatsappLink = `https://wa.me/55${formattedNumber}`;
+    Linking.openURL(whatsappLink).catch(() => {
+      Alert.alert("Erro", "Não foi possível abrir o WhatsApp.");
+    });
   };
 
   const handleStartConversation = async () => {
+    if (!userId || !freelancer.id) {
+      return Alert.alert("Erro", "Usuário ou freelancer não encontrado.");
+    }
+
     setLoading(true);
+
     try {
-      const userId = await AsyncStorage.getItem("id");
-      if (!userId) {
-        return Alert.alert(
-          "Falha na funcionalidade.",
-          "Tente repetir o processo de login"
+      // Check if a chat already exists between userId and freelancer.id
+      const { data: existingChats, error: fetchError } = await supabase
+        .from("chats")
+        .select("*")
+        .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`);
+
+      if (fetchError) {
+        throw new Error(
+          `Erro ao verificar chats existentes: ${fetchError.message}`
         );
       }
-      const result = await startConversation(userId, freelancer.user_id);
-      const conversationId = result.conversationId;
-      navigation.navigate("ChatScreen", { conversationId }); // Navigate to the chat screen
+
+      if (existingChats.length > 0) {
+        // Chat already exists
+        const existingChat = existingChats[0];
+        navigation.navigate("ChatScreen", {
+          chatId: existingChat.id,
+          userId: userId,
+          freelancerId: freelancer.id,
+        });
+        return;
+      }
+
+      // Create a new chat
+      const { data, error: insertError } = await supabase
+        .from("chats")
+        .insert([{ user_1_id: userId, user_2_id: freelancer.id }])
+        .select();
+
+      if (insertError) {
+        throw new Error(`Erro ao iniciar conversa: ${insertError.message}`);
+      }
+
+      const chat = data[0];
+      navigation.navigate("ChatScreen", {
+        chatId: chat.id,
+        userId: userId,
+        freelancerId: freelancer.id,
+      });
     } catch (error) {
-      Alert.alert("Error", "Could not start conversation. Please try again.");
+      console.error(error);
+      Alert.alert("Falha ao iniciar a conversa.", "Tente novamente.");
     } finally {
       setLoading(false);
     }

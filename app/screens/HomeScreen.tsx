@@ -27,6 +27,7 @@ interface Props {
 }
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [userId, setUserId] = useState<string>("");
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<FlattenedProfile[]>([]);
@@ -44,8 +45,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [loaded, error]);
 
+  const fetchId = async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      setUserId(data.user.id);
+    }
+  };
+
+  useEffect(() => {
+    fetchId();
+  }, []);
+
   const fetchFreelancers = async (role: string) => {
-    if (!role) return;
+    if (!role || !userId) return;
 
     setIsLoading(true);
     setApiError(null);
@@ -69,6 +81,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         )
       `
       )
+      .filter("id", "neq", userId)
       .filter("freelancers.roles", "cs", `{${role}}`); // Use 'cs' for contains
 
     if (error) {

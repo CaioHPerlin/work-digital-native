@@ -4,7 +4,7 @@ import { Text, TextInput } from "react-native-paper";
 
 interface InputFieldProps {
   label: string;
-  value: string;
+  value: string | undefined;
   onChangeText: (text: string) => void;
   keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
   textContentType?: "none" | "emailAddress" | "password" | "telephoneNumber";

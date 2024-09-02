@@ -1,102 +1,134 @@
-import { getConversationById, sendMessage } from "@/api/conversationApi";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
   TextInput,
-  Button,
   FlatList,
-  StyleSheet,
-  Platform,
   TouchableOpacity,
+  StyleSheet,
   KeyboardAvoidingView,
+  Platform,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
+import { supabase } from "../../lib/supabase";
+
+interface ChatScreenProps {
+  route: { params: { chatId: string; userId: string; freelancerId: string } };
+}
 
 interface Message {
   id: string;
-  sender: string;
+  chat_id: string;
+  sender_id: string;
   content: string;
-}
-
-interface ChatScreenProps {
-  route: { params: { conversationId: string } };
-}
-
-interface Conversation {
-  id: string;
-  user_id: string;
-  freelancer_id: string;
-  freelancer_name?: string;
+  created_at: string;
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
-  const { conversationId } = route.params;
+  const { chatId, userId, freelancerId } = route.params;
+
+  const [targetUserName, setTargetUserName] = useState("Carregando...");
+  const [targetUserPicture, setTargetUserPicture] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [conversation, setConversation] = useState<Conversation>();
   const [loading, setLoading] = useState(false);
   const flatListRef = useRef<FlatList<Message>>(null);
 
   useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        setLoading(true);
-        const result = await getConversationById(conversationId);
-        setMessages(result.messages);
-        setConversation(result.conversation);
-      } catch (error) {
-        console.error("Error fetching conversation:", error);
-      } finally {
-        setLoading(false);
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        return Alert.alert(
+          "Erro ao buscar mensagens.",
+          "Tente novamente mais tarde."
+        );
       }
+
+      setMessages(data as Message[]);
+
+      setTimeout(
+        () => flatListRef.current?.scrollToEnd({ animated: true }),
+        50
+      );
     };
 
-    fetchConversation();
-  }, [conversationId]);
+    const fetchTargetUser = async () => {
+      const { data, error } = await supabase
+        .from("profiles") // Adjust table name as necessary
+        .select("*")
+        .eq("id", freelancerId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching target user:", error);
+      } else {
+        setTargetUserName(data?.name || "Unknown User");
+        setTargetUserPicture(data?.profile_picture_url || "");
+      }
+    };
+    fetchTargetUser();
+    fetchMessages();
+  }, [chatId, freelancerId]);
 
   useEffect(() => {
-    // Scroll to the bottom
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: true });
-    }
+    const channel = supabase
+      .channel(chatId)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) => {
+          addMessage({
+            id: payload.new.id,
+            chat_id: payload.new.chat_id,
+            sender_id: payload.new.sender_id,
+            content: payload.new.content,
+            created_at: payload.new.created_at,
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [chatId]);
+
+  useEffect(() => {
+    flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
 
+  const addMessage = async (message: Message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) {
-      return;
-    }
+    if (!newMessage.trim()) return;
 
-    if (!conversation) {
-      return;
-    }
-    try {
-      const message = newMessage;
-      setNewMessage("");
-      const senderId = await conversation.user_id;
+    const { data, error } = await supabase.from("messages").insert([
+      {
+        chat_id: chatId,
+        sender_id: userId,
+        content: newMessage,
+        created_at: new Date().toISOString(), // Use ISO string for datetime
+      },
+    ]);
 
-      const response = await sendMessage(conversationId, senderId, newMessage);
-
-      // Use the response to update state
-      const { messageId } = response;
-
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: messageId.toString(),
-          sender: senderId,
-          content: newMessage,
-        },
-      ]);
-      console.log(messages);
-
-      // Scroll to the bottom
-      if (flatListRef.current) {
-        flatListRef.current.scrollToEnd({ animated: true });
-      }
-    } catch (error) {
+    if (error) {
       console.error("Error sending message:", error);
+    } else {
+      setNewMessage("");
+      flatListRef.current?.scrollToEnd({ animated: true });
     }
   };
 
@@ -106,9 +138,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       duration={200}
       style={[
         styles.message,
-        item.sender !== conversation?.freelancer_id
-          ? styles.selfMessage
-          : styles.otherMessage,
+        item.sender_id === userId ? styles.selfMessage : styles.otherMessage,
       ]}
     >
       <Text style={styles.messageText}>{item.content}</Text>
@@ -118,19 +148,17 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>
-          {loading ? "Carregando..." : conversation?.freelancer_name}
-        </Text>
+        <Text style={styles.headerText}>{targetUserName}</Text>
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ ...styles.chatContainer, opacity: conversation ? 1 : 0.5 }}
+        style={styles.chatContainer}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.messageList}
         />
         <View style={styles.inputContainer}>
@@ -143,7 +171,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           />
           <TouchableOpacity
             onPress={handleSendMessage}
-            disabled={loading && conversation != undefined}
             style={styles.sendButton}
           >
             <Icon name="send" size={20} color="#fff" />

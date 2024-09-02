@@ -12,7 +12,7 @@ export type RootStackParamList = {
   SliderDestaque: undefined;
   Slider: undefined;
   ChatList: undefined;
-  ChatScreen: { conversationId: string };
+  ChatScreen: { chatId: string; userId: string; freelancerId: string };
 };
 
 export type DrawerParamList = {
@@ -54,9 +54,10 @@ export type FlattenedProfile = Profile & {
 
 export type Conversation = {
   id: string;
-  user_id?: string;
-  freelancer_id?: string;
-  freelancer_name?: string;
-  user_name?: string;
-  freelancer_profile_id?: string;
+  user_1_id: string;
+  user_2_id: string;
+  created_at: string;
+  updated_at: string;
+  user_1?: any;
+  user_2?: any;
 };

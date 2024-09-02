@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native-animatable";
 import { Conversation, CustomStackNavigationProp } from "../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Animatable from "react-native-animatable";
-import { getConversationsByUser } from "@/api/conversationApi";
 import {
   Alert,
   FlatList,
@@ -13,46 +11,81 @@ import {
 } from "react-native";
 import { Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { supabase } from "../../lib/supabase";
 
 const ChatList: React.FC = () => {
+  const [userId, setUserId] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<CustomStackNavigationProp>();
   const [loading, setLoading] = useState(false);
 
+  const fetchUserId = async () => {
+    const { data } = await supabase.auth.getSession();
+    setUserId(data.session?.user.id || "");
+  };
+
   const fetchConversations = async () => {
-    const id = await AsyncStorage.getItem("id");
-    if (!id) {
+    const { data, error } = await supabase
+      .from("chats")
+      .select(
+        `
+    *,
+    user_1:profiles!chats_user_1_id_fkey(id, name),
+    user_2:profiles!chats_user_2_id_fkey(id, name)
+  `
+      )
+      .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`)
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      console.log(error);
       return Alert.alert(
         "Falha no carregamento.",
         "Erro ao carregar histórico de mensagens"
       );
     }
-    const result = await getConversationsByUser(id);
-    setConversations(result);
+
+    setConversations(data);
   };
 
   useEffect(() => {
-    fetchConversations();
+    fetchUserId();
   }, []);
 
-  const navigateToChat = (conversationId: string) => {
-    navigation.navigate("ChatScreen", { conversationId }); // Navigate to the chat screen
+  useEffect(() => {
+    if (userId) {
+      fetchConversations();
+    }
+  }, [userId]);
+
+  const navigateToChat = (
+    chatId: string,
+    userId: string,
+    freelancerId: string
+  ) => {
+    navigation.navigate("ChatScreen", { chatId, userId, freelancerId }); // Navigate to the chat screen
   };
 
   const renderConversation = ({ item }: { item: Conversation }) => {
     return (
       <TouchableOpacity
-        onPress={() => navigateToChat(item.id)}
+        onPress={() =>
+          navigateToChat(
+            item.id,
+            userId,
+            userId === item.user_2_id ? item.user_1_id : item.user_2_id
+          )
+        }
         style={styles.itemContainer}
       >
         <Image
-          source={{
-            uri: `https://res.cloudinary.com/dwngturuh/image/upload/profile-pictures/${item.freelancer_profile_id}.jpg`,
-          }}
+          source={require("../../assets/images/favicon.png")}
           style={styles.image}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.nameText}>{item.freelancer_name}</Text>
+          <Text style={styles.nameText}>
+            {userId === item.user_2_id ? item.user_1.name : item.user_2.name}
+          </Text>
         </View>
       </TouchableOpacity>
     );
