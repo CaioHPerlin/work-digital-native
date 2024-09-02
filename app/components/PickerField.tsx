@@ -10,6 +10,7 @@ interface PickerFieldProps {
   data: LocationData[];
   enabled?: boolean;
   loading?: boolean;
+  errorMessage?: string;
 }
 
 interface LocationData {
@@ -25,6 +26,7 @@ const PickerField: React.FC<PickerFieldProps> = ({
   data,
   enabled = true,
   loading = false,
+  errorMessage,
 }) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
@@ -47,6 +49,7 @@ const PickerField: React.FC<PickerFieldProps> = ({
         ))}
       </Picker>
     )}
+    {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
   </View>
 );
 
@@ -75,5 +78,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#000000",
     borderRadius: 5,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 10,
   },
 });

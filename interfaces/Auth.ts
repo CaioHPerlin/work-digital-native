@@ -4,10 +4,12 @@ export interface SignUpUser {
   password: string;
   state: string;
   city: string;
+  isFreelancer: boolean;
 }
 
-// Wip
-export interface SignUpFreelancer {
+export interface SignUpFreelancer extends SignUpUser {
   cpf: string;
-  birthdate: string;
+  phoneNumber: string;
+  birthDate: string;
+  profilePhoto?: string;
 }

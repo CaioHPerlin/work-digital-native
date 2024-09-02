@@ -14,6 +14,7 @@ interface InputFieldProps {
   mask?: "cpf" | "date" | "phone";
   maxLength?: number;
   placeholder?: string;
+  errorMessage?: string;
 }
 
 const formatCPF = (cpf: string) => {
@@ -56,6 +57,7 @@ const InputField: React.FC<InputFieldProps> = ({
   mask,
   maxLength,
   placeholder,
+  errorMessage,
 }) => {
   const handleChange = (text: string) => {
     switch (mask) {
@@ -90,6 +92,7 @@ const InputField: React.FC<InputFieldProps> = ({
         style={styles.input}
         maxLength={maxLength}
       />
+      {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
     </View>
   );
 };
@@ -112,5 +115,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: "#000000",
     borderRadius: 5,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 10,
   },
 });

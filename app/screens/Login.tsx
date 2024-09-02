@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 import axios from "axios";
 import * as Animatable from "react-native-animatable";
 import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import InputField from "../components/InputField";
-
-SplashScreen.preventAutoHideAsync();
+import { supabase } from "../../lib/supabase";
 
 interface Props {
   navigation: any;
@@ -17,66 +15,24 @@ interface Props {
 const Login: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [loaded, error] = useFonts({
-    "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
-  });
-
-  const checkLogin = async () => {
-    const [cpf, id] = await Promise.all([
-      AsyncStorage.getItem("cpf"),
-      AsyncStorage.getItem("id"),
-    ]);
-    if (cpf) {
-      console.log(cpf, id);
-      navigation.navigate("HomeScreen");
-    }
-  };
-
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-      checkLogin();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        "https://app-api-pied.vercel.app/users/auth",
-        {
-          email: email,
-          password: senha,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data.token) {
-        await Promise.all([
-          AsyncStorage.setItem("cpf", response.data.user.cpf),
-          AsyncStorage.setItem("id", String(response.data.user.id)),
-        ]);
-        console.log(response.data.user.cpf, response.data.user.id);
-        navigation.navigate("HomeScreen");
-      }
-    } catch (error) {
-      alert("Verifique suas informações de login.");
-      console.error("Error logging in:", error);
-    } finally {
-      setIsLoading(false);
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: senha,
+    });
+
+    if (error) {
+      setLoading(false);
+      return Alert.alert("Credenciais incorretas");
     }
+
+    setLoading(false);
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <Animatable.Text

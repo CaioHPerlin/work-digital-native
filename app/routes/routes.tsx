@@ -6,6 +6,8 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Session } from "@supabase/supabase-js"; // Import Session type
+
 import RegisterAccount from "../screens/RegisterAccount";
 import Login from "../screens/Login";
 import HomeScreen from "../screens/HomeScreen";
@@ -25,6 +27,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
 import ChatScreen from "../screens/ChatScreen";
+import { supabase } from "../../lib/supabase";
+import { Alert } from "react-native";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -33,14 +37,9 @@ const DrawerContent = (props: any) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
 
   const handleLogout = async () => {
-    try {
-      await Promise.all([
-        AsyncStorage.removeItem("cpf"),
-        AsyncStorage.removeItem("id"),
-      ]);
-      navigation.navigate("Login");
-    } catch (error) {
-      console.error("Failed to log out", error);
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+    if (error) {
+      Alert.alert("Erro ao sair.", error.message);
     }
   };
 
@@ -49,9 +48,7 @@ const DrawerContent = (props: any) => {
       <DrawerItemList {...props} />
       <DrawerItem
         label="Sair"
-        labelStyle={{
-          color: "#FFF",
-        }}
+        labelStyle={{ color: "#FFF" }}
         activeTintColor="white"
         inactiveTintColor="white"
         activeBackgroundColor="#FFC88d"
@@ -59,99 +56,92 @@ const DrawerContent = (props: any) => {
           <Ionicon name="exit-outline" color={color} size={size} />
         )}
         onPress={handleLogout}
-        style={{
-          borderWidth: 2,
-          borderColor: "#FFC88d",
-        }}
+        style={{ borderWidth: 2, borderColor: "#FFC88d" }}
       />
     </DrawerContentScrollView>
   );
 };
 
-const Routes = () => {
+interface RoutesProps {
+  session: Session | null;
+}
+
+const Routes: React.FC<RoutesProps> = ({ session }) => {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
-      screenOptions={{
-        headerShown: false,
-      }}
+      initialRouteName={session ? "HomeScreen" : "Login"} // Redirect based on session
+      screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="HomeScreen">
-        {() => (
-          <Drawer.Navigator
-            drawerContent={(props) => <DrawerContent {...props} />}
-            screenOptions={({ route }) => ({
-              header: () => <Header title={route.name} />,
-              drawerStyle: {
-                backgroundColor: "#2d47f0",
-                width: 240,
-              },
-              headerStyle: {
-                height: 80,
-                backgroundColor: "#2d47f0",
-              },
-              headerTitleStyle: {
-                color: "#f27e26",
-              },
-              drawerActiveBackgroundColor: "#FFC88d",
-              drawerInactiveTintColor: "white",
-              drawerActiveTintColor: "white",
-              drawerItemStyle: {
-                borderWidth: 2,
-                borderColor: "#FFC88d",
-              },
-            })}
-          >
-            <Drawer.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                drawerIcon: ({ color, size }) => (
-                  <Icon name="home" color={color} size={size} />
-                ),
-              }}
-            />
-            <Drawer.Screen
-              name="Dados Pessoais"
-              component={DadosPessoais}
-              options={{
-                drawerIcon: ({ color, size }) => (
-                  <Icon name="user" color={color} size={size} />
-                ),
-              }}
-            />
-            <Drawer.Screen
-              name="Tornar-se Autônomo"
-              component={BecomeAutonomo}
-              options={{
-                drawerIcon: ({ color, size }) => (
-                  <Icon name="briefcase" color={color} size={size} />
-                ),
-              }}
-            />
-            <Drawer.Screen
-              name="Alterar Cidade"
-              component={ChangeCity}
-              options={{
-                drawerIcon: ({ color, size }) => (
-                  <Icon name="map-marker" color={color} size={size} />
-                ),
-              }}
-            />
-            <Drawer.Screen
-              name="Alterar Senha"
-              component={ChangePassword}
-              options={{
-                drawerIcon: ({ color, size }) => (
-                  <Icon name="lock" color={color} size={size} />
-                ),
-              }}
-            />
-          </Drawer.Navigator>
-        )}
-      </Stack.Screen>
+      {!session ? (
+        <>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+        </>
+      ) : (
+        <Stack.Screen name="HomeScreen">
+          {() => (
+            <Drawer.Navigator
+              drawerContent={(props) => <DrawerContent {...props} />}
+              screenOptions={({ route }) => ({
+                header: () => <Header title={route.name} />,
+                drawerStyle: { backgroundColor: "#2d47f0", width: 240 },
+                headerStyle: { height: 80, backgroundColor: "#2d47f0" },
+                headerTitleStyle: { color: "#f27e26" },
+                drawerActiveBackgroundColor: "#FFC88d",
+                drawerInactiveTintColor: "white",
+                drawerActiveTintColor: "white",
+                drawerItemStyle: { borderWidth: 2, borderColor: "#FFC88d" },
+              })}
+            >
+              <Drawer.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                  drawerIcon: ({ color, size }) => (
+                    <Icon name="home" color={color} size={size} />
+                  ),
+                }}
+              />
+              <Drawer.Screen
+                name="Dados Pessoais"
+                component={DadosPessoais}
+                options={{
+                  drawerIcon: ({ color, size }) => (
+                    <Icon name="user" color={color} size={size} />
+                  ),
+                }}
+              />
+              <Drawer.Screen
+                name="Tornar-se Autônomo"
+                component={BecomeAutonomo}
+                options={{
+                  drawerIcon: ({ color, size }) => (
+                    <Icon name="briefcase" color={color} size={size} />
+                  ),
+                }}
+              />
+              <Drawer.Screen
+                name="Alterar Cidade"
+                component={ChangeCity}
+                options={{
+                  drawerIcon: ({ color, size }) => (
+                    <Icon name="map-marker" color={color} size={size} />
+                  ),
+                }}
+              />
+              <Drawer.Screen
+                name="Alterar Senha"
+                component={ChangePassword}
+                options={{
+                  drawerIcon: ({ color, size }) => (
+                    <Icon name="lock" color={color} size={size} />
+                  ),
+                }}
+              />
+            </Drawer.Navigator>
+          )}
+        </Stack.Screen>
+      )}
       <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
       <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
       <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
@@ -159,16 +149,12 @@ const Routes = () => {
       <Stack.Screen
         name="ChatList"
         component={ChatList}
-        options={{
-          animation: "slide_from_right",
-        }}
+        options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="ChatScreen"
         children={(props: any) => <ChatScreen {...props} />}
-        options={{
-          animation: "slide_from_right",
-        }}
+        options={{ animation: "slide_from_right" }}
       />
     </Stack.Navigator>
   );
