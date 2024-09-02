@@ -35,6 +35,14 @@ const Drawer = createDrawerNavigator();
 
 const DrawerContent = (props: any) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
+  // const [user, setUser] = React.useState<any>({});
+
+  // React.useEffect(() => {
+  //   const getUser = async () => {
+  //     const { data, error } = await supabase.auth.getUser();
+  //     setUser(data.user);
+  //   };
+  // }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut({ scope: "local" });
@@ -84,7 +92,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={({ route }) => ({
                 header: () => <Header title={route.name} />,
-                drawerStyle: { backgroundColor: "#2d47f0", width: 240 },
+                drawerStyle: { backgroundColor: "#2d47f0", width: 280 },
                 headerStyle: { height: 80, backgroundColor: "#2d47f0" },
                 headerTitleStyle: { color: "#f27e26" },
                 drawerActiveBackgroundColor: "#FFC88d",
@@ -112,15 +120,6 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                 }}
               />
               <Drawer.Screen
-                name="Tornar-se Autônomo"
-                component={BecomeAutonomo}
-                options={{
-                  drawerIcon: ({ color, size }) => (
-                    <Icon name="briefcase" color={color} size={size} />
-                  ),
-                }}
-              />
-              <Drawer.Screen
                 name="Alterar Cidade"
                 component={ChangeCity}
                 options={{
@@ -138,6 +137,17 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                   ),
                 }}
               />
+              {!session.user.user_metadata.is_freelancer && (
+                <Drawer.Screen
+                  name="Prestar Serviços"
+                  component={BecomeAutonomo}
+                  options={{
+                    drawerIcon: ({ color, size }) => (
+                      <Icon name="briefcase" color={color} size={size} />
+                    ),
+                  }}
+                />
+              )}
             </Drawer.Navigator>
           )}
         </Stack.Screen>

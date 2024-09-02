@@ -28,18 +28,28 @@ export type DrawerParamList = {
 export type CustomStackNavigationProp = StackNavigationProp<RootStackParamList>;
 
 export type Freelancer = {
-  id: number;
-  user_id: string;
+  cpf: string;
+  phone_number: string;
+  birthdate: string;
+  profile_picture_url: string | null;
   roles: string[];
-  name: string;
-  phone: string;
+};
+
+export type Profile = {
+  id: string;
   email: string;
-  city: string;
+  name: string;
   state: string;
-  highlights: any;
-  description: string;
-  profile_picture: string;
-  picture_folder: string;
+  city: string;
+  freelancers: Freelancer; // Freelancer is an object, not an array
+};
+
+export type FlattenedProfile = Profile & {
+  cpf: any;
+  phone_number: any;
+  birthdate: any;
+  profile_picture_url: any | null;
+  roles: any[];
 };
 
 export type Conversation = {

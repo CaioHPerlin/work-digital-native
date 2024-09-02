@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  GestureResponderEvent,
   Linking,
   Alert,
 } from "react-native";
@@ -21,11 +20,11 @@ interface Props {
 
 const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
   const [loading, setLoading] = useState(false);
-  const { phone } = freelancer;
+  const { phone_number } = freelancer;
   const navigation = useNavigation<CustomStackNavigationProp>();
 
   const handleWhatsAppPress = () => {
-    const whatsappLink = `https://wa.me/+55${phone}`;
+    const whatsappLink = `https://wa.me/+55${phone_number}`;
     Linking.openURL(whatsappLink);
   };
 

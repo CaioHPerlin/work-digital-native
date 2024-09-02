@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import { Freelancer } from "../types";
+import { FlattenedProfile, Freelancer } from "../types";
 
 interface ListFreelancerProps {
-  data: Freelancer[];
+  data: FlattenedProfile[];
   navigation: any;
 }
 
@@ -19,7 +19,7 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
   data,
   navigation,
 }) => {
-  const navigateToDetails = (freelancer: Freelancer) => {
+  const navigateToDetails = (freelancer: FlattenedProfile) => {
     navigation.navigate("FreelancerDetails", { freelancer });
   };
 
@@ -43,14 +43,18 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
               style={styles.itemContainer}
             >
               <Image
-                source={{
-                  uri: `https://res.cloudinary.com/dwngturuh/image/upload/profile-pictures/${item.id}.jpg`,
-                }}
+                source={
+                  item.profile_picture_url
+                    ? {
+                        uri: item.profile_picture_url,
+                      }
+                    : require("../../assets/images/favicon.png")
+                }
                 style={styles.image}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.nameText}>{item.name}</Text>
-                <Text style={styles.roleText}>{item.roles.join(", ")}</Text>
+                <Text style={styles.roleText}>{item.email}</Text>
               </View>
             </TouchableOpacity>
           )}
@@ -90,10 +94,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   nameText: {
-    fontSize: 20,
+    fontSize: 18,
   },
   roleText: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#666",
   },
 });

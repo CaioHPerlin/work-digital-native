@@ -1,14 +1,10 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Icon, MD3Colors } from "react-native-paper";
+import { FlattenedProfile } from "../types";
 
 interface Props {
-  freelancer: {
-    name: string;
-    roles: string[];
-    phone: string;
-    profilePictureUrl: string;
-  };
+  freelancer: FlattenedProfile;
 }
 
 const PersonalCard: React.FC<Props> = ({ freelancer }) => {
@@ -16,9 +12,13 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
     <>
       <View style={styles.container}>
         <Image
-          source={{
-            uri: freelancer.profilePictureUrl,
-          }}
+          source={
+            freelancer.profile_picture_url
+              ? {
+                  uri: freelancer.profile_picture_url,
+                }
+              : require("../../assets/images/favicon.png")
+          }
           style={styles.image}
         />
 
@@ -30,17 +30,16 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
             </Text>
           ))}
 
-          <Text style={styles.subDados}>{freelancer.phone}</Text>
-
+          <Text style={styles.subDados}>{freelancer.phone_number}</Text>
         </View>
         <View>
-            <Text style={styles.titleRedes}>Minhas Redes </Text>
-            <View style={styles.icons}>
-              <Icon source="whatsapp" color={"green"} size={40} />
-              <Icon source="instagram" color={"#E1306C"} size={40} />
-              <Icon source="facebook" color={"blue"} size={40} />
-            </View>
+          <Text style={styles.titleRedes}>Minhas Redes </Text>
+          <View style={styles.icons}>
+            <Icon source="whatsapp" color={"green"} size={40} />
+            <Icon source="instagram" color={"#E1306C"} size={40} />
+            <Icon source="facebook" color={"blue"} size={40} />
           </View>
+        </View>
       </View>
     </>
   );
@@ -69,12 +68,12 @@ const styles = StyleSheet.create({
 
   subDados: {
     fontSize: 14,
-    marginBottom:5,
+    marginBottom: 5,
     color: "#3f3f3f",
   },
   titleRedes: {
     fontSize: 14,
-    marginBottom:35,
+    marginBottom: 35,
     color: "#3f3f3f",
   },
   text: {

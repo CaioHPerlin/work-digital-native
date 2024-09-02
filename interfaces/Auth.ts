@@ -13,3 +13,11 @@ export interface SignUpFreelancer extends SignUpUser {
   birthDate: string;
   profilePhoto?: string;
 }
+
+export interface UserToFreelancer {
+  description?: string;
+  cpf: string;
+  birthDate: string;
+  phoneNumber: string;
+  profilePhoto?: string;
+}

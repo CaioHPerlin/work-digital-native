@@ -1,414 +1,514 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Image,
   ScrollView,
   Alert,
-  KeyboardTypeOptions,
+  Modal,
+  TouchableWithoutFeedback,
+  FlatList,
+  TextInput,
+  SafeAreaView,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import InputField from "../../components/InputField";
+import * as Animatable from "react-native-animatable";
+import { UserToFreelancer } from "@/interfaces/Auth";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { supabase } from "@/lib/supabase";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-import defaultRoles from "@/constants/roles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DrawerActions } from "@react-navigation/native";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { validateCPF, validatePhone } from "../../../utils/validator";
+import { uploadImage } from "../../../lib/cloudinary";
+import roles from "../../../constants/roles";
+import { LogBox } from "react-native";
 
-type BecomeAutonomoProps = {
+dayjs.extend(customParseFormat);
+
+interface Props {
   navigation: any;
-};
+}
 
-type ImagePickerGroupProps = {
-  label: string;
-  image: string | null;
-  onPickImage: () => void;
-};
+const RegisterAccount: React.FC<Props> = ({ navigation }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [searchText, setSearchText] = useState<string>("");
 
-type InputGroupProps = {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-  keyboardType?: KeyboardTypeOptions;
-};
-
-const BecomeAutonomo = ({ navigation }: BecomeAutonomoProps) => {
-  const [descricao, setDescricao] = useState<string>("");
-  const [roles, setRoles] = useState<string[]>([]);
-  const [icone, setIcone] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
+
+  // Define o schema Zod para validação
+  const signUpSchema = z.object({
+    description: z.string().optional(),
+    cpf: z.string().refine((value) => validateCPF(value), {
+      message: "CPF inválido",
+    }),
+    phoneNumber: z.string().refine((value) => validatePhone(value), {
+      message: "Número de telefone inválido",
+    }),
+    birthDate: z
+      .string()
+      .refine(
+        (value) => dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year") >= 18,
+        { message: "Você deve ter pelo menos 18 anos" }
+      ),
+    profilePhoto: z.string().optional(),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<UserToFreelancer>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const handlePickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setIcone(result.assets[0].uri);
+      setValue("profilePhoto", result.assets[0].uri);
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+  };
+
+  const filteredRoles = roles
+    .sort()
+    .filter((service) =>
+      service.toLowerCase().startsWith(searchText.toLowerCase())
+    );
+
+  const handleRoleSelect = (role: string) => {
+    if (selectedRoles.includes(role)) {
+      setSelectedRoles(selectedRoles.filter((r) => r !== role));
+    } else if (selectedRoles.length < 3) {
+      setSelectedRoles([...selectedRoles, role]);
+    }
+  };
+
+  const handleRoleRemove = (role: string) => {
+    if (selectedRoles.includes(role)) {
+      const newArray = selectedRoles.filter((item) => item !== role);
+      setSelectedRoles(newArray);
+    }
+  };
+
+  const handleSignUp = async (data: UserToFreelancer) => {
     setLoading(true);
-    try {
-      const formData = new FormData();
-      const cpf = await AsyncStorage.getItem("cpf");
-      if (cpf != null) {
-        formData.append("cpf", cpf);
-      } else {
-        throw new Error("CPF não encontrado. Faça login novamente.");
-      }
-      formData.append("description", descricao);
-      formData.append("roles", JSON.stringify(roles));
 
-      if (icone) {
-        const uriParts = icone.split(".");
-        const fileType = uriParts[uriParts.length - 1];
-
-        const photo = {
-          uri: icone,
-          name: `profile.${fileType}`,
-          type: `image/${fileType}`,
-        };
-
-        formData.append("photo", photo);
-      }
-
-      // Debugging: Log FormData to ensure it's correct
-      console.log("FormData:", formData);
-
-      // Post request with appropriate headers
-      const response = await axios.post(
-        "https://app-api-pied.vercel.app/freelancers",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      console.log("Freelancer created:", response.data);
-      Alert.alert(
-        "Sucesso",
-        "Você se tornou um prestador da nossa plataforma!"
-      );
-      navigation.navigate("Home");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(
-          "Error becoming freelancer:",
-          error.response?.data || error.message
-        );
-        if (
-          error.response?.data.message == "Perfil de prestador já cadastrado."
-        ) {
-          Alert.alert(
-            "Falha ao tornar-se prestador",
-            "Este perfil já é um autônomo cadastrado."
-          );
-        } else {
-          Alert.alert(
-            "Falha ao tornar-se prestador",
-            error.response?.data.message
-          );
-        }
-      } else {
-        console.error("Unexpected error:", error);
-      }
-      throw error;
-    } finally {
+    if (selectedRoles.length < 1) {
       setLoading(false);
+      return;
     }
-  };
 
-  const handleRemoveRole = (roleToRemove: string) => {
-    const updatedRoles = roles.filter((role) => role !== roleToRemove);
-    setRoles(updatedRoles);
+    data.birthDate = data.birthDate.split("/").reverse().join("-");
+
+    const fullData = {
+      ...data,
+      roles: selectedRoles,
+    };
+    console.log(fullData);
+
+    const { data: supabaseData, error: authError } =
+      await supabase.auth.getUser();
+
+    if (authError || !supabaseData.user) {
+      throw new Error("Failed to get user from Supabase Auth");
+    }
+
+    const userId = supabaseData.user.id;
+
+    // Update the user's profile to mark as a freelancer
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ is_freelancer: true })
+      .match({ id: userId });
+
+    if (updateError) {
+      setLoading(false);
+      console.error("Error during update:", updateError.message);
+      return Alert.alert(
+        "Erro ao atualizar banco de dados.",
+        "Tente novamente mais tarde."
+      );
+    }
+
+    // Insert a new row into the freelancers table
+    const { error: insertError } = await supabase.from("freelancers").insert([
+      {
+        user_id: userId,
+        cpf: fullData.cpf,
+        phone_number: fullData.phoneNumber,
+        birthdate: fullData.birthDate,
+        profile_picture_url: `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${userId}.jpg`,
+        roles: fullData.roles,
+        description: fullData.description,
+      },
+    ]);
+
+    if (insertError) {
+      setLoading(false);
+      console.error("Error during sign up:", insertError.message);
+      return Alert.alert(
+        "Erro ao cadastrar.",
+        "Já existe um prestador com este CPF ou E-mail."
+      );
+    }
+
+    // Success! Optionally handle success state here
+    console.log("Freelancer registration successful");
+    Alert.alert(
+      "Sucesso!",
+      "Perfil de prestador cadastrado com sucesso! Faça login novamente para acessar a interface do prestador."
+    );
+
+    if (data.profilePhoto && supabaseData.user) {
+      await uploadImage(data.profilePhoto, supabaseData.user.id);
+    }
+
+    setLoading(false);
+    await supabase.auth.signOut({ scope: "local" });
   };
+  const roleModal = (
+    <Modal
+      visible={isOpen}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setIsOpen(false)}
+    >
+      <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
+        <View style={styles.modalBackground}>
+          <Animatable.View
+            animation="slideInUp"
+            duration={400}
+            style={styles.modalContainer}
+          >
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                style={styles.modalSearchBar}
+                placeholder="Buscar Função"
+                placeholderTextColor="#FFF"
+                value={searchText}
+                onChangeText={handleSearch}
+              />
+              <Icon
+                name="search"
+                size={20}
+                color="#FFF"
+                style={styles.searchIcon}
+              />
+            </View>
+            <FlatList
+              style={{ width: "100%" }}
+              data={filteredRoles}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.modalItem,
+                    selectedRoles.includes(item) && {
+                      backgroundColor: "#6200ee",
+                    },
+                  ]}
+                  onPress={() =>
+                    item.length > 1 ? handleRoleSelect(item) : ""
+                  }
+                >
+                  <Text
+                    style={
+                      selectedRoles.includes(item)
+                        ? { ...styles.modalItemText, color: "#FFF" }
+                        : item.length > 1
+                        ? styles.modalItemText
+                        : { ...styles.modalItemText, color: "#f27e26" }
+                    }
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </Animatable.View>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
 
   return (
-    <>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Tornar-se Autônomo</Text>
-
-        <InputGroup
-          label="Descrição"
-          value={descricao}
-          onChangeText={setDescricao}
-          placeholder="Escreva a descrição dos seus serviços"
-        />
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Tipo de Serviço</Text>
-          <Picker
-            selectedValue={""}
-            style={styles.picker}
-            onValueChange={(itemValue) => {
-              if (itemValue && roles.length < 5 && !roles.includes(itemValue)) {
-                setRoles([...roles, itemValue]);
-              }
-            }}
-          >
-            <Picker.Item label="Selecione um serviço" value="" />
-            {defaultRoles.map((role: string) => (
-              <Picker.Item
-                label={role}
-                value={role}
-                key={role}
-                enabled={role.length > 1}
-                style={
-                  role.length > 1 ? { color: "#000" } : { color: "#aeaeae" }
-                }
+    <View style={styles.container}>
+      <ScrollView>
+        <>
+          {/* Description Input */}
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Descrição dos seus serviços (Opcional)"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="default"
+                errorMessage={errors.description?.message}
               />
-            ))}
-          </Picker>
-        </View>
-
-        <View style={styles.rolesContainer}>
-          <Text style={styles.label}>Serviços Selecionados:</Text>
-          <View style={styles.selectedRoles}>
-            {roles.map((role, index) => (
-              <View key={index} style={styles.selectedRoleContainer}>
-                <Text style={styles.selectedRole}>{role}</Text>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleRemoveRole(role)}
-                >
-                  <Text style={styles.deleteButtonText}>X</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <ImagePickerGroup
-          label="Avatar"
-          image={icone}
-          onPickImage={pickImage}
-        />
-        {/* <TouchableOpacity
-          style={styles.buttonDestak}
-          onPress={() => navigation.navigate("ManageDestak")}
-        >
-          <Text style={styles.buttonText}>Gerenciar Destaque</Text>
-        </TouchableOpacity> */}
-        <View style={styles.buttonContainer}>
-          <FormButton
-            disabled={loading}
-            text={loading ? "Criando perfil..." : "Confirmar"}
-            onPress={handleSubmit}
-            style={styles.buttonConfirmar}
-            textStyle={styles.buttonText}
+            )}
           />
-          {/*<FormButton text="Visualizar" style={styles.buttonVisualizar textStyle={styles.buttonText}/>*/}
-        </View>
 
-        <FormButton
-          text="Voltar"
-          style={styles.buttonVoltar}
-          textStyle={styles.buttonText}
-          onPress={() => {
-            navigation.navigate("Home");
-            navigation.dispatch(DrawerActions.openDrawer());
-          }}
-        />
+          {/* Role Input */}
+          <SafeAreaView style={{ marginBottom: 20 }}>
+            <FlatList
+              ListHeaderComponent={
+                <TouchableOpacity
+                  onPress={() => setIsOpen(true)}
+                  style={
+                    selectedRoles.length === 0
+                      ? {
+                          ...styles.uploadButton,
+                          marginBottom: 10,
+                        }
+                      : {
+                          ...styles.uploadButton,
+                          borderBottomLeftRadius: 0,
+                          borderBottomRightRadius: 0,
+                        }
+                  }
+                >
+                  <Text style={styles.uploadButtonText}>
+                    Selecione seus serviços
+                  </Text>
+                </TouchableOpacity>
+              }
+              data={selectedRoles}
+              renderItem={(item) => (
+                <TouchableOpacity
+                  onPress={() => handleRoleRemove(item.item)}
+                  style={styles.roleContainer}
+                >
+                  <Text>{item.item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+
+            {selectedRoles.length < 1 && (
+              <Text style={styles.errorText}>
+                Você deve selecionar ao menos 1 função
+              </Text>
+            )}
+          </SafeAreaView>
+          {/* CPF Input */}
+          <Controller
+            control={control}
+            name="cpf"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="CPF"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                errorMessage={errors.cpf?.message}
+                mask="cpf"
+                maxLength={14}
+              />
+            )}
+          />
+
+          {/* Phone Number Input */}
+          <Controller
+            control={control}
+            name="phoneNumber"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Número de Telefone"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="phone-pad"
+                errorMessage={errors.phoneNumber?.message}
+                mask="phone"
+                maxLength={15}
+              />
+            )}
+          />
+
+          {/* Birth Date Input */}
+          <Controller
+            control={control}
+            name="birthDate"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Data de Nascimento"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                errorMessage={errors.birthDate?.message}
+                mask="date"
+                maxLength={10}
+              />
+            )}
+          />
+
+          {/* Profile Photo Upload */}
+          <TouchableOpacity
+            onPress={handlePickImage}
+            style={styles.uploadButton}
+          >
+            <Text style={styles.uploadButtonText}>
+              {watch("profilePhoto")
+                ? "Alterar Foto de Perfil"
+                : "Adicionar Foto de Perfil (Opcional)"}
+            </Text>
+          </TouchableOpacity>
+
+          {roleModal}
+        </>
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={handleSubmit(handleSignUp)}
+          disabled={loading}
+        >
+          <Text style={styles.submitButtonText}>
+            {loading ? "Cadastrando..." : "Cadastrar"}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
-    </>
+    </View>
   );
 };
 
-const InputGroup = ({
-  label,
-  value,
-  onChangeText,
-  placeholder = "",
-  keyboardType = "default",
-}: InputGroupProps) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    <TextInput
-      value={value}
-      placeholder={placeholder}
-      onChangeText={onChangeText}
-      keyboardType={keyboardType}
-      style={styles.input}
-    />
-  </View>
-);
-
-const FormButton = ({
-  text,
-  onPress,
-  style,
-  textStyle,
-  disabled,
-}: {
-  text: string;
-  onPress?: () => void;
-  style: object;
-  textStyle: object;
-  disabled: boolean;
-}) => (
-  <TouchableOpacity style={style} onPress={onPress} disabled={disabled}>
-    <Text style={textStyle}>{text}</Text>
-  </TouchableOpacity>
-);
-
-const ImagePickerGroup = ({
-  label,
-  image,
-  onPickImage,
-}: ImagePickerGroupProps) => (
-  <View style={styles.inputGroup}>
-    <Text style={styles.label}>{label}</Text>
-    <TouchableOpacity style={styles.imagePicker} onPress={onPickImage}>
-      <Text style={styles.imagePickerText}>Escolher {label}</Text>
-    </TouchableOpacity>
-    {image && <Image source={{ uri: image }} style={styles.image} />}
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
-    marginTop: 25,
-    flexGrow: 1,
-    padding: 30,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   title: {
-    color: "#2d47f0",
-    fontSize: 28,
-    marginBottom: 20,
-    textAlign: "center",
-    fontFamily: "TitanOne-Regular",
-    margin: 2,
-  },
-  inputGroup: {
-    marginBottom: 15,
-    width: "100%",
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
+    fontSize: 32,
     fontWeight: "bold",
+    marginBottom: 30,
   },
-  input: {
-    borderColor: "black",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 15,
-    backgroundColor: "#ffffff",
-  },
-  picker: {
-    borderColor: "#000",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: "#ffffff",
-  },
-  imagePicker: {
-    backgroundColor: "#2d47f0",
-    padding: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#f27e26",
-  },
-  imagePickerText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginTop: 10,
-    borderRadius: 5,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: "35%",
-    width: "100%",
-  },
-  buttonVoltar: {
-    backgroundColor: "#2d47f0",
-    padding: 20,
-    marginTop: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    width: "97%",
-    borderWidth: 2,
-    borderColor: "#f27e26",
-  },
-  buttonDestak: {
-    backgroundColor: "#2d47f0",
-    padding: 20,
-    marginTop: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    width: "100%",
-    borderWidth: 2,
-    borderColor: "#f27e26",
-  },
-  buttonConfirmar: {
-    backgroundColor: "#2d47f0",
-    padding: 20,
-    marginTop: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    width: "97%",
-    marginHorizontal: 5,
-    borderWidth: 2,
-    borderColor: "#f27e26",
-  },
-
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  rolesContainer: {
-    marginBottom: 15,
-    width: "100%",
-  },
-  selectedRoles: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 5,
-    color: "#fff",
-  },
-  selectedRoleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#2d47f0",
-    color: "#fff",
-    padding: 5,
-    marginRight: 5,
-    marginBottom: 5,
-    borderRadius: 5,
-  },
-  selectedRole: {
-    marginRight: 5,
-    color: "#fff",
-    fontWeight: "700",
-    padding: 10,
-  },
-  deleteButton: {
-    backgroundColor: "#f54242",
+  submitButton: {
+    backgroundColor: "#6200ee",
+    paddingVertical: 15,
     borderRadius: 10,
-    padding: 5,
+    marginTop: 20,
+    marginBottom: 10,
+    alignItems: "center",
   },
-  deleteButtonText: {
+  submitButtonText: {
     color: "#fff",
-    paddingHorizontal: 5,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  uploadButton: {
+    backgroundColor: "#6200ee",
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  uploadButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  pickerContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  searchBar: {
+    height: 50,
+    borderColor: "#f27e26",
+    borderWidth: 2,
+    paddingHorizontal: 8,
+    justifyContent: "center",
+    width: "100%",
+    borderRadius: 5,
+    backgroundColor: "#2d47f0",
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 20,
+    alignItems: "center",
+    elevation: 20,
+    height: "80%",
+    borderColor: "#f27e26",
+    borderWidth: 2,
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2d47f0",
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    height: 50,
+    marginBottom: 10,
+    width: "100%",
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  modalSearchBar: {
+    flex: 1,
+    color: "#FFF",
+  },
+  modalItem: {
+    paddingHorizontal: 6,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    width: "100%",
+  },
+  modalItemText: {
+    fontSize: 16,
+    textAlign: "justify",
+  },
+  noSelectionContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  roleContainer: {
+    backgroundColor: "#fff",
+    borderColor: "#6200ee",
+    borderWidth: 1,
+    borderTopWidth: 0,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderTopEndRadius: 0,
+    borderTopStartRadius: 0,
+    marginTop: 0,
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
   },
 });
 
-export default BecomeAutonomo;
+export default RegisterAccount;

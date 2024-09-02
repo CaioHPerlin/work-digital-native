@@ -6,13 +6,20 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Modal,
+  TouchableWithoutFeedback,
+  FlatList,
+  TextInput,
+  SafeAreaView,
 } from "react-native";
 import axios from "axios";
 import InputField from "../components/InputField";
 import PickerField from "../components/PickerField";
 import Checkbox from "../components/Checkbox";
+import * as Animatable from "react-native-animatable";
 import { SignUpFreelancer } from "@/interfaces/Auth";
 import Location from "@/interfaces/Location";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { supabase } from "@/lib/supabase";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -22,6 +29,8 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { validateCPF, validatePhone } from "../../utils/validator";
 import { uploadImage } from "../../lib/cloudinary";
+import roles from "../../constants/roles";
+import { LogBox } from "react-native";
 
 dayjs.extend(customParseFormat);
 
@@ -29,47 +38,61 @@ interface Props {
   navigation: any;
 }
 
-// Define o schema Zod para validação
-const signUpSchema = z.object({
-  name: z.string().min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
-  email: z.string().email("Formato de e-mail inválido"),
-  password: z
-    .string()
-    .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-  state: z.string().min(1, { message: "Estado é obrigatório" }),
-  city: z.string().min(1, { message: "Cidade é obrigatória" }),
-  isFreelancer: z.boolean(),
-  cpf: z
-    .string()
-    .optional()
-    .refine((value) => (value ? validateCPF(value) : false), {
-      message: "CPF inválido",
-    }),
-  phoneNumber: z
-    .string()
-    .optional()
-    .refine((value) => (value ? validatePhone(value) : false), {
-      message: "Número de telefone inválido",
-    }),
-  birthDate: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        const age = dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year");
-        return age >= 18;
-      },
-      { message: "Você deve ter pelo menos 18 anos" }
-    ),
-  profilePhoto: z.string().optional(),
-});
-
 const RegisterAccount: React.FC<Props> = ({ navigation }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [searchText, setSearchText] = useState<string>("");
+
   const [states, setStates] = useState<Location[]>([]);
   const [cities, setCities] = useState<Location[]>([]);
   const [loadingStates, setLoadingStates] = useState<boolean>(true);
   const [loadingCities, setLoadingCities] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+
+  let isFreelancer = false;
+  // Define o schema Zod para validação
+  const signUpSchema = z.object({
+    name: z
+      .string()
+      .min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
+    email: z.string().email("Formato de e-mail inválido"),
+    password: z
+      .string()
+      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+    state: z.string().min(1, { message: "Estado é obrigatório" }),
+    city: z.string().min(1, { message: "Cidade é obrigatória" }),
+    isFreelancer: z.boolean(),
+    cpf: z
+      .string()
+      .optional()
+      .refine(
+        (value) => (isFreelancer ? (value ? validateCPF(value) : false) : true),
+        {
+          message: "CPF inválido",
+        }
+      ),
+    phoneNumber: z
+      .string()
+      .optional()
+      .refine(
+        (value) =>
+          isFreelancer ? (value ? validatePhone(value) : false) : true,
+        {
+          message: "Número de telefone inválido",
+        }
+      ),
+    birthDate: z
+      .string()
+      .optional()
+      .refine(
+        (value) =>
+          isFreelancer
+            ? dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year") >= 18
+            : true,
+        { message: "Você deve ter pelo menos 18 anos" }
+      ),
+    profilePhoto: z.string().optional(),
+  });
 
   const {
     control,
@@ -82,7 +105,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   });
 
   const stateValue = watch("state");
-  const isFreelancer = watch("isFreelancer");
+  isFreelancer = watch("isFreelancer");
 
   // Buscar estados ao montar o componente
   useEffect(() => {
@@ -127,6 +150,10 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     }
   }, [stateValue]);
 
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+  }, []);
+
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -140,10 +167,41 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+  };
+
+  const filteredRoles = roles
+    .sort()
+    .filter((service) =>
+      service.toLowerCase().startsWith(searchText.toLowerCase())
+    );
+
+  const handleRoleSelect = (role: string) => {
+    if (selectedRoles.includes(role)) {
+      setSelectedRoles(selectedRoles.filter((r) => r !== role));
+    } else if (selectedRoles.length < 3) {
+      setSelectedRoles([...selectedRoles, role]);
+    }
+  };
+
+  const handleRoleRemove = (role: string) => {
+    if (selectedRoles.includes(role)) {
+      const newArray = selectedRoles.filter((item) => item !== role);
+      setSelectedRoles(newArray);
+    }
+  };
+
   const handleSignUp = async (data: SignUpFreelancer) => {
     setLoading(true);
 
-    data.birthDate = data.birthDate.split("/").reverse().join("-");
+    if (isFreelancer) {
+      if (selectedRoles.length < 1) {
+        return;
+      }
+
+      data.birthDate = data.birthDate.split("/").reverse().join("-");
+    }
 
     const { data: supabaseData, error } = await supabase.auth.signUp({
       email: data.email,
@@ -159,6 +217,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           phone_number: data.isFreelancer ? data.phoneNumber : undefined,
           birth_date: data.isFreelancer ? data.birthDate : undefined,
           profile_photo: data.isFreelancer ? data.profilePhoto : undefined,
+          roles: data.isFreelancer ? selectedRoles : undefined,
         },
       },
     });
@@ -182,6 +241,71 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     setLoading(false);
   };
+
+  const roleModal = (
+    <Modal
+      visible={isOpen}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setIsOpen(false)}
+    >
+      <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
+        <View style={styles.modalBackground}>
+          <Animatable.View
+            animation="slideInUp"
+            duration={400}
+            style={styles.modalContainer}
+          >
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                style={styles.modalSearchBar}
+                placeholder="Buscar Função"
+                placeholderTextColor="#FFF"
+                value={searchText}
+                onChangeText={handleSearch}
+              />
+              <Icon
+                name="search"
+                size={20}
+                color="#FFF"
+                style={styles.searchIcon}
+              />
+            </View>
+            <FlatList
+              style={{ width: "100%" }}
+              data={filteredRoles}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.modalItem,
+                    selectedRoles.includes(item) && {
+                      backgroundColor: "#6200ee",
+                    },
+                  ]}
+                  onPress={() =>
+                    item.length > 1 ? handleRoleSelect(item) : ""
+                  }
+                >
+                  <Text
+                    style={
+                      selectedRoles.includes(item)
+                        ? { ...styles.modalItemText, color: "#FFF" }
+                        : item.length > 1
+                        ? styles.modalItemText
+                        : { ...styles.modalItemText, color: "#f27e26" }
+                    }
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </Animatable.View>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
 
   return (
     <View style={styles.container}>
@@ -285,6 +409,47 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
         {isFreelancer && (
           <>
+            {/* Role Input */}
+            <SafeAreaView style={{ marginBottom: 20 }}>
+              <FlatList
+                ListHeaderComponent={
+                  <TouchableOpacity
+                    onPress={() => setIsOpen(true)}
+                    style={
+                      selectedRoles.length === 0
+                        ? {
+                            ...styles.uploadButton,
+                            marginBottom: 10,
+                          }
+                        : {
+                            ...styles.uploadButton,
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                          }
+                    }
+                  >
+                    <Text style={styles.uploadButtonText}>
+                      Selecione seus serviços
+                    </Text>
+                  </TouchableOpacity>
+                }
+                data={selectedRoles}
+                renderItem={(item) => (
+                  <TouchableOpacity
+                    onPress={() => handleRoleRemove(item.item)}
+                    style={styles.roleContainer}
+                  >
+                    <Text>{item.item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+
+              {selectedRoles.length < 1 && (
+                <Text style={styles.errorText}>
+                  Você deve selecionar ao menos 1 função
+                </Text>
+              )}
+            </SafeAreaView>
             {/* CPF Input */}
             <Controller
               control={control}
@@ -344,9 +509,11 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.uploadButtonText}>
                 {watch("profilePhoto")
                   ? "Alterar Foto de Perfil"
-                  : "Adicionar Foto de Perfil"}
+                  : "Adicionar Foto de Perfil (Opcional)"}
               </Text>
             </TouchableOpacity>
+
+            {roleModal}
           </>
         )}
 
@@ -399,6 +566,87 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  pickerContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  searchBar: {
+    height: 50,
+    borderColor: "#f27e26",
+    borderWidth: 2,
+    paddingHorizontal: 8,
+    justifyContent: "center",
+    width: "100%",
+    borderRadius: 5,
+    backgroundColor: "#2d47f0",
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 20,
+    alignItems: "center",
+    elevation: 20,
+    height: "80%",
+    borderColor: "#f27e26",
+    borderWidth: 2,
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2d47f0",
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    height: 50,
+    marginBottom: 10,
+    width: "100%",
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  modalSearchBar: {
+    flex: 1,
+    color: "#FFF",
+  },
+  modalItem: {
+    paddingHorizontal: 6,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    width: "100%",
+  },
+  modalItemText: {
+    fontSize: 16,
+    textAlign: "justify",
+  },
+  noSelectionContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  roleContainer: {
+    backgroundColor: "#fff",
+    borderColor: "#6200ee",
+    borderWidth: 1,
+    borderTopWidth: 0,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderTopEndRadius: 0,
+    borderTopStartRadius: 0,
+    marginTop: 0,
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
   },
 });
 

@@ -17,7 +17,8 @@ import roles from "@/constants/roles";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Freelancer } from "../types";
+import { FlattenedProfile, Freelancer } from "../types";
+import { supabase } from "../../lib/supabase";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,7 +29,7 @@ interface Props {
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
-  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [freelancers, setFreelancers] = useState<FlattenedProfile[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -48,16 +49,56 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     setIsLoading(true);
     setApiError(null);
-    try {
-      const response = await axios.get(
-        `https://app-api-pied.vercel.app/freelancers?role=${role}`
-      );
-      setFreelancers(response.data);
-    } catch (error) {
-      setApiError("Erro ao buscar freelancers. Tente novamente.");
-    } finally {
-      setIsLoading(false);
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(
+        `
+        id,
+        email,
+        name,
+        state,
+        city,
+        freelancers:freelancers!inner(
+          cpf,
+          phone_number,
+          birthdate,
+          profile_picture_url,
+          roles,
+          description
+        )
+      `
+      )
+      .filter("freelancers.roles", "cs", `{${role}}`); // Use 'cs' for contains
+
+    if (error) {
+      setApiError("Erro ao buscar prestadores. Tente novamente.");
+      return console.log(error.message);
+    } else {
+      console.log("Freelancers data:", data);
     }
+
+    const flattenedData: any[] = data.map((profile) => {
+      const { freelancers, ...rest } = profile;
+      return {
+        ...rest,
+        ...freelancers,
+      };
+    });
+
+    setFreelancers(flattenedData);
+    setIsLoading(false);
+
+    // try {
+    //   const response = await axios.get(
+    //     `https://app-api-pied.vercel.app/freelancers?role=${role}`
+    //   );
+    //   setFreelancers(response.data);
+    // } catch (error) {
+    //   setApiError("Erro ao buscar freelancers. Tente novamente.");
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const handleItemSelect = (item: string) => {
@@ -100,7 +141,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 fontWeight: "700",
               }}
             >
-              {selectedValue || "Selecione um serviço"}
+              {"Selecione um serviço"}
             </Text>
           </TouchableOpacity>
         </Animatable.View>
@@ -121,7 +162,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.searchInputContainer}>
                   <TextInput
                     style={styles.modalSearchBar}
-                    placeholder="Buscar Um Profissional"
+                    placeholder="Buscar Um Serviço"
                     placeholderTextColor="#FFF"
                     value={searchText}
                     onChangeText={handleSearch}
@@ -141,9 +182,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={styles.modalItem}
-                      onPress={() => handleItemSelect(item)}
+                      onPress={() =>
+                        item.length > 1 ? handleItemSelect(item) : ""
+                      }
                     >
-                      <Text style={styles.modalItemText}>{item}</Text>
+                      <Text
+                        style={
+                          item.length > 1
+                            ? styles.modalItemText
+                            : { ...styles.modalItemText, color: "#f27e26" }
+                        }
+                      >
+                        {item}
+                      </Text>
                     </TouchableOpacity>
                   )}
                 />
@@ -243,6 +294,7 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   modalItem: {
+    paddingHorizontal: 6,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
