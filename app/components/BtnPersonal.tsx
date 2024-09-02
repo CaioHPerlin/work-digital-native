@@ -52,7 +52,9 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
       const { data: existingChats, error: fetchError } = await supabase
         .from("chats")
         .select("*")
-        .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`);
+        .or(
+          `and(user_1_id.eq.${userId},user_2_id.eq.${freelancer.id}),and(user_1_id.eq.${freelancer.id},user_2_id.eq.${userId})`
+        );
 
       if (fetchError) {
         throw new Error(

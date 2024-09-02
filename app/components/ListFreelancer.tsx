@@ -48,7 +48,7 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
                     ? {
                         uri: item.profile_picture_url,
                       }
-                    : require("../../assets/images/favicon.png")
+                    : require("../../assets/images/user.jpg")
                 }
                 style={styles.image}
               />

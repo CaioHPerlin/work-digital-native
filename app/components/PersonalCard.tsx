@@ -17,7 +17,7 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
               ? {
                   uri: freelancer.profile_picture_url,
                 }
-              : require("../../assets/images/favicon.png")
+              : require("../../assets/images/user.jpg")
           }
           style={styles.image}
         />

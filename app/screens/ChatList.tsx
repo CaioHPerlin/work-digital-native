@@ -79,7 +79,7 @@ const ChatList: React.FC = () => {
         style={styles.itemContainer}
       >
         <Image
-          source={require("../../assets/images/favicon.png")}
+          source={require("../../assets/images/user.jpg")}
           style={styles.image}
         />
         <View style={styles.textContainer}>

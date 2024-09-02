@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import Layout from "../components/Layout";
 import PersonalCard from "../components/PersonalCard";
 import Description from "../components/Description";
 import BtnPersonal from "../components/BtnPersonal";
