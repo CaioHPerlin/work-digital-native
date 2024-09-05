@@ -13,24 +13,20 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   let { freelancer } = route.params;
   console.log(freelancer);
 
-  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
-  const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
+
   return (
     <>
+    <View style={styles.geral}>
+    <View style={styles.dadosFreelancer}>
       <PersonalCard freelancer={freelancer} />
-      <View style={styles.container}>
-        {[0, 1].map((index) => (
-          <SliderDestaque
-            key={index}
-            isPickerVisible={currentHighlightIndex === index && isPickerVisible}
-            setPickerVisible={setPickerVisible}
-            index={index}
-            //onLastItemVisible={handleLastItemVisible}
-          />
-        ))}
-      </View>
       <Description freelancer={freelancer} />
-      <BtnPersonal freelancer={freelancer} />
+      </View>
+
+        <BtnPersonal freelancer={freelancer} />
+  
+        </View>
+        <View></View>
+      
     </>
   );
 };
@@ -41,9 +37,16 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     flexDirection: "row",
   },
-  containerIteins: {
-    marginRight: 50,
-  },
+  dadosFreelancer:{
+    margin:0,
+    borderWidth:5,
+    borderColor: "#2d47f0"
+    },
+    geral:{
+      backgroundColor:"#2d47f0",
+  
+    }
+
 });
 
 export default FreelancerDetails;

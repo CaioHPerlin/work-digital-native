@@ -28,12 +28,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "black",
     margin: 10,
+    color:"#f27e26", 
+    fontWeight: "bold",
   },
 
   conteudo: {
     fontSize: 16,
-    color: "black",
-    margin: 10,
+    color: "#fff",
+    marginHorizontal: 10,
+    marginBottom:10,
     textAlign: "justify",
   },
 });

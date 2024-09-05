@@ -27,7 +27,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
               source={require("../../assets/images/user.jpg")}
             />
           </View>
-          <Text>Destaque {index + 1}</Text>
+          <Text style={styles.txtDestak}>Destaque {index + 1}</Text>
         </TouchableOpacity>
       </View>
 
@@ -116,12 +116,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   borderAvatar: {
-    borderWidth: 3,
+    borderWidth: 2,
+    padding:5,
+    
     borderColor: "#f27e26",
     alignItems: "center",
-    borderRadius: 100,
-    paddingVertical: 4,
+    borderRadius: 50,
+    
   },
+  txtDestak:{
+color:"#fff"
+  }
 });
 
 export default SliderDestaque;

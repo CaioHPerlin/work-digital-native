@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-paper";
 import { CustomStackNavigationProp, FlattenedProfile } from "../types";
 import { supabase } from "../../lib/supabase";
+import SliderDestaque from "./SliderDestaque";
 
 interface Props {
   freelancer: FlattenedProfile;
@@ -97,25 +98,45 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
     }
   };
 
+  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+  const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
+
   return (
     <View style={styles.buttonContainer}>
       {/* <TouchableOpacity style={styles.button} onPress={handleBackPress}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity> */}
+
       <TouchableOpacity
         style={styles.buttonWhats}
         onPress={handleWhatsAppPress}
       >
-        <Icon source="whatsapp" color={"white"} size={30} />
-        <Text style={styles.buttonText}>WhatsApp</Text>
+        <Icon source="whatsapp" color={"white"} size={57} />
       </TouchableOpacity>
+
+      <View style={styles.container}>
+        {[0].map((index) => (
+          <SliderDestaque
+            key={index}
+            isPickerVisible={currentHighlightIndex === index && isPickerVisible}
+            setPickerVisible={setPickerVisible}
+            index={index}
+            //onLastItemVisible={handleLastItemVisible}
+          />
+        ))}
+      </View>
+
       <TouchableOpacity
         style={styles.button}
-        disabled={loading}
+        // disabled={loading}
         onPress={handleStartConversation}
       >
         <Text style={styles.buttonText}>
-          {loading ? "Aguarde..." : "Conversar"}
+          {loading ? (
+            "Aguarde..."
+          ) : (
+            <Icon source="chat" color={"white"} size={48} />
+          )}
         </Text>
       </TouchableOpacity>
     </View>
@@ -126,35 +147,31 @@ export default BtnPersonal;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginTop: "auto",
+    backgroundColor:"#2d47f0",
+    borderWidth: 1,
+    borderColor: "#f27e26",
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    margin: 10,
+    paddingHorizontal:5,
+    
   },
   button: {
     backgroundColor: "#2d47f0",
-    padding: 18,
-    borderRadius: 5,
+    borderRadius: 50,
+    padding:10,
     alignItems: "center",
-    flex: 1,
-    marginHorizontal: 5,
+    justifyContent: "center",
+
     borderWidth: 2,
     borderColor: "#f27e26",
   },
   buttonWhats: {
     backgroundColor: "#25D366",
     flexDirection: "row",
-    flex: 1,
+    borderRadius: 50,
+    padding:10,
     justifyContent: "center",
     alignItems: "center",
-    padding: 18,
-    borderRadius: 5,
-  },
-
-  buttonText: {
-    margin: 5,
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });
