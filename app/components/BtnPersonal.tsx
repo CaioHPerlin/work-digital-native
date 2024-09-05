@@ -114,7 +114,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         <Icon source="whatsapp" color={"white"} size={57} />
       </TouchableOpacity>
 
-      <View style={styles.container}>
+      <View >
         {[0].map((index) => (
           <SliderDestaque
             key={index}
@@ -131,7 +131,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         // disabled={loading}
         onPress={handleStartConversation}
       >
-        <Text style={styles.buttonText}>
+        <Text >
           {loading ? (
             "Aguarde..."
           ) : (
