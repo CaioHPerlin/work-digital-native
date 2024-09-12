@@ -173,7 +173,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       </Animatable.View>
     );
   };
-  EmitterSubscription;
 
   useEffect(() => {
     let keyboardDidShowListener: EmitterSubscription;
