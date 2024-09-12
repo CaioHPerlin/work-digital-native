@@ -9,6 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ScrollView,
+  Keyboard,
+  EmitterSubscription,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
@@ -19,11 +22,12 @@ interface ChatScreenProps {
 }
 
 interface Message {
-  id: string;
+  id?: string;
   chat_id: string;
   sender_id: string;
   content: string;
   created_at: string;
+  temp?: boolean;
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
@@ -52,11 +56,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       }
 
       setMessages(data as Message[]);
-
-      setTimeout(
-        () => flatListRef.current?.scrollToEnd({ animated: true }),
-        50
-      );
     };
 
     const fetchTargetUser = async () => {
@@ -104,46 +103,110 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     };
   }, [chatId]);
 
-  useEffect(() => {
-    flatListRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+  const addMessage = (message: Message) => {
+    setMessages((prevMessages) => {
+      // Check if the message already exists (optimistically added)
+      const messageExists = prevMessages.some((msg) => msg.id === message.id);
 
-  const addMessage = async (message: Message) => {
-    setMessages((prevMessages) => [...prevMessages, message]);
+      // If it doesn't exist, add it
+      if (!messageExists) {
+        return [...prevMessages, message];
+      }
+
+      return prevMessages;
+    });
   };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
-    const { data, error } = await supabase.from("messages").insert([
-      {
-        chat_id: chatId,
-        sender_id: userId,
-        content: newMessage,
-        created_at: new Date().toISOString(), // Use ISO string for datetime
-      },
-    ]);
+    const tempMessage = {
+      id: Date.now().toString(), // Temporary ID
+      chat_id: chatId,
+      sender_id: userId,
+      content: newMessage,
+      created_at: new Date().toISOString(),
+      temp: true,
+    };
+
+    // Optimistically add the message to the list
+    setMessages((prevMessages) => [...prevMessages, tempMessage]);
+    setNewMessage("");
+
+    // Insert message into the database
+    const { data, error } = await supabase
+      .from("messages")
+      .insert([
+        {
+          chat_id: chatId,
+          sender_id: userId,
+          content: newMessage,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select();
 
     if (error) {
       console.error("Error sending message:", error);
-    } else {
-      setNewMessage("");
-      flatListRef.current?.scrollToEnd({ animated: true });
+    } else if (data) {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.temp && msg.id === tempMessage.id ? data[0] : msg
+        )
+      );
     }
   };
 
-  const renderItem = ({ item }: { item: Message }) => (
-    <Animatable.View
-      animation={"fadeInUp"}
-      duration={200}
-      style={[
-        styles.message,
-        item.sender_id === userId ? styles.selfMessage : styles.otherMessage,
-      ]}
-    >
-      <Text style={styles.messageText}>{item.content}</Text>
-    </Animatable.View>
-  );
+  const renderItem = ({ item }: { item: Message }) => {
+    const isNewMessage = !item.id || item.temp;
+
+    return (
+      <Animatable.View
+        animation={isNewMessage ? "fadeInUp" : undefined} // Apply animation only to new messages
+        duration={200}
+        style={[
+          styles.message,
+          item.sender_id === userId ? styles.selfMessage : styles.otherMessage,
+        ]}
+      >
+        <Text style={styles.messageText}>{item.content}</Text>
+      </Animatable.View>
+    );
+  };
+  EmitterSubscription;
+
+  useEffect(() => {
+    let keyboardDidShowListener: EmitterSubscription;
+    let keyboardDidHideListener: EmitterSubscription;
+
+    const scrollToEnd = () => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100); // smooth scrolling
+    };
+
+    const keyboardDidShow = () => {
+      scrollToEnd();
+    };
+
+    const keyboardDidHide = () => {
+      scrollToEnd();
+    };
+
+    keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      keyboardDidShow
+    );
+    keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      keyboardDidHide
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -152,15 +215,22 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} // Adjust based on header height
         style={styles.chatContainer}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) =>
+            item.id || `${item.created_at}_${messages.indexOf(item)}`
+          }
           contentContainerStyle={styles.messageList}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
         />
+
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
