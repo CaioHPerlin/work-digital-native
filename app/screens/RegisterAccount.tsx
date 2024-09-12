@@ -180,7 +180,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const handleRoleSelect = (role: string) => {
     if (selectedRoles.includes(role)) {
       setSelectedRoles(selectedRoles.filter((r) => r !== role));
-    } else if (selectedRoles.length < 3) {
+    } else {
       setSelectedRoles([...selectedRoles, role]);
     }
   };
