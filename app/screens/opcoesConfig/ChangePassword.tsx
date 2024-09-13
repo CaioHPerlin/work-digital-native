@@ -6,9 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { TextInput } from "react-native-paper";
-import Layout from "@/app/components/Layout";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { supabase } from "../../../lib/supabase";
 
 type ChangePasswordProps = {
   navigation: any;
@@ -18,69 +20,130 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [oldPasswordVisible, setOldPasswordVisible] = useState<boolean>(false);
+  const [newPasswordVisible, setNewPasswordVisible] = useState<boolean>(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+    useState<boolean>(false);
 
   const handleCancel = () => {
     navigation.goBack();
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert("As senhas não coincidem");
+      Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
-    alert('Alterado com sucesso');
+
+    try {
+      // Update the user's password
+      const { user, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      Alert.alert("Sucesso", "Atualização de senha bem-sucedida.");
+      navigation.goBack();
+    } catch (error) {
+      if (newPassword == oldPassword) {
+        return Alert.alert("Erro", "Estas são a mesma senha.");
+      }
+      Alert.alert("Erro", "Verifique as credenciais digitadas.");
+    }
   };
 
   return (
     <>
       <View style={styles.container}>
         <ScrollView>
-          <Text style={styles.title}>Alterar Senha</Text>
-
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Senha Atual</Text>
-            <TextInput
-              label="Senha Atual"
-              value={oldPassword}
-              onChangeText={(text) => setOldPassword(text)}
-              secureTextEntry
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                label="Senha Atual"
+                value={oldPassword}
+                onChangeText={(text) => setOldPassword(text)}
+                secureTextEntry={!oldPasswordVisible}
+                style={styles.input}
+                underlineColor="transparent"
+                activeUnderlineColor="black"
+              />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => setOldPasswordVisible(!oldPasswordVisible)}
+              >
+                <Icon
+                  name={oldPasswordVisible ? "eye" : "eye-slash"}
+                  size={30}
+                  color="#000"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nova Senha</Text>
-            <TextInput
-              label="Nova Senha"
-              value={newPassword}
-              onChangeText={(text) => setNewPassword(text)}
-              secureTextEntry
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
+            <Text style={styles.label}>Senha Nova</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                label="Senha Nova"
+                value={newPassword}
+                onChangeText={(text) => setNewPassword(text)}
+                secureTextEntry={!newPasswordVisible}
+                style={styles.input}
+                underlineColor="transparent"
+                activeUnderlineColor="black"
+              />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() => setNewPasswordVisible(!newPasswordVisible)}
+              >
+                <Icon
+                  name={newPasswordVisible ? "eye" : "eye-slash"}
+                  size={30}
+                  color="#000"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirmar Nova Senha</Text>
-            <TextInput
-              label="Confirmar Nova Senha"
-              value={confirmPassword}
-              onChangeText={(text) => setConfirmPassword(text)}
-              secureTextEntry
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
+            <Text style={styles.label}>Confirme a Senha Nova</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                label="Confirme a Senha Nova"
+                value={confirmPassword}
+                onChangeText={(text) => setConfirmPassword(text)}
+                secureTextEntry={!confirmPasswordVisible}
+                style={styles.input}
+                underlineColor="transparent"
+                activeUnderlineColor="black"
+              />
+              <TouchableOpacity
+                style={styles.eyeIcon}
+                onPress={() =>
+                  setConfirmPasswordVisible(!confirmPasswordVisible)
+                }
+              >
+                <Icon
+                  name={confirmPasswordVisible ? "eye" : "eye-slash"}
+                  size={30}
+                  color="#000"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleCancel}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleChangePassword}
+            >
               <Text style={styles.buttonText}>Alterar Senha</Text>
             </TouchableOpacity>
           </View>
@@ -93,18 +156,10 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:"40%",
+    marginTop: 40,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-  },
-  title: {
-    color: "#2d47f0",
-    fontSize: 30,
-    marginBottom: 20,
-    textAlign: "center",
-    fontFamily: "TitanOne-Regular",
-    margin: 2,
   },
   inputGroup: {
     marginBottom: 10,
@@ -113,14 +168,24 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
-    fontWeight:"bold"
+    fontWeight: "bold",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
+    flex: 1,
     borderColor: "black",
     borderWidth: 1,
     marginBottom: 10,
     color: "#000000",
     borderRadius: 5,
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 10,
+    top: 10,
   },
   buttonContainer: {
     flexDirection: "row",

@@ -143,13 +143,14 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               />
               <Drawer.Screen
                 name="Alterar Cidade"
-                component={ChangeCity}
                 options={{
                   drawerIcon: ({ color, size }) => (
                     <Icon name="map-marker" color={color} size={size} />
                   ),
                 }}
-              />
+              >
+                {(props) => <ChangeCity {...props} userId={session.user.id} />}
+              </Drawer.Screen>
               <Drawer.Screen
                 name="Alterar Senha"
                 component={ChangePassword}

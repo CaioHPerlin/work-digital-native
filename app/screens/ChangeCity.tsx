@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
-import Layout from "@/app/components/Layout";
+import { supabase } from "../../lib/supabase";
 
 type ChangeCityProps = {
   navigation: any;
+  userId: string;
 };
 
 type Estado = {
@@ -27,9 +29,10 @@ type Cidade = {
   nome: string;
 };
 
-export default function ChangeCity({ navigation }: ChangeCityProps) {
+export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
   const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
   const [estados, setEstados] = useState<Estado[]>([]);
@@ -78,21 +81,82 @@ export default function ChangeCity({ navigation }: ChangeCityProps) {
     }
   }, [estado]);
 
+  useEffect(() => {
+    // Fetch user profile on component mount
+    const fetchUserProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles") // Adjust table name if needed
+          .select("*")
+          .eq("id", userId) // Replace with actual user ID
+          .single();
+
+        if (error) {
+          console.error("Error fetching user profile:", error);
+          return;
+        }
+
+        setUserProfile(data);
+        setEstado(data.state);
+        setCidade(data.city);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const updateUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles") // Adjust table name if needed
+        .update({
+          state: estado,
+          city: cidade,
+        })
+        .eq("id", userId); // Replace with actual user ID
+
+      if (error) {
+        console.error("Error updating user profile:", error);
+        Alert.alert(
+          "Erro",
+          "Ocorreu um erro ao tentar atualizar o perfil do usuário."
+        );
+        return;
+      }
+
+      Alert.alert("Sucesso", "Cidade e estado atualizados com sucesso.");
+      setUserProfile((prev: any) => ({
+        ...prev,
+        state: estado,
+        city: cidade,
+      }));
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      Alert.alert(
+        "Erro",
+        "Ocorreu um erro ao tentar atualizar o perfil do usuário."
+      );
+    }
+  };
+
   const handleCancel = () => {
     navigation.goBack();
   };
 
   const handleChangeCity = () => {
-    // Lógica para alterar a cidade
-    alert("Cidade alterada com sucesso");
+    if (estado && cidade) {
+      updateUserProfile();
+    } else {
+      Alert.alert("Error", "Please select both state and city.");
+    }
   };
-
   return (
     <>
       <View style={styles.container}>
         <ScrollView>
-          <Text style={styles.title}>Alterar Cidade</Text>
-
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
             {loadingEstados ? (
@@ -157,12 +221,11 @@ export default function ChangeCity({ navigation }: ChangeCityProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:"50%",
+    marginTop: 40,
     flex: 1,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-
   },
   title: {
     color: "#2d47f0",
@@ -179,7 +242,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   picker: {
     backgroundColor: "#fffefd",
