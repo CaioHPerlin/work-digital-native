@@ -174,6 +174,14 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     );
   };
 
+  const capitalize = (str: string) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   useEffect(() => {
     let keyboardDidShowListener: EmitterSubscription;
     let keyboardDidHideListener: EmitterSubscription;
@@ -210,7 +218,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>{targetUserName}</Text>
+        <Text style={styles.headerText}>{capitalize(targetUserName)}</Text>
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
