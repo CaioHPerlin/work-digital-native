@@ -1,25 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState, useEffect } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React, { useRef, useState, useEffect } from "react";
+import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
+import { HighlightImage } from "../types";
 
-const { width } = Dimensions.get('window');
-const carouselItem = require('../../assets/carousel.json');
+const { width } = Dimensions.get("window");
 const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
 
-interface CarouselItems {
-  title: string;
-  url: string;
-  promo: string;
+interface Props {
+  highlight: HighlightImage;
 }
 
-export default function Slider() {
-  let flatListRef = useRef<FlatList<CarouselItems> | null>();
+export default function Slider({ highlight }: Props) {
+  let flatListRef = useRef<FlatList<string[]> | null>();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const onViewRef = useRef(({ changed }: { changed: any }) => {
@@ -34,17 +26,17 @@ export default function Slider() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % carouselItem.length;
+      const nextIndex = (currentIndex + 1) % highlight.images.length;
       scrollToIndex(nextIndex);
     }, 3000); // Muda a imagem a cada 3 segundos
 
     return () => clearInterval(interval); // Limpa o intervalo quando o componente desmonta
   }, [currentIndex]);
 
-  const renderItems: React.FC<{ item: CarouselItems }> = ({ item }) => {
+  const renderItems: React.FC<{ item: string }> = ({ item }) => {
     return (
       <View>
-        <Image source={{ uri: item.url }} style={styles.image} />
+        <Image source={{ uri: item }} style={styles.image} />
       </View>
     );
   };
@@ -52,17 +44,17 @@ export default function Slider() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      
+
       {/* Barra de progresso na parte superior */}
       <View style={styles.progressBarContainer}>
-        {carouselItem.map((_, index: number) => (
+        {highlight.images.map((_, index: number) => (
           <View
             key={index.toString()}
             style={[
               styles.progressBar,
               {
-                width: `${100 / carouselItem.length}%`,
-                backgroundColor: index <= currentIndex ? 'black' : 'grey',
+                width: `${100 / highlight.images.length}%`,
+                backgroundColor: index <= currentIndex ? "black" : "grey",
               },
             ]}
           />
@@ -70,7 +62,7 @@ export default function Slider() {
       </View>
 
       <FlatList
-        data={carouselItem}
+        data={highlight.images}
         renderItem={renderItems}
         keyExtractor={(item, index) => index.toString()}
         horizontal
@@ -90,11 +82,11 @@ export default function Slider() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   progressBarContainer: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     top: 10,
     left: 0,
     right: 0,
@@ -102,14 +94,14 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   progressBar: {
-    height: '100%',
+    height: "100%",
   },
   carousel: {
-    marginTop: 0, 
+    marginTop: 0,
   },
   image: {
     width,
-    height: '100%',
-    resizeMode: 'cover',
+    height: "100%",
+    resizeMode: "cover",
   },
 });

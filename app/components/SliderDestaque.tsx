@@ -4,8 +4,16 @@ import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
 import { Avatar } from "react-native-paper";
 import Layout from "./Layout";
 import ImageWithFallback from "./ImageWithFallback";
+import {
+  CustomStackNavigationProp,
+  FlattenedProfile,
+  HighlightImage,
+} from "../types";
+import { useNavigation } from "@react-navigation/native";
 
 interface SliderDestaqueProps {
+  startConversation: () => void;
+  highlight: HighlightImage;
   isPickerVisible: boolean;
   setPickerVisible: (visible: boolean) => void;
   index: number;
@@ -13,6 +21,8 @@ interface SliderDestaqueProps {
 }
 
 const SliderDestaque: React.FC<SliderDestaqueProps> = ({
+  startConversation,
+  highlight,
   isPickerVisible,
   setPickerVisible,
   index,
@@ -22,8 +32,11 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
     <>
       <View style={styles.avatarContainer}>
         <TouchableOpacity onPress={() => setPickerVisible(true)}>
-          <View>
-            <ImageWithFallback imageUrl={""} />
+          <View style={styles.avatarContainer}>
+            <ImageWithFallback
+              style={styles.borderAvatar}
+              imageUrl={highlight.images[0]}
+            />
           </View>
           <Text style={styles.txtDestak}>Meus Serviços</Text>
         </TouchableOpacity>
@@ -37,7 +50,10 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Slider onLastItemVisible={onLastItemVisible} />
+              <Slider
+                highlight={highlight}
+                onLastItemVisible={onLastItemVisible}
+              />
 
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -48,7 +64,10 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => setPickerVisible(false)}
+                  onPress={() => {
+                    setPickerVisible(false);
+                    startConversation();
+                  }}
                   style={styles.modalButtonChat}
                 >
                   <Text style={styles.buttonText}>Chat</Text>
@@ -116,13 +135,18 @@ const styles = StyleSheet.create({
   borderAvatar: {
     borderWidth: 2,
     padding: 5,
-
+    width: 80,
+    height: 80,
     borderColor: "#f27e26",
     alignItems: "center",
     borderRadius: 50,
   },
   txtDestak: {
+    position: "absolute",
     color: "#fff",
+    bottom: -10,
+    right: 10,
+    textAlign: "center",
   },
 });
 

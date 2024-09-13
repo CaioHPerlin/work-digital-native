@@ -103,59 +103,59 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           .from("profiles")
           .select(
             `
-            id,
-            email,
-            name,
-            state,
-            city,
-            freelancers:freelancers!inner(
-              cpf,
-              phone_number,
-              birthdate,
-              profile_picture_url,
-              roles,
-              description
-            ),
-            highlights:highlights!inner(
-              role,
-              images
-            )
-          `
+              id,
+              email,
+              name,
+              state,
+              city,
+              freelancers:freelancers!inner(
+                cpf,
+                phone_number,
+                birthdate,
+                profile_picture_url,
+                roles,
+                description
+              ),
+              highlights:highlights!left(
+                role,
+                images
+              )
+            `
           )
           .eq("id", userId);
 
         if (error) {
-          console.error("Error fetching data:", error.message);
-          return;
+          throw new Error(error.message);
         }
 
         const profileData = data[0];
+
         if (!profileData) {
+          Alert.alert(
+            "Ocorreu um erro",
+            "Falha ao encontrar registro do usuário. Tente novamente mais tarde"
+          );
           return;
         }
 
         const { freelancers, highlights, ...rest } = profileData;
+
         if (!freelancers) {
+          Alert.alert(
+            "Ocorreu um erro",
+            "Não foi possível encontrar informações do freelancer."
+          );
           return;
         }
 
-        const flattenedData: any = {
+        const flattenedData = {
           ...rest,
           ...freelancers,
-          highlights,
+          highlights: highlights || [], // Ensure highlights is always an array
         };
 
         // Set the profile and freelancer data
         setFreelancer(flattenedData);
-
-        if (!flattenedData) {
-          Alert.alert(
-            "Ocorreu um erro",
-            "O servidor falhou em responder com os dados do usuário. Tente novamente mais tarde."
-          );
-          console.error(flattenedData);
-          return;
-        }
 
         // Set form values
         setValue("name", flattenedData.name);
@@ -167,7 +167,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         setImageUri(flattenedData.profile_picture_url);
 
         // Set highlights data
-        setHighlightImages(flattenedData.highlights || []);
+        setHighlightImages(flattenedData.highlights);
       } catch (error) {
         console.error("Error fetching data:", error);
         Alert.alert(
@@ -178,7 +178,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     };
 
     fetchData();
-  }, [userId, setValue]);
+  }, [userId, setValue, setFreelancer, setImageUri, setHighlightImages]);
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);

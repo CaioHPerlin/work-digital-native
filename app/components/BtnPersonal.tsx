@@ -10,7 +10,11 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 import { Icon } from "react-native-paper";
-import { CustomStackNavigationProp, FlattenedProfile } from "../types";
+import {
+  CustomStackNavigationProp,
+  FlattenedProfile,
+  HighlightImage,
+} from "../types";
 import { supabase } from "../../lib/supabase";
 import SliderDestaque from "./SliderDestaque";
 
@@ -21,6 +25,7 @@ interface Props {
 const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
   const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [highlight, setHighlight] = useState<HighlightImage>();
   const { phone_number } = freelancer;
   const navigation = useNavigation<CustomStackNavigationProp>();
 
@@ -32,6 +37,40 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
 
     fetchUserId();
   }, []);
+
+  useEffect(() => {
+    const fetchHighlight = async () => {
+      if (!freelancer || !freelancer.roles || freelancer.roles.length === 0) {
+        return; // No roles available to fetch highlights
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("highlights")
+          .select("*")
+          .eq("user_id", freelancer.id)
+          .eq("role", freelancer.roles[0]);
+
+        if (error) {
+          console.error("Error fetching highlights:", error.message);
+          Alert.alert("Erro ao buscar destaques");
+          return;
+        }
+
+        console.log(data);
+
+        if (data) {
+          setHighlight(data[0]);
+        }
+      } catch (error) {
+        console.error(
+          "Error in fetching highlights:",
+          (error as Error).message
+        );
+      }
+    };
+    fetchHighlight();
+  }, [freelancer]);
 
   const handleWhatsAppPress = () => {
     const formattedNumber = phone_number.replace(/\D/g, ""); // Removes non-numeric characters
@@ -113,20 +152,20 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
       >
         <Icon source="whatsapp" color={"white"} size={57} />
       </TouchableOpacity>
-
-      <View>
-        {[0].map((index) => (
+      {highlight && highlight.images.length > 0 && (
+        <View>
           <SliderDestaque
             // sei a role e o freelancer, só puxar dos dados aqui.
-            key={index}
-            isPickerVisible={currentHighlightIndex === index && isPickerVisible}
+            startConversation={handleStartConversation}
+            highlight={highlight}
+            key={0}
+            isPickerVisible={currentHighlightIndex === 0 && isPickerVisible}
             setPickerVisible={setPickerVisible}
-            index={index}
+            index={0}
             //onLastItemVisible={handleLastItemVisible}
           />
-        ))}
-      </View>
-
+        </View>
+      )}
       <TouchableOpacity
         style={styles.button}
         // disabled={loading}

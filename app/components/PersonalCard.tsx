@@ -20,7 +20,6 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
 
         <View style={styles.text}>
           <Text style={styles.dados}>{freelancer.name}</Text>
-          {/* Retirei o map para ficar apenas uma role para fazer o design da tela, porem deve ser atualizado para a role selecionada pois ele quer que mostre apenas o cargo selecioado   */}
           <Text style={styles.subDados}>{freelancer.roles}</Text>
 
           <Text style={styles.subDados}>{freelancer.phone_number}</Text>
