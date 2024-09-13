@@ -29,6 +29,7 @@ import { CustomStackNavigationProp } from "../types";
 import ChatScreen from "../screens/ChatScreen";
 import { supabase } from "../../lib/supabase";
 import { Alert } from "react-native";
+import FreelancerProfile from "../screens/FreelancerProfile";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -171,13 +172,16 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               ) : (
                 <Drawer.Screen
                   name="Meu Perfil de Prestador"
-                  component={HomeScreen}
                   options={{
                     drawerIcon: ({ color, size }) => (
                       <Icon name="briefcase" color={color} size={size} />
                     ),
                   }}
-                />
+                >
+                  {(props) => (
+                    <FreelancerProfile {...props} userId={session.user.id} />
+                  )}
+                </Drawer.Screen>
               )}
             </Drawer.Navigator>
           )}

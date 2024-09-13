@@ -114,9 +114,10 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         <Icon source="whatsapp" color={"white"} size={57} />
       </TouchableOpacity>
 
-      <View >
+      <View>
         {[0].map((index) => (
           <SliderDestaque
+            // sei a role e o freelancer, só puxar dos dados aqui.
             key={index}
             isPickerVisible={currentHighlightIndex === index && isPickerVisible}
             setPickerVisible={setPickerVisible}
@@ -131,9 +132,9 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         // disabled={loading}
         onPress={handleStartConversation}
       >
-        <Text >
+        <Text>
           {loading ? (
-            "Aguarde..."
+            <Icon source="dots-horizontal" color={"white"} size={48} />
           ) : (
             <Icon source="chat" color={"white"} size={48} />
           )}
@@ -147,22 +148,21 @@ export default BtnPersonal;
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor:"#2d47f0",
+    backgroundColor: "#2d47f0",
     borderWidth: 1,
     borderColor: "#f27e26",
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal:5,
-    
+    paddingHorizontal: 5,
+    paddingVertical: 5,
   },
   button: {
     backgroundColor: "#2d47f0",
     borderRadius: 50,
-    padding:10,
+    padding: 10,
     alignItems: "center",
     justifyContent: "center",
-
     borderWidth: 2,
     borderColor: "#f27e26",
   },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#25D366",
     flexDirection: "row",
     borderRadius: 50,
-    padding:10,
+    padding: 10,
     justifyContent: "center",
     alignItems: "center",
   },

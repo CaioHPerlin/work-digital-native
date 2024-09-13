@@ -41,13 +41,13 @@ export type Profile = {
   name: string;
   state: string;
   city: string;
-  freelancers: Freelancer; // Freelancer is an object, not an array
 };
 
 export type FlattenedProfile = Profile & {
   cpf: any;
   phone_number: any;
   birthdate: any;
+  description: any;
   profile_picture_url: any | null;
   roles: any[];
 };

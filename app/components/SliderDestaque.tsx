@@ -3,6 +3,7 @@ import Slider from "./Slider";
 import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
 import { Avatar } from "react-native-paper";
 import Layout from "./Layout";
+import ImageWithFallback from "./ImageWithFallback";
 
 interface SliderDestaqueProps {
   isPickerVisible: boolean;
@@ -21,13 +22,10 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
     <>
       <View style={styles.avatarContainer}>
         <TouchableOpacity onPress={() => setPickerVisible(true)}>
-          <View style={styles.borderAvatar}>
-            <Avatar.Image
-              size={60}
-              source={require("../../assets/images/user.jpg")}
-            />
+          <View>
+            <ImageWithFallback imageUrl={""} />
           </View>
-          <Text style={styles.txtDestak}>Destaque {index + 1}</Text>
+          <Text style={styles.txtDestak}>Meus Serviços</Text>
         </TouchableOpacity>
       </View>
 
@@ -117,16 +115,15 @@ const styles = StyleSheet.create({
   },
   borderAvatar: {
     borderWidth: 2,
-    padding:5,
-    
+    padding: 5,
+
     borderColor: "#f27e26",
     alignItems: "center",
     borderRadius: 50,
-    
   },
-  txtDestak:{
-color:"#fff"
-  }
+  txtDestak: {
+    color: "#fff",
+  },
 });
 
 export default SliderDestaque;

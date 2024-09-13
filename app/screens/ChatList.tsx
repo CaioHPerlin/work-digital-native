@@ -12,6 +12,7 @@ import {
 import { Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
+import ImageWithFallback from "../components/ImageWithFallback";
 
 const ChatList: React.FC = () => {
   const [userId, setUserId] = useState("");
@@ -78,8 +79,10 @@ const ChatList: React.FC = () => {
         }
         style={styles.itemContainer}
       >
-        <Image
-          source={require("../../assets/images/user.jpg")}
+        <ImageWithFallback
+          imageUrl={`https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${
+            userId === item.user_2_id ? item.user_1.id : item.user_2.id
+          }.jpg`}
           style={styles.image}
         />
         <View style={styles.textContainer}>

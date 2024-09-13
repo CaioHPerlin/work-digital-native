@@ -9,18 +9,23 @@ import {
   SafeAreaView,
 } from "react-native";
 import { FlattenedProfile, Freelancer } from "../types";
+import ImageWithFallback from "./ImageWithFallback";
 
 interface ListFreelancerProps {
   data: FlattenedProfile[];
   navigation: any;
+  selectedRole?: string;
 }
 
 const ListFreelancer: React.FC<ListFreelancerProps> = ({
   data,
   navigation,
+  selectedRole,
 }) => {
   const navigateToDetails = (freelancer: FlattenedProfile) => {
-    navigation.navigate("FreelancerDetails", { freelancer });
+    navigation.navigate("FreelancerDetails", {
+      freelancer: { ...freelancer, roles: [selectedRole] },
+    });
   };
 
   useEffect(() => {
@@ -42,19 +47,18 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
               onPress={() => navigateToDetails(item)}
               style={styles.itemContainer}
             >
-              <Image
-                source={
-                  item.profile_picture_url
-                    ? {
-                        uri: item.profile_picture_url,
-                      }
-                    : require("../../assets/images/user.jpg")
-                }
+              <ImageWithFallback
+                imageUrl={item.profile_picture_url}
                 style={styles.image}
               />
               <View style={styles.textContainer}>
-                <Text style={styles.nameText}>{item.name}</Text>
-                <Text style={styles.roleText}>{item.email}</Text>
+                <Text style={styles.nameText}>
+                  {item.name
+                    .toLowerCase()
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </Text>
               </View>
             </TouchableOpacity>
           )}

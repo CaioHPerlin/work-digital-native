@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { Icon, MD3Colors } from "react-native-paper";
 import { FlattenedProfile } from "../types";
 import Description from "./Description";
+import ImageWithFallback from "./ImageWithFallback";
 
 interface Props {
   freelancer: FlattenedProfile;
@@ -12,28 +13,20 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
   return (
     <>
       <View style={styles.container}>
-        <Image
-          source={
-            freelancer.profile_picture_url
-              ? {
-                  uri: freelancer.profile_picture_url,
-                }
-              : require("../../assets/images/user.jpg")
-          }
+        <ImageWithFallback
+          imageUrl={freelancer.profile_picture_url}
           style={styles.image}
         />
 
         <View style={styles.text}>
           <Text style={styles.dados}>{freelancer.name}</Text>
-        {/* Retirei o map para ficar apenas uma role para fazer o design da tela, porem deve ser atualizado para a role selecionada pois ele quer que mostre apenas o cargo selecioado   */}
-            <Text style={styles.subDados} >
-              {freelancer.roles[0]}
-            </Text>
-         
+          {/* Retirei o map para ficar apenas uma role para fazer o design da tela, porem deve ser atualizado para a role selecionada pois ele quer que mostre apenas o cargo selecioado   */}
+          <Text style={styles.subDados}>{freelancer.roles}</Text>
+
           <Text style={styles.subDados}>{freelancer.phone_number}</Text>
         </View>
         {/* <View>
-          <Text style={styles.titleRedes}>Minhas Redes </Text>
+        <Text style={styles.titleRedes}>Minhas Redes </Text>
           <View style={styles.icons}>
             <Icon source="whatsapp" color={"green"} size={40} />
             <Icon source="instagram" color={"#E1306C"} size={40} />
@@ -41,7 +34,6 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
           </View>
         </View> */}
       </View>
-
     </>
   );
 };
@@ -64,12 +56,10 @@ const styles = StyleSheet.create({
     borderRadius: 70,
   },
   dados: {
-    paddingRight:120,
-
+    paddingRight: 120,
     fontSize: 24,
-    color: "black",
     fontWeight: "bold",
-    color:"#fff"
+    color: "#fff",
   },
 
   subDados: {

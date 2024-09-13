@@ -13,6 +13,10 @@ interface Props {
 
 const Description: React.FC<Props> = ({ freelancer }) => {
   const { description } = freelancer;
+  if (!description || description === "") {
+    return <View style={{ marginBottom: 50 }}></View>;
+  }
+
   return (
     <View>
       <Text style={styles.text}>Sobre </Text>
@@ -28,7 +32,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "black",
     margin: 10,
-    color:"#f27e26", 
+    color: "#f27e26",
     fontWeight: "bold",
   },
 
@@ -36,7 +40,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     marginHorizontal: 10,
-    marginBottom:10,
+    marginBottom: 10,
     textAlign: "justify",
   },
 });

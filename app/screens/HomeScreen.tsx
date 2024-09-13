@@ -222,7 +222,11 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={{ textAlign: "center", color: "red" }}>{apiError}</Text>
         ) : freelancers.length > 0 ? (
           <Animatable.View animation="fadeInUp">
-            <ListFreelancer data={freelancers} navigation={navigation} />
+            <ListFreelancer
+              data={freelancers}
+              navigation={navigation}
+              selectedRole={selectedValue}
+            />
           </Animatable.View>
         ) : (
           <View style={styles.noSelectionContainer}>
