@@ -61,3 +61,9 @@ export type Conversation = {
   user_1?: any;
   user_2?: any;
 };
+
+export type HighlightImage = {
+  user_id?: string;
+  role: string;
+  images: string[]; // or string[] if storing URLs
+};

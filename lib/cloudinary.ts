@@ -46,13 +46,15 @@ export const uploadImage = async (imageUri: string, id: string) => {
 
     const result = await response.json();
     if (response.ok) {
-      console.log(result);
+      return { secure_url: result.secure_url };
     } else {
       console.error(result);
+      return { secure_url: "" };
     }
   } catch (error) {
-    console.error(error);
+    console.error("Upload image error:", error);
     Alert.alert("Erro no upload da imagem.");
+    return { secure_url: "" };
   }
 };
 

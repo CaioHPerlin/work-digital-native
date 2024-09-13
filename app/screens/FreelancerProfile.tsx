@@ -14,7 +14,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { supabase } from "../../lib/supabase";
-import { FlattenedProfile } from "../types"; // Adjust the path as needed
+import { FlattenedProfile, HighlightImage } from "../types"; // Adjust the path as needed
 import * as ImagePicker from "expo-image-picker";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -57,6 +57,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
 
+  const [highlightImages, setHighlightImages] = useState<HighlightImage[]>([]);
+
   const {
     control,
     handleSubmit,
@@ -95,66 +97,84 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     const fetchData = async () => {
       if (!userId) return;
 
-      // Fetch profile data
-      const { data, error } = await supabase
-        .from("profiles")
-        .select(
+      try {
+        // Fetch profile and highlights data
+        const { data, error } = await supabase
+          .from("profiles")
+          .select(
+            `
+            id,
+            email,
+            name,
+            state,
+            city,
+            freelancers:freelancers!inner(
+              cpf,
+              phone_number,
+              birthdate,
+              profile_picture_url,
+              roles,
+              description
+            ),
+            highlights:highlights!inner(
+              role,
+              images
+            )
           `
-          id,
-          email,
-          name,
-          state,
-          city,
-          freelancers:freelancers!inner(
-            cpf,
-            phone_number,
-            birthdate,
-            profile_picture_url,
-            roles,
-            description
           )
-      `
-        )
-        .filter("id", "eq", userId);
+          .eq("id", userId);
 
-      if (error) {
-        console.log(error.message);
-        return;
-      }
+        if (error) {
+          console.error("Error fetching data:", error.message);
+          return;
+        }
 
-      const profileData = data[0];
-      if (!profileData) {
-        return;
-      }
+        const profileData = data[0];
+        if (!profileData) {
+          return;
+        }
 
-      const { freelancers, ...rest } = profileData;
-      if (!freelancers) {
-        return;
-      }
+        const { freelancers, highlights, ...rest } = profileData;
+        if (!freelancers) {
+          return;
+        }
 
-      const flattenedData: any = {
-        ...rest,
-        ...freelancers,
-      };
+        const flattenedData: any = {
+          ...rest,
+          ...freelancers,
+          highlights,
+        };
 
-      // Set the profile and freelancer data
-      setFreelancer(flattenedData);
+        // Set the profile and freelancer data
+        setFreelancer(flattenedData);
 
-      if (!flattenedData) {
+        if (!flattenedData) {
+          Alert.alert(
+            "Ocorreu um erro",
+            "O servidor falhou em responder com os dados do usuário. Tente novamente mais tarde."
+          );
+          console.error(flattenedData);
+          return;
+        }
+
+        // Set form values
+        setValue("name", flattenedData.name);
+        setValue("description", flattenedData.description || undefined);
+        setValue("phoneNumber", flattenedData.phone_number);
+        setValue("profilePhoto", flattenedData.profile_picture_url);
+        setValue("roles", flattenedData.roles || []);
+        setSelectedRoles(flattenedData.roles);
+        setImageUri(flattenedData.profile_picture_url);
+
+        // Set highlights data
+        setHighlightImages(flattenedData.highlights || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
         Alert.alert(
-          "Ocorreu um erro",
-          "O servidor falhou em responder com os dados do usuário. Tente novamente mais tarde."
+          "Erro ao buscar dados",
+          "Não foi possível buscar os dados do usuário."
         );
-        console.error(flattenedData);
-        return;
       }
-      setValue("name", flattenedData.name);
-      setValue("description", flattenedData.description || undefined);
-      setValue("phoneNumber", flattenedData.phone_number);
-      setValue("profilePhoto", flattenedData.profile_picture_url);
-      setValue("roles", flattenedData.roles || []);
-      setSelectedRoles(flattenedData.roles);
-      setImageUri(flattenedData.profile_picture_url);
     };
 
     fetchData();
@@ -163,6 +183,54 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
+
+  const handleHighlightUpload = async (role: string) => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [9, 16],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      setHighlightImages((prev) => {
+        // Find the index of the role in the current state
+        const index = prev.findIndex((item) => item.role === role);
+
+        // Update or add the role's image list
+        if (index !== -1) {
+          // Role exists, update the existing entry
+          const updatedHighlightImages = [...prev];
+          updatedHighlightImages[index] = {
+            ...updatedHighlightImages[index],
+            images: [
+              ...updatedHighlightImages[index].images,
+              result.assets[0].uri,
+            ],
+          };
+          return updatedHighlightImages;
+        } else {
+          // Role does not exist, add a new entry
+          return [...prev, { role, images: [result.assets[0].uri] }];
+        }
+      });
+    }
+  };
+
+  const handleHighlightRemove = (role: string, index: number) => {
+    setHighlightImages((prev) => {
+      const updatedHighlightImages = prev.map((item) => {
+        if (item.role === role) {
+          return {
+            ...item,
+            images: item.images.filter((_, imgIndex) => imgIndex !== index),
+          };
+        }
+        return item;
+      });
+      return updatedHighlightImages;
+    });
+  };
 
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -180,6 +248,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   const handleUpdateProfile = async (data: any) => {
     setLoading(true);
+    console.log(highlightImages);
 
     try {
       console.log(data.profilePhoto);
@@ -212,6 +281,36 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         .eq("user_id", userId);
 
       if (freelancerError) throw freelancerError;
+
+      // Prepare highlights for upsert
+      const highlightsToUpsert = await Promise.all(
+        highlightImages.map(async (highlight) => {
+          const uploadedImages: string[] = await Promise.all(
+            highlight.images.map(async (uri, index) => {
+              const result = await uploadImage(
+                uri,
+                `highlights/${userId}_${Date.now()}_${index}`
+              );
+              return result?.secure_url; // Adjust this if necessary
+            })
+          );
+
+          return {
+            user_id: userId,
+            role: highlight.role,
+            images: uploadedImages,
+          };
+        })
+      );
+
+      // Upsert highlights
+      const { error: highlightError } = await supabase
+        .from("highlights")
+        .upsert(highlightsToUpsert, {
+          onConflict: ["user_id", "role"], // Specify conflict columns
+        });
+
+      if (highlightError) throw highlightError;
 
       Alert.alert("Perfil atualizado com sucesso!");
     } catch (error) {
@@ -294,6 +393,47 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
         <Text style={styles.uploadButtonText}>Alterar Foto de Perfil</Text>
       </TouchableOpacity>
+
+      <Controller
+        control={control}
+        name="name"
+        render={({ field: { onChange, value } }) => (
+          <InputField
+            label="Nome Completo"
+            value={value}
+            onChangeText={onChange}
+            errorMessage={errors.name?.message as string}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="description"
+        render={({ field: { onChange, value } }) => (
+          <InputField
+            label="Descrição"
+            value={value}
+            onChangeText={onChange}
+            errorMessage={errors.description?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="phoneNumber"
+        render={({ field: { onChange, value } }) => (
+          <InputField
+            label="Número de Telefone"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="phone-pad"
+            errorMessage={errors.phoneNumber?.message as string}
+          />
+        )}
+      />
+
       <>
         <SafeAreaView style={{ marginBottom: 20 }}>
           <FlatList
@@ -339,45 +479,44 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         {roleModal}
       </>
 
-      <Controller
-        control={control}
-        name="name"
-        render={({ field: { onChange, value } }) => (
-          <InputField
-            label="Nome Completo"
-            value={value}
-            onChangeText={onChange}
-            errorMessage={errors.name?.message as string}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="description"
-        render={({ field: { onChange, value } }) => (
-          <InputField
-            label="Descrição"
-            value={value}
-            onChangeText={onChange}
-            errorMessage={errors.description?.message}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="phoneNumber"
-        render={({ field: { onChange, value } }) => (
-          <InputField
-            label="Número de Telefone"
-            value={value}
-            onChangeText={onChange}
-            keyboardType="phone-pad"
-            errorMessage={errors.phoneNumber?.message as string}
-          />
-        )}
-      />
+      <Text style={styles.title}>Adicionar Destaques</Text>
+      {selectedRoles.map((role) => (
+        <View key={role} style={styles.roleContainerX}>
+          <TouchableOpacity
+            onPress={() => handleHighlightUpload(role)}
+            style={{
+              flexDirection: "row",
+              gap: 10,
+              alignItems: "center",
+            }}
+          >
+            <Icon
+              name="plus"
+              size={20}
+              color="#FFF"
+              style={{
+                padding: 10,
+                backgroundColor: "#6200ee",
+                maxWidth: 45,
+                borderRadius: 10,
+              }}
+            />
+            <Text style={styles.roleTitle}>{role}</Text>
+          </TouchableOpacity>
+          <ScrollView horizontal style={styles.imageScrollView}>
+            {highlightImages
+              .find((item) => item.role === role)
+              ?.images.map((uri, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleHighlightRemove(role, index)}
+                >
+                  <Image source={{ uri }} style={styles.image} />
+                </TouchableOpacity>
+              ))}
+          </ScrollView>
+        </View>
+      ))}
 
       <TouchableOpacity
         style={styles.submitButton}
@@ -498,6 +637,22 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginBottom: 10,
+  },
+  roleContainerX: {
+    marginBottom: 20,
+  },
+  roleTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  imageScrollView: {
+    flexDirection: "row",
+    marginTop: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginRight: 10,
   },
 });
 
