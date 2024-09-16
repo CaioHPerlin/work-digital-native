@@ -55,6 +55,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   const [freelancer, setFreelancer] = useState<FlattenedProfile>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [initLoading, setInitLoading] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const [highlightImages, setHighlightImages] = useState<HighlightImage[]>([]);
@@ -97,6 +98,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     const fetchData = async () => {
       if (!userId) return;
 
+      setInitLoading(true);
       try {
         // Fetch profile and highlights data
         const { data, error } = await supabase
@@ -174,6 +176,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           "Erro ao buscar dados",
           "Não foi possível buscar os dados do usuário."
         );
+      } finally {
+        await setTimeout(() => setInitLoading(false), 300);
       }
     };
 
@@ -247,7 +251,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   };
 
   const handleUpdateProfile = async (data: any) => {
-    setLoading(true);
+    setInitLoading(true);
     console.log(highlightImages);
 
     try {
@@ -317,9 +321,23 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       console.error(error);
       Alert.alert("Erro ao atualizar perfil", (error as Error).message);
     } finally {
-      setLoading(false);
+      setInitLoading(false);
     }
   };
+
+  if (initLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          style={styles.loadingText}
+        >
+          Carregando...
+        </Animatable.Text>
+      </View>
+    );
+  }
 
   const roleModal = (
     <Modal
@@ -388,7 +406,11 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <ImageWithFallback imageUrl={imageUri} style={styles.profileImage} />
+      <ImageWithFallback
+        cache={false}
+        imageUrl={imageUri}
+        style={styles.profileImage}
+      />
 
       <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
         <Text style={styles.uploadButtonText}>Alterar Foto de Perfil</Text>
@@ -532,6 +554,12 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 const styles = StyleSheet.create({
+  centerContainer: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -653,6 +681,10 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     marginRight: 10,
+  },
+  loadingText: {
+    fontSize: 34,
+    color: "#feb96f",
   },
 });
 

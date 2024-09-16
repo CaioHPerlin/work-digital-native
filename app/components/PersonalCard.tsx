@@ -14,6 +14,7 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
     <>
       <View style={styles.container}>
         <ImageWithFallback
+          cache={false}
           imageUrl={freelancer.profile_picture_url}
           style={styles.image}
         />

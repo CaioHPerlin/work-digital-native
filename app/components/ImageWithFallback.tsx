@@ -4,9 +4,10 @@ import { Image, StyleProp, ImageStyle } from "react-native";
 interface Props {
   imageUrl: string | null; // Allow imageUrl to be null
   style?: StyleProp<ImageStyle>;
+  cache?: boolean;
 }
 
-const ImageWithFallback: React.FC<Props> = ({ imageUrl, style }) => {
+const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
   const [imageSource, setImageSource] = useState(
     require("../../assets/images/user.jpg")
   );
@@ -16,7 +17,11 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style }) => {
       try {
         const response = await fetch(url, { method: "HEAD" }); // check URL validity
         if (response.ok) {
-          setImageSource({ uri: url });
+          let imageUri = url;
+          if (cache !== undefined && cache === false) {
+            imageUri += `?random=${Date.now()}`;
+          }
+          setImageSource({ uri: imageUri });
         }
       } catch (error) {
         setImageSource(require("../../assets/images/user.jpg"));

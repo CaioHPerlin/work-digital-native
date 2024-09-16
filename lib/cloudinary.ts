@@ -1,15 +1,23 @@
-import { Cloudinary } from "@cloudinary/url-gen";
-
-export const cld = new Cloudinary({
-  cloud: {
-    cloudName: process.env.EXPO_PUBLIC_CLOUD_NAME,
-    apiKey: process.env.EXPO_PUBLIC_CLOUD_API_KEY,
-    apiSecret: process.env.EXPO_PUBLIC_CLOUD_API_SECRET,
-  },
-});
-
 import { Alert } from "react-native";
 import { supabase } from "./supabase";
+import {
+  FunctionsFetchError,
+  FunctionsHttpError,
+  FunctionsRelayError,
+} from "@supabase/supabase-js";
+import * as FileSystem from "expo-file-system";
+
+const uriToBase64 = async (uri: string): Promise<string> => {
+  try {
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    return `data:image/jpeg;base64,${base64}`;
+  } catch (error) {
+    console.error("Error reading file:", error);
+    throw new Error("Failed to convert image to base64");
+  }
+};
 
 export const uploadImage = async (imageUri: string, id: string) => {
   if (!imageUri) {
@@ -18,36 +26,48 @@ export const uploadImage = async (imageUri: string, id: string) => {
   }
 
   try {
+    let uploadUri = imageUri;
+    if (imageUri.startsWith("file://")) {
+      uploadUri = await uriToBase64(imageUri);
+    }
     // Prepare form data
     const formData = new FormData();
-    formData.append("file", {
-      uri: imageUri,
-      type: "image/jpeg", // Adjust if necessary
-      name: "image.jpg", // Adjust if necessary
-    } as any);
+
+    formData.append("file", uploadUri);
     formData.append("id", id); // Optional: you can pass the ID if you want to customize the public_id on the server
 
     // Perform the upload
-    const { data, error } = await supabase.functions.invoke("upload-image", {
+    const { data, error } = await supabase.functions.invoke("image-upload", {
       method: "POST",
       body: formData,
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
     });
 
+    console.log(imageUri);
+
     if (error) {
-      console.error("Upload failed:", error);
-      throw new Error(`Upload failed: ${error}`);
+      if (error instanceof FunctionsHttpError) {
+        const errorMessage = error.message;
+        console.error("Function returned an HTTP error:", errorMessage);
+        console.error(error.name);
+      } else if (error instanceof FunctionsRelayError) {
+        console.error("Relay error:", error.message);
+      } else if (error instanceof FunctionsFetchError) {
+        console.error("Fetch error:", error.message);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      throw error; // Rethrow to handle it in the catch block
     }
 
-    const result = await data.json();
-    return { secure_url: result.secure_url };
+    // Ensure data is defined before attempting to parse it
+    if (!data) {
+      throw new Error("No data returned from the function.");
+    }
+
+    return { secure_url: data.secure_url };
   } catch (error) {
     console.error("Upload image error:", error);
     Alert.alert("Erro no upload da imagem.", (error as Error).message);
     return { secure_url: "" };
   }
 };
-
-// https://res.cloudinary.com/dwngturuh/image/upload/profile-pictures/1.jpg

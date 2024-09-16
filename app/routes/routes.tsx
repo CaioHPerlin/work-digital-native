@@ -132,15 +132,17 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                   ),
                 }}
               />
-              <Drawer.Screen
-                name="Dados Pessoais"
-                component={DadosPessoais}
-                options={{
-                  drawerIcon: ({ color, size }) => (
-                    <Icon name="user" color={color} size={size} />
-                  ),
-                }}
-              />
+              {!isFreelancer && (
+                <Drawer.Screen
+                  name="Dados Pessoais"
+                  component={DadosPessoais}
+                  options={{
+                    drawerIcon: ({ color, size }) => (
+                      <Icon name="user" color={color} size={size} />
+                    ),
+                  }}
+                />
+              )}
               <Drawer.Screen
                 name="Alterar Cidade"
                 options={{

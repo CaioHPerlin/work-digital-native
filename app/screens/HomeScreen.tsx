@@ -28,6 +28,8 @@ interface Props {
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [userId, setUserId] = useState<string>("");
+  const [userCity, setUserCity] = useState<string>("");
+  const [userState, setUserState] = useState<string>("");
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
   const [freelancers, setFreelancers] = useState<FlattenedProfile[]>([]);
@@ -46,9 +48,22 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [loaded, error]);
 
   const fetchId = async () => {
-    const { data } = await supabase.auth.getUser();
-    if (data.user) {
-      setUserId(data.user.id);
+    const { data: authData } = await supabase.auth.getUser();
+    if (authData.user) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", authData.user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        return;
+      }
+
+      setUserId(authData.user.id);
+      setUserState(data.state);
+      setUserCity(data.city);
     }
   };
 
@@ -82,7 +97,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       `
       )
       .filter("id", "neq", userId)
-      .filter("freelancers.roles", "cs", `{${role}}`); // Use 'cs' for contains
+      .filter("freelancers.roles", "cs", `{${role}}`) // Use 'cs' for contains
+      .filter("state", "eq", userState)
+      .filter("city", "eq", userCity);
 
     if (error) {
       setApiError("Erro ao buscar prestadores. Tente novamente.");
