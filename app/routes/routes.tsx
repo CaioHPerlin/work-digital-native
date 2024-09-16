@@ -155,13 +155,16 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               </Drawer.Screen>
               <Drawer.Screen
                 name="Alterar Senha"
-                component={ChangePassword}
                 options={{
                   drawerIcon: ({ color, size }) => (
                     <Icon name="lock" color={color} size={size} />
                   ),
                 }}
-              />
+              >
+                {(props) => (
+                  <ChangePassword {...props} userId={session.user.id} />
+                )}
+              </Drawer.Screen>
               {!isFreelancer ? (
                 <Drawer.Screen
                   name="Prestar Serviços"

@@ -14,9 +14,11 @@ import { supabase } from "../../../lib/supabase";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 
 type ChangePasswordProps = {
   navigation: any;
+  userId: string;
 };
 
 const passwordSchema = z
@@ -34,15 +36,20 @@ const passwordSchema = z
     path: ["confirmPassword"],
   });
 
-export default function ChangePassword({ navigation }: ChangePasswordProps) {
+export default function ChangePassword({
+  navigation,
+  userId,
+}: ChangePasswordProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(passwordSchema),
   });
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [oldPasswordVisible, setOldPasswordVisible] = useState<boolean>(false);
   const [newPasswordVisible, setNewPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] =
@@ -53,23 +60,49 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
   };
 
   const handleChangePassword = async (data: any) => {
-    const { newPassword, oldPassword } = data;
+    const { newPassword, oldPassword, confirmPassword } = data;
+
+    if (newPassword === oldPassword) {
+      return Alert.alert("Erro", "Estas são a mesma senha.");
+    }
+
+    if (confirmPassword !== newPassword) {
+      return Alert.alert("Erro", "A confirmação de senha não coincide.");
+    }
+
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
+      setLoading(true);
+      const { error } = await supabase.functions.invoke(
+        "secure-update-password",
+        {
+          body: {
+            userId: userId,
+            oldPassword: oldPassword,
+            newPassword: newPassword,
+          },
+        }
+      );
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(error);
       }
 
-      Alert.alert("Sucesso", "Atualização de senha bem-sucedida.");
+      Alert.alert(
+        "Sucesso",
+        "Atualização de senha bem-sucedida! Faça login com sua nova senha."
+      );
+      await supabase.auth.signOut({ scope: "local" });
+      reset({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
       navigation.goBack();
     } catch (error) {
-      if (newPassword === oldPassword) {
-        return Alert.alert("Erro", "Estas são a mesma senha.");
-      }
       Alert.alert("Erro", "Verifique as credenciais digitadas.");
+      console.error(error as FunctionsHttpError);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,10 +225,13 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={loading}
               style={styles.button}
               onPress={handleSubmit(handleChangePassword)}
             >
-              <Text style={styles.buttonText}>Alterar Senha</Text>
+              <Text style={styles.buttonText}>
+                {loading ? "Alterando..." : "Alterar Senha"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
