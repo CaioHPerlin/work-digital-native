@@ -2,6 +2,7 @@ export interface SignUpUser {
   name: string;
   email: string;
   password: string;
+  confirmPassword: string;
   state: string;
   city: string;
   isFreelancer: boolean;

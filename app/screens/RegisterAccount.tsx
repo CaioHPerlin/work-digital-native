@@ -51,48 +51,57 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
   let isFreelancer = false;
   // Define o schema Zod para validação
-  const signUpSchema = z.object({
-    name: z
-      .string()
-      .min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
-    email: z.string().email("Formato de e-mail inválido"),
-    password: z
-      .string()
-      .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-    state: z.string().min(1, { message: "Estado é obrigatório" }),
-    city: z.string().min(1, { message: "Cidade é obrigatória" }),
-    isFreelancer: z.boolean(),
-    cpf: z
-      .string()
-      .optional()
-      .refine(
-        (value) => (isFreelancer ? (value ? validateCPF(value) : false) : true),
-        {
-          message: "CPF inválido",
-        }
-      ),
-    phoneNumber: z
-      .string()
-      .optional()
-      .refine(
-        (value) =>
-          isFreelancer ? (value ? validatePhone(value) : false) : true,
-        {
-          message: "Número de telefone inválido",
-        }
-      ),
-    birthDate: z
-      .string()
-      .optional()
-      .refine(
-        (value) =>
-          isFreelancer
-            ? dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year") >= 18
-            : true,
-        { message: "Você deve ter pelo menos 18 anos" }
-      ),
-    profilePhoto: z.string().optional(),
-  });
+  const signUpSchema = z
+    .object({
+      name: z
+        .string()
+        .min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
+      email: z.string().email("Formato de e-mail inválido"),
+      password: z
+        .string()
+        .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+      confirmPassword: z
+        .string()
+        .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
+      state: z.string().min(1, { message: "Estado é obrigatório" }),
+      city: z.string().min(1, { message: "Cidade é obrigatória" }),
+      isFreelancer: z.boolean(),
+      cpf: z
+        .string()
+        .optional()
+        .refine(
+          (value) =>
+            isFreelancer ? (value ? validateCPF(value) : false) : true,
+          {
+            message: "CPF inválido",
+          }
+        ),
+      phoneNumber: z
+        .string()
+        .optional()
+        .refine(
+          (value) =>
+            isFreelancer ? (value ? validatePhone(value) : false) : true,
+          {
+            message: "Número de telefone inválido",
+          }
+        ),
+      birthDate: z
+        .string()
+        .optional()
+        .refine(
+          (value) =>
+            isFreelancer
+              ? dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year") >= 18
+              : true,
+          { message: "Você deve ter pelo menos 18 anos" }
+        ),
+      profilePhoto: z.string().optional(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "As senhas não coincidem.",
+      path: ["confirmPassword"],
+    });
 
   const {
     control,
@@ -356,6 +365,21 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               secureTextEntry
               autoCapitalize="none"
               errorMessage={errors.password?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="confirmPassword"
+          render={({ field: { onChange, value } }) => (
+            <InputField
+              label="Confirme sua Senha"
+              value={value}
+              onChangeText={onChange}
+              secureTextEntry
+              autoCapitalize="none"
+              errorMessage={errors.confirmPassword?.message}
             />
           )}
         />
