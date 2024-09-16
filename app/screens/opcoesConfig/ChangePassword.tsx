@@ -11,15 +11,38 @@ import {
 import { TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { supabase } from "../../../lib/supabase";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type ChangePasswordProps = {
   navigation: any;
 };
 
+const passwordSchema = z
+  .object({
+    oldPassword: z.string().min(1, "A senha antiga é obrigatória"),
+    newPassword: z
+      .string()
+      .min(6, "A nova senha deve ter pelo menos 6 caracteres"),
+    confirmPassword: z
+      .string()
+      .min(6, "A senha deve ter pelo menos 6 caracteres"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "As senhas não coincidem.",
+    path: ["confirmPassword"],
+  });
+
 export default function ChangePassword({ navigation }: ChangePasswordProps) {
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(passwordSchema),
+  });
+
   const [oldPasswordVisible, setOldPasswordVisible] = useState<boolean>(false);
   const [newPasswordVisible, setNewPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] =
@@ -29,15 +52,10 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
     navigation.goBack();
   };
 
-  const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Erro", "As senhas não coincidem.");
-      return;
-    }
-
+  const handleChangePassword = async (data: any) => {
+    const { newPassword, oldPassword } = data;
     try {
-      // Update the user's password
-      const { user, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
@@ -48,7 +66,7 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
       Alert.alert("Sucesso", "Atualização de senha bem-sucedida.");
       navigation.goBack();
     } catch (error) {
-      if (newPassword == oldPassword) {
+      if (newPassword === oldPassword) {
         return Alert.alert("Erro", "Estas são a mesma senha.");
       }
       Alert.alert("Erro", "Verifique as credenciais digitadas.");
@@ -62,14 +80,20 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Senha Atual</Text>
             <View style={styles.inputContainer}>
-              <TextInput
-                label="Senha Atual"
-                value={oldPassword}
-                onChangeText={(text) => setOldPassword(text)}
-                secureTextEntry={!oldPasswordVisible}
-                style={styles.input}
-                underlineColor="transparent"
-                activeUnderlineColor="black"
+              <Controller
+                control={control}
+                name="oldPassword"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    label="Senha Atual"
+                    value={value}
+                    onChangeText={onChange}
+                    secureTextEntry={!oldPasswordVisible}
+                    style={styles.input}
+                    underlineColor="transparent"
+                    activeUnderlineColor="black"
+                  />
+                )}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -82,19 +106,30 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
                 />
               </TouchableOpacity>
             </View>
+            {errors.oldPassword && (
+              <Text style={styles.errorText}>
+                {errors.oldPassword.message?.toString()}
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Senha Nova</Text>
             <View style={styles.inputContainer}>
-              <TextInput
-                label="Senha Nova"
-                value={newPassword}
-                onChangeText={(text) => setNewPassword(text)}
-                secureTextEntry={!newPasswordVisible}
-                style={styles.input}
-                underlineColor="transparent"
-                activeUnderlineColor="black"
+              <Controller
+                control={control}
+                name="newPassword"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    label="Senha Nova"
+                    value={value}
+                    onChangeText={onChange}
+                    secureTextEntry={!newPasswordVisible}
+                    style={styles.input}
+                    underlineColor="transparent"
+                    activeUnderlineColor="black"
+                  />
+                )}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -107,19 +142,30 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
                 />
               </TouchableOpacity>
             </View>
+            {errors.newPassword && (
+              <Text style={styles.errorText}>
+                {errors.newPassword.message as string}
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Confirme a Senha Nova</Text>
             <View style={styles.inputContainer}>
-              <TextInput
-                label="Confirme a Senha Nova"
-                value={confirmPassword}
-                onChangeText={(text) => setConfirmPassword(text)}
-                secureTextEntry={!confirmPasswordVisible}
-                style={styles.input}
-                underlineColor="transparent"
-                activeUnderlineColor="black"
+              <Controller
+                control={control}
+                name="confirmPassword"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    label="Confirme a Senha Nova"
+                    value={value}
+                    onChangeText={onChange}
+                    secureTextEntry={!confirmPasswordVisible}
+                    style={styles.input}
+                    underlineColor="transparent"
+                    activeUnderlineColor="black"
+                  />
+                )}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -134,6 +180,11 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
                 />
               </TouchableOpacity>
             </View>
+            {errors.confirmPassword && (
+              <Text style={styles.errorText}>
+                {errors.confirmPassword.message as string}
+              </Text>
+            )}
           </View>
 
           <View style={styles.buttonContainer}>
@@ -142,7 +193,7 @@ export default function ChangePassword({ navigation }: ChangePasswordProps) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={handleChangePassword}
+              onPress={handleSubmit(handleChangePassword)}
             >
               <Text style={styles.buttonText}>Alterar Senha</Text>
             </TouchableOpacity>
@@ -186,6 +237,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     top: 10,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 5,
   },
   buttonContainer: {
     flexDirection: "row",

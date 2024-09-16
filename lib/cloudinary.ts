@@ -9,10 +9,7 @@ export const cld = new Cloudinary({
 });
 
 import { Alert } from "react-native";
-
-// Cloudinary configuration
-const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
-const UPLOAD_PRESET = "default"; // Your unsigned upload preset
+import { supabase } from "./supabase";
 
 export const uploadImage = async (imageUri: string, id: string) => {
   if (!imageUri) {
@@ -21,9 +18,6 @@ export const uploadImage = async (imageUri: string, id: string) => {
   }
 
   try {
-    // Cloudinary unsigned upload URL
-    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-
     // Prepare form data
     const formData = new FormData();
     formData.append("file", {
@@ -31,12 +25,10 @@ export const uploadImage = async (imageUri: string, id: string) => {
       type: "image/jpeg", // Adjust if necessary
       name: "image.jpg", // Adjust if necessary
     } as any);
-    formData.append("upload_preset", UPLOAD_PRESET);
-    formData.append("folder", "profile_pictures"); // Specify the folder
-    formData.append("public_id", id); // Optional: you can omit this if you want Cloudinary to generate the public_id
+    formData.append("id", id); // Optional: you can pass the ID if you want to customize the public_id on the server
 
     // Perform the upload
-    const response = await fetch(uploadUrl, {
+    const { data, error } = await supabase.functions.invoke("upload-image", {
       method: "POST",
       body: formData,
       headers: {
@@ -44,16 +36,16 @@ export const uploadImage = async (imageUri: string, id: string) => {
       },
     });
 
-    const result = await response.json();
-    if (response.ok) {
-      return { secure_url: result.secure_url };
-    } else {
-      console.error(result);
-      return { secure_url: "" };
+    if (error) {
+      console.error("Upload failed:", error);
+      throw new Error(`Upload failed: ${error}`);
     }
+
+    const result = await data.json();
+    return { secure_url: result.secure_url };
   } catch (error) {
     console.error("Upload image error:", error);
-    Alert.alert("Erro no upload da imagem.");
+    Alert.alert("Erro no upload da imagem.", (error as Error).message);
     return { secure_url: "" };
   }
 };
