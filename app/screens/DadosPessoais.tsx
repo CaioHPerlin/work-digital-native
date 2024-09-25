@@ -14,6 +14,8 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { supabase } from "../../lib/supabase";
 import InputField from "../components/InputField";
+import LinkedState from "../components/LinkedState";
+import LinkedCity from "../components/LinkedCity";
 
 type DadosPessoaisProps = {
   navigation: any;
@@ -38,54 +40,6 @@ export default function DadosPessoais({
   const [name, setName] = useState<string>("");
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
-  const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
-  const [estados, setEstados] = useState<Estado[]>([]);
-  const [cidades, setCidades] = useState<Cidade[]>([]);
-
-  useEffect(() => {
-    const fetchEstados = async () => {
-      try {
-        const response = await axios.get(
-          "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome"
-        );
-        const sortedStates = response.data.sort((a: Estado, b: Estado) =>
-          a.nome.localeCompare(b.nome)
-        );
-        setEstados(sortedStates);
-        setLoadingEstados(false);
-      } catch (error) {
-        console.error(error);
-        setLoadingEstados(false);
-      }
-    };
-
-    fetchEstados();
-  }, []);
-
-  useEffect(() => {
-    if (estado) {
-      setLoadingCidades(true);
-      const fetchCidades = async () => {
-        try {
-          const response = await axios.get(
-            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
-          );
-          const sortedCities = response.data.sort((a: Cidade, b: Cidade) =>
-            a.nome.localeCompare(b.nome)
-          );
-          setCidades(sortedCities);
-          setLoadingCidades(false);
-        } catch (error) {
-          console.error(error);
-          setLoadingCidades(false);
-        }
-      };
-
-      fetchCidades();
-    }
-  }, [estado]);
 
   useEffect(() => {
     // Fetch user profile on component mount
@@ -102,7 +56,6 @@ export default function DadosPessoais({
           return;
         }
 
-        setUserProfile(data);
         setName(data.name);
         setEstado(data.state);
         setCidade(data.city);
@@ -135,11 +88,6 @@ export default function DadosPessoais({
       }
 
       Alert.alert("Sucesso", "Dados pessoais atualizados com sucesso.");
-      setUserProfile((prev: any) => ({
-        ...prev,
-        state: estado,
-        city: cidade,
-      }));
       navigation.goBack();
     } catch (error) {
       console.error("Error updating user profile:", error);
@@ -175,50 +123,13 @@ export default function DadosPessoais({
               keyboardType="default"
             />
             <Text style={styles.label}>Estado</Text>
-            {loadingEstados ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={estado}
-                onValueChange={(itemValue) => {
-                  setEstado(itemValue);
-                  setCidade("");
-                }}
-                style={styles.picker}
-              >
-                <Picker.Item label="Selecione um estado" value="" />
-                {estados.map((estado) => (
-                  <Picker.Item
-                    key={estado.id}
-                    label={estado.nome}
-                    value={estado.sigla}
-                  />
-                ))}
-              </Picker>
-            )}
+            <LinkedState state={estado} setState={setEstado} />
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Cidade</Text>
-            {loadingCidades ? (
-              <ActivityIndicator size="large" color="#FFC88d" />
-            ) : (
-              <Picker
-                selectedValue={cidade}
-                onValueChange={(itemValue) => setCidade(itemValue)}
-                style={styles.picker}
-                enabled={estado !== ""}
-              >
-                <Picker.Item label="Selecione uma cidade" value="" />
-                {cidades.map((cidade) => (
-                  <Picker.Item
-                    key={cidade.id}
-                    label={cidade.nome}
-                    value={cidade.nome}
-                  />
-                ))}
-              </Picker>
-            )}
+
+            <LinkedCity state={estado} city={cidade} setCity={setCidade} />
           </View>
 
           <View style={styles.buttonContainer}>

@@ -31,6 +31,8 @@ import { validateCPF, validatePhone } from "../../utils/validator";
 import { uploadImage } from "../../lib/cloudinary";
 import roles from "../../constants/roles";
 import { LogBox } from "react-native";
+import LinkedState from "../components/LinkedState";
+import LinkedCity from "../components/LinkedCity";
 
 dayjs.extend(customParseFormat);
 
@@ -43,8 +45,6 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
-  const [states, setStates] = useState<Location[]>([]);
-  const [cities, setCities] = useState<Location[]>([]);
   const [loadingStates, setLoadingStates] = useState<boolean>(true);
   const [loadingCities, setLoadingCities] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
@@ -109,55 +109,13 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     formState: { errors },
     watch,
     setValue,
+    getValues,
   } = useForm<SignUpFreelancer>({
     resolver: zodResolver(signUpSchema),
   });
 
   const stateValue = watch("state");
   isFreelancer = watch("isFreelancer");
-
-  // Buscar estados ao montar o componente
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await axios.get(
-          "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
-        );
-        setStates(
-          response.data.sort((a: any, b: any) => a.nome.localeCompare(b.nome))
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoadingStates(false);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-  // Buscar cidades quando o estado for selecionado
-  useEffect(() => {
-    if (stateValue) {
-      setLoadingCities(true);
-      const fetchCities = async () => {
-        try {
-          const response = await axios.get(
-            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateValue}/municipios`
-          );
-          setCities(
-            response.data.sort((a: any, b: any) => a.nome.localeCompare(b.nome))
-          );
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setLoadingCities(false);
-        }
-      };
-
-      fetchCities();
-    }
-  }, [stateValue]);
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
@@ -250,6 +208,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     setLoading(false);
   };
+
+  let state = watch("state");
+  let city = watch("city");
 
   const roleModal = (
     <Modal
@@ -401,36 +362,16 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
         />
 
         {/* State Picker */}
-        <Controller
-          control={control}
-          name="state"
-          render={({ field: { onChange, value } }) => (
-            <PickerField
-              label="Estado"
-              selectedValue={value}
-              onValueChange={onChange}
-              data={states}
-              loading={loadingStates}
-              errorMessage={errors.state?.message}
-            />
-          )}
+        <LinkedState
+          state={state} // Fetch the current state value
+          setState={(selectedState: any) => setValue("state", selectedState)} // Update the form's 'state' field with the selected sigla
         />
 
         {/* City Picker */}
-        <Controller
-          control={control}
-          name="city"
-          render={({ field: { onChange, value } }) => (
-            <PickerField
-              label="Cidade"
-              selectedValue={value}
-              onValueChange={onChange}
-              data={cities}
-              loading={loadingCities}
-              enabled={!!stateValue}
-              errorMessage={errors.city?.message}
-            />
-          )}
+        <LinkedCity
+          state={state}
+          city={city} // Fetch the current city value
+          setCity={(selectedCity: any) => setValue("city", selectedCity)} // Update the form's 'city'
         />
 
         {/* Checkbox Sou prestador de serviços */}
