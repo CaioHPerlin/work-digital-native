@@ -242,6 +242,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           <TextInput
             style={styles.textInput}
             value={newMessage}
+            multiline={true}
             onChangeText={setNewMessage}
             placeholder="Type a message..."
             placeholderTextColor="#888"
