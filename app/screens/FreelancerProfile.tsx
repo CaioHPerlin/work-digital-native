@@ -5,7 +5,6 @@ import {
   Alert,
   Text,
   TouchableOpacity,
-  Image,
   ScrollView,
   Modal,
   TouchableWithoutFeedback,
@@ -13,6 +12,7 @@ import {
   TextInput,
   SafeAreaView,
 } from "react-native";
+import { Image } from "expo-image";
 import { supabase } from "../../lib/supabase";
 import { FlattenedProfile, HighlightImage } from "../types"; // Adjust the path as needed
 import * as ImagePicker from "expo-image-picker";
@@ -24,7 +24,6 @@ import { validatePhone } from "../../utils/validator";
 import * as Animatable from "react-native-animatable";
 import roles from "../../constants/roles";
 import Icon from "react-native-vector-icons/FontAwesome";
-import ImageWithFallback from "../components/ImageWithFallback";
 import { LogBox } from "react-native";
 import { uploadImage } from "../../lib/cloudinary";
 
@@ -422,11 +421,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <ImageWithFallback
-        cache={false}
-        imageUrl={imageUri}
-        style={styles.profileImage}
-      />
+      <Image source={imageUri} style={styles.profileImage} />
 
       <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
         <Text style={styles.uploadButtonText}>Alterar Foto de Perfil</Text>
