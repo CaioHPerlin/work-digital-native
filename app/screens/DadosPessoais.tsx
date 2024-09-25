@@ -37,6 +37,7 @@ export default function DadosPessoais({
   navigation,
   userId,
 }: DadosPessoaisProps) {
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
@@ -68,6 +69,7 @@ export default function DadosPessoais({
   }, []);
 
   const updateUserProfile = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from("profiles") // Adjust table name if needed
@@ -95,6 +97,8 @@ export default function DadosPessoais({
         "Erro",
         "Ocorreu um erro ao tentar atualizar o perfil do usuário."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,7 +144,9 @@ export default function DadosPessoais({
               style={styles.button}
               onPress={handleDadosPessoais}
             >
-              <Text style={styles.buttonText}>Atualizar Dados</Text>
+              <Text style={styles.buttonText}>
+                {loading ? "Atualizando..." : "Atualizar Dados"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

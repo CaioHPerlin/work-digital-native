@@ -311,9 +311,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       const { error: highlightError } = await supabase
         .from("highlights")
         .upsert(highlightsToUpsert, {
-          onConflict: ["user_id", "role"], // Specify conflict columns
+          // @ts-ignore
+          onConflict: ["user_id", "role"], // Specify conflict columns as an array
         });
-
       if (highlightError) throw highlightError;
 
       Alert.alert("Perfil atualizado com sucesso!");

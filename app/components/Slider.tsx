@@ -48,21 +48,18 @@ export default function Slider({ imageUrls }: Props) {
     scrollToIndex(prevIndex);
   };
 
-  // useEffect(() => {
-  //   if (imageUrls.length > 0) {
-  //     const interval = setInterval(handleNext, 3000); // Change image every 3 seconds
-  //     return () => clearInterval(interval); // Clear interval on unmount
-  //   }
-  // }, [imageUrls.length]); // Removed currentIndex from dependency to prevent unnecessary intervals
+  useEffect(() => {
+    if (imageUrls.length > 0) {
+      const interval = setInterval(handleNext, 3000); // Change image every 3 seconds
+      return () => clearInterval(interval); // Clear interval on unmount
+    }
+  }, [imageUrls.length]); // Removed currentIndex from dependency to prevent unnecessary intervals
 
-  const renderItems: React.FC<{ item: string }> = ({ item }) => {
-    console.log(item);
-    return (
-      <View>
-        <ImageWithFallback imageUrl={item} style={styles.image} />
-      </View>
-    );
-  };
+  const renderItems = ({ item }: { item: string }) => (
+    <View>
+      <ImageWithFallback imageUrl={item} style={styles.image} />
+    </View>
+  );
 
   return (
     <View style={styles.container}>

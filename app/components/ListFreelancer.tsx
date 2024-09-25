@@ -23,6 +23,8 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
   selectedRole,
 }) => {
   const navigateToDetails = (freelancer: FlattenedProfile) => {
+    Image.prefetch(freelancer.profile_picture_url);
+
     navigation.navigate("FreelancerDetails", {
       freelancer: { ...freelancer, roles: [selectedRole] },
     });
@@ -50,6 +52,7 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
               <ImageWithFallback
                 imageUrl={item.profile_picture_url}
                 style={styles.image}
+                cache={false}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.nameText}>

@@ -17,7 +17,6 @@ interface SliderDestaqueProps {
   isPickerVisible: boolean;
   setPickerVisible: (visible: boolean) => void;
   index: number;
-  onLastItemVisible: () => void;
 }
 
 const SliderDestaque: React.FC<SliderDestaqueProps> = ({
@@ -26,25 +25,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   isPickerVisible,
   setPickerVisible,
   index,
-  onLastItemVisible,
 }) => {
-  const [prefetchedImages, setPrefetechedImages] = useState<string[]>([]);
-
-  useEffect(() => {
-    const prefetch = async () => {
-      const fetchedImages: string[] = []; // Array to hold the prefetched URLs
-
-      highlight.images.forEach(async (url: string) => {
-        await Image.prefetch(url);
-        fetchedImages.push(url); // Push URL to array after successful prefetch
-      });
-
-      setPrefetechedImages(fetchedImages);
-    };
-
-    prefetch();
-  }, []);
-
   return (
     <>
       <View style={styles.avatarContainer}>
@@ -67,10 +48,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Slider
-                imageUrls={prefetchedImages}
-                onLastItemVisible={onLastItemVisible}
-              />
+              <Slider imageUrls={highlight.images} />
 
               <View style={styles.buttonContainer}>
                 <TouchableOpacity

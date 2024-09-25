@@ -48,14 +48,18 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   // Define o schema Zod para validação
   const signUpSchema = z.object({
     description: z.string().optional(),
-    cpf: z.string().refine((value) => validateCPF(value), {
-      message: "CPF inválido",
-    }),
-    phoneNumber: z.string().refine((value) => validatePhone(value), {
-      message: "Número de telefone inválido",
-    }),
+    cpf: z
+      .string({ message: "Seu CPF é obrigatório" })
+      .refine((value) => validateCPF(value), {
+        message: "CPF inválido",
+      }),
+    phoneNumber: z
+      .string({ message: "Seu número de telefone é obrigatório" })
+      .refine((value) => validatePhone(value), {
+        message: "Número de telefone inválido",
+      }),
     birthDate: z
-      .string()
+      .string({ message: "Sua data de nascimento é obrigatória" })
       .refine(
         (value) => dayjs().diff(dayjs(value, "DD/MM/YYYY"), "year") >= 18,
         { message: "Você deve ter pelo menos 18 anos" }

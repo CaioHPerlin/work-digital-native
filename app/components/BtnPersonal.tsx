@@ -21,12 +21,12 @@ import SliderDestaque from "./SliderDestaque";
 
 interface Props {
   freelancer: FlattenedProfile;
+  highlight: HighlightImage | null;
 }
 
-const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
+const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
   const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [highlight, setHighlight] = useState<HighlightImage>();
   const { phone_number } = freelancer;
   const navigation = useNavigation<CustomStackNavigationProp>();
 
@@ -38,40 +38,6 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
 
     fetchUserId();
   }, []);
-
-  useEffect(() => {
-    const fetchHighlight = async () => {
-      if (!freelancer || !freelancer.roles || freelancer.roles.length === 0) {
-        return; // No roles available to fetch highlights
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from("highlights")
-          .select("*")
-          .eq("user_id", freelancer.id)
-          .eq("role", freelancer.roles[0]);
-
-        if (error) {
-          console.error("Error fetching highlights:", error.message);
-          Alert.alert("Erro ao buscar destaques");
-          return;
-        }
-
-        console.log(data);
-
-        if (data) {
-          setHighlight(data[0]);
-        }
-      } catch (error) {
-        console.error(
-          "Error in fetching highlights:",
-          (error as Error).message
-        );
-      }
-    };
-    fetchHighlight();
-  }, [freelancer]);
 
   const handleWhatsAppPress = () => {
     const formattedNumber = phone_number.replace(/\D/g, ""); // Removes non-numeric characters

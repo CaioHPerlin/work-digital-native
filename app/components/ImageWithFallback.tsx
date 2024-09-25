@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Image, StyleProp, ImageStyle } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  StyleProp,
+  ImageStyle,
+  View,
+} from "react-native";
 
 interface Props {
   imageUrl: string | null; // Allow imageUrl to be null
@@ -8,6 +14,7 @@ interface Props {
 }
 
 const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
+  const [loaded, setLoaded] = useState(false);
   const [imageSource, setImageSource] = useState(
     require("../../assets/images/user.jpg")
   );
@@ -15,11 +22,11 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
   useEffect(() => {
     const checkUrl = async (url: string) => {
       try {
-        const response = await fetch(url, { method: "HEAD" }); // check URL validity
+        const response = await fetch(url); // check URL validity
         if (response.ok) {
           let imageUri = url;
-          if (cache !== undefined && cache === false) {
-            imageUri += `?random=${Date.now()}`;
+          if (cache === false) {
+            imageUri += `?random=${Date.now()}`; // Disable caching
           }
           setImageSource({ uri: imageUri });
         }
@@ -33,13 +40,38 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
     } else {
       setImageSource(require("../../assets/images/user.jpg"));
     }
-  }, [imageUrl]);
+  }, [imageUrl, cache]);
 
   const handleError = () => {
     setImageSource(require("../../assets/images/user.jpg"));
+    setLoaded(true); // Mark image as loaded even on error
   };
 
-  return <Image source={imageSource} onError={handleError} style={style} />;
+  console.log(style);
+
+  return (
+    <View
+      style={[
+        style,
+        {
+          padding: 0,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+      ]}
+    >
+      {!loaded && (
+        <ActivityIndicator size="small" color="#FFC88d" style={style} />
+      )}
+      <Image
+        fadeDuration={250}
+        source={imageSource}
+        style={[style, !loaded && { opacity: 0 }]} // Hide image until loaded
+        onError={handleError}
+        onLoad={() => setLoaded(true)} // Set to true once image is loaded
+      />
+    </View>
+  );
 };
 
 export default ImageWithFallback;

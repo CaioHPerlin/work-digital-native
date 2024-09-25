@@ -21,6 +21,7 @@ type ChangeCityProps = {
 };
 
 export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
+  const [loading, setLoading] = useState(false);
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
 
@@ -50,6 +51,7 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
   }, []);
 
   const updateUserProfile = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from("profiles") // Adjust table name if needed
@@ -76,6 +78,8 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
         "Erro",
         "Ocorreu um erro ao tentar atualizar o perfil do usuário."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,7 +114,9 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleChangeCity}>
-              <Text style={styles.buttonText}>Alterar Cidade</Text>
+              <Text style={styles.buttonText}>
+                {loading ? "Alterando..." : "Alterar Cidade"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

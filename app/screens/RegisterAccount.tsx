@@ -44,9 +44,6 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-
-  const [loadingStates, setLoadingStates] = useState<boolean>(true);
-  const [loadingCities, setLoadingCities] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
 
   let isFreelancer = false;
@@ -54,17 +51,23 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const signUpSchema = z
     .object({
       name: z
-        .string()
+        .string({ message: "Por favor, insira seu nome completo" })
         .min(3, { message: "Nome deve ter pelo menos 3 caracteres" }),
-      email: z.string().email("Formato de e-mail inválido"),
+      email: z
+        .string({ message: "Por favor, insira seu endereço de e-mail" })
+        .email("Formato de e-mail inválido"),
       password: z
-        .string()
+        .string({ message: "Senha é obrigatória" })
         .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
       confirmPassword: z
-        .string()
+        .string({ message: "É obrigatório confirmar sua senha" })
         .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-      state: z.string().min(1, { message: "Estado é obrigatório" }),
-      city: z.string().min(1, { message: "Cidade é obrigatória" }),
+      state: z
+        .string({ message: "Por favor, selecione seu estado" })
+        .min(1, { message: "Estado é obrigatório" }),
+      city: z
+        .string({ message: "Por favor, selecione sua cidade" })
+        .min(1, { message: "Cidade é obrigatória" }),
       isFreelancer: z.boolean(),
       cpf: z
         .string()
@@ -366,6 +369,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           state={state} // Fetch the current state value
           setState={(selectedState: any) => setValue("state", selectedState)} // Update the form's 'state' field with the selected sigla
         />
+        {errors.state && (
+          <Text style={styles.errorText}>{errors.state.message}</Text>
+        )}
 
         {/* City Picker */}
         <LinkedCity
@@ -373,6 +379,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           city={city} // Fetch the current city value
           setCity={(selectedCity: any) => setValue("city", selectedCity)} // Update the form's 'city'
         />
+        {errors.city && (
+          <Text style={styles.errorText}>{errors.city.message}</Text>
+        )}
 
         {/* Checkbox Sou prestador de serviços */}
         <Controller
