@@ -234,6 +234,22 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                     item.length > 1 ? handleRoleSelect(item) : ""
                   }
                 >
+                  {item.length > 1 && (
+                    <Icon
+                      name={
+                        selectedRoles.includes(item)
+                          ? "check-square-o"
+                          : "square-o"
+                      }
+                      style={
+                        selectedRoles.includes(item)
+                          ? { ...styles.modalItemText, color: "#FFF" }
+                          : item.length > 1
+                          ? styles.modalItemText
+                          : { ...styles.modalItemText, color: "#f27e26" }
+                      }
+                    />
+                  )}
                   <Text
                     style={
                       selectedRoles.includes(item)
@@ -304,6 +320,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                   style={styles.roleContainer}
                 >
                   <Text>{item.item}</Text>
+                  <Icon name="close" size={16} />
                 </TouchableOpacity>
               )}
             />
@@ -479,6 +496,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   modalItem: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    alignItems: "center",
+    gap: 4,
     paddingHorizontal: 6,
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -495,6 +517,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   roleContainer: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    alignContent: "center",
     backgroundColor: "#fff",
     borderColor: "#6200ee",
     borderWidth: 1,

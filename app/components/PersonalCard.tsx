@@ -25,14 +25,6 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
 
           <Text style={styles.subDados}>{freelancer.phone_number}</Text>
         </View>
-        {/* <View>
-        <Text style={styles.titleRedes}>Minhas Redes </Text>
-          <View style={styles.icons}>
-            <Icon source="whatsapp" color={"green"} size={40} />
-            <Icon source="instagram" color={"#E1306C"} size={40} />
-            <Icon source="facebook" color={"blue"} size={40} />
-          </View>
-        </View> */}
       </View>
     </>
   );
@@ -45,9 +37,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // borderWidth:3,
-    // borderColor:"#000"
-    //justifyContent:'space-around'
   },
   image: {
     width: 100,
