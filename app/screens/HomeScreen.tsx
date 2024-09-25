@@ -141,6 +141,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [navigation]);
 
   const handleItemSelect = (item: string) => {
+    if (!userId) {
+      fetchId();
+    }
     setSelectedValue(item);
     setIsModalVisible(false);
     fetchFreelancers(item); // Fetch freelancers immediately after selection

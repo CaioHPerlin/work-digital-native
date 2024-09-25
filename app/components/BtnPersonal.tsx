@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -137,15 +138,10 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
     }
   };
 
-  const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
 
   return (
     <View style={styles.buttonContainer}>
-      {/* <TouchableOpacity style={styles.button} onPress={handleBackPress}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity> */}
-
       <TouchableOpacity
         style={styles.buttonWhats}
         onPress={handleWhatsAppPress}
@@ -156,9 +152,9 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
         <View>
           <SliderDestaque
             startConversation={handleStartConversation}
-            highlight={highlight}
+            highlight={{ ...highlight }}
             key={0}
-            isPickerVisible={currentHighlightIndex === 0 && isPickerVisible}
+            isPickerVisible={isPickerVisible}
             setPickerVisible={setPickerVisible}
             index={0}
             //onLastItemVisible={handleLastItemVisible}

@@ -1,42 +1,65 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useRef, useState, useEffect } from "react";
-import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
-import { HighlightImage } from "../types";
+import {
+  Dimensions,
+  FlatList,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import ImageWithFallback from "./ImageWithFallback";
 
 const { width } = Dimensions.get("window");
 const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
 
 interface Props {
-  highlight: HighlightImage;
+  imageUrls: string[];
 }
 
-export default function Slider({ highlight }: Props) {
-  let flatListRef = useRef<FlatList<string[]> | null>();
+export default function Slider({ imageUrls }: Props) {
+  const flatListRef = useRef<FlatList<string>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const onViewRef = useRef(({ changed }: { changed: any }) => {
     if (changed[0].isViewable) {
-      setCurrentIndex(changed[0].index);
+      const newIndex = changed[0].index;
+      console.log("New index from viewable items:", newIndex); // Debugging log
+      setCurrentIndex(newIndex);
     }
   });
 
   const scrollToIndex = (index: number) => {
-    flatListRef.current?.scrollToIndex({ animated: true, index: index });
+    if (index >= 0 && index < imageUrls.length) {
+      flatListRef.current?.scrollToIndex({ animated: true, index });
+    } else {
+      console.warn("Invalid index:", index); // Warn for invalid index
+    }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % highlight.images.length;
-      scrollToIndex(nextIndex);
-    }, 3000); // Muda a imagem a cada 3 segundos
+  const handleNext = () => {
+    const nextIndex = (currentIndex + 1) % imageUrls.length;
+    console.log("Next index:", nextIndex); // Debugging log
+    scrollToIndex(nextIndex);
+  };
 
-    return () => clearInterval(interval); // Limpa o intervalo quando o componente desmonta
-  }, [currentIndex]);
+  const handlePrev = () => {
+    const prevIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+    console.log("Previous index:", prevIndex); // Debugging log
+    scrollToIndex(prevIndex);
+  };
+
+  // useEffect(() => {
+  //   if (imageUrls.length > 0) {
+  //     const interval = setInterval(handleNext, 3000); // Change image every 3 seconds
+  //     return () => clearInterval(interval); // Clear interval on unmount
+  //   }
+  // }, [imageUrls.length]); // Removed currentIndex from dependency to prevent unnecessary intervals
 
   const renderItems: React.FC<{ item: string }> = ({ item }) => {
+    console.log(item);
     return (
       <View>
-        <Image source={{ uri: item }} style={styles.image} />
+        <ImageWithFallback imageUrl={item} style={styles.image} />
       </View>
     );
   };
@@ -45,16 +68,16 @@ export default function Slider({ highlight }: Props) {
     <View style={styles.container}>
       <StatusBar style="auto" />
 
-      {/* Barra de progresso na parte superior */}
+      {/* Progress bar at the top */}
       <View style={styles.progressBarContainer}>
-        {highlight.images.map((_, index: number) => (
+        {imageUrls.map((_, index: number) => (
           <View
             key={index.toString()}
             style={[
               styles.progressBar,
               {
-                width: `${100 / highlight.images.length}%`,
-                backgroundColor: index <= currentIndex ? "black" : "grey",
+                width: `${100 / imageUrls.length}%`,
+                backgroundColor: index <= currentIndex ? "white" : "black",
               },
             ]}
           />
@@ -62,19 +85,21 @@ export default function Slider({ highlight }: Props) {
       </View>
 
       <FlatList
-        data={highlight.images}
+        data={imageUrls}
         renderItem={renderItems}
         keyExtractor={(item, index) => index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled
-        ref={(ref) => {
-          flatListRef.current = ref;
-        }}
+        ref={flatListRef}
         style={styles.carousel}
         viewabilityConfig={viewConfigRef}
         onViewableItemsChanged={onViewRef.current}
       />
+
+      {/* Touchable areas on the sides */}
+      <TouchableOpacity style={styles.leftTouchArea} onPress={handlePrev} />
+      <TouchableOpacity style={styles.rightTouchArea} onPress={handleNext} />
     </View>
   );
 }
@@ -87,7 +112,7 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     flexDirection: "row",
     position: "absolute",
-    top: 10,
+    top: 5,
     left: 0,
     right: 0,
     height: 5,
@@ -103,5 +128,21 @@ const styles = StyleSheet.create({
     width,
     height: "100%",
     resizeMode: "cover",
+  },
+  leftTouchArea: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: width / 2,
+    zIndex: 20,
+  },
+  rightTouchArea: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: width / 2,
+    zIndex: 20,
   },
 });

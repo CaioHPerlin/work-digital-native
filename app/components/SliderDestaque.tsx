@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
-import { Avatar } from "react-native-paper";
-import Layout from "./Layout";
-import ImageWithFallback from "./ImageWithFallback";
 import {
-  CustomStackNavigationProp,
-  FlattenedProfile,
-  HighlightImage,
-} from "../types";
-import { useNavigation } from "@react-navigation/native";
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Modal,
+  Image,
+} from "react-native";
+import ImageWithFallback from "./ImageWithFallback";
+import { HighlightImage } from "../types";
 
 interface SliderDestaqueProps {
   startConversation: () => void;
@@ -28,6 +28,23 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   index,
   onLastItemVisible,
 }) => {
+  const [prefetchedImages, setPrefetechedImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const prefetch = async () => {
+      const fetchedImages: string[] = []; // Array to hold the prefetched URLs
+
+      highlight.images.forEach(async (url: string) => {
+        await Image.prefetch(url);
+        fetchedImages.push(url); // Push URL to array after successful prefetch
+      });
+
+      setPrefetechedImages(fetchedImages);
+    };
+
+    prefetch();
+  }, []);
+
   return (
     <>
       <View style={styles.avatarContainer}>
@@ -51,7 +68,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Slider
-                highlight={highlight}
+                imageUrls={prefetchedImages}
                 onLastItemVisible={onLastItemVisible}
               />
 
