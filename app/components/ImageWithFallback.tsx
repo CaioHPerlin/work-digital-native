@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ActivityIndicator,
-  Image,
+  Animated,
   StyleProp,
   ImageStyle,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 
 interface Props {
   imageUrl: string | null; // Allow imageUrl to be null
@@ -15,40 +16,50 @@ interface Props {
 
 const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
   const [loaded, setLoaded] = useState(false);
-  const [imageSource, setImageSource] = useState(
-    require("../../assets/images/user.jpg")
-  );
+  const [imageSource, setImageSource] = useState<any>();
+  const pulseAnim = useRef(new Animated.Value(1)).current; // Animation value for pulse effect
 
   useEffect(() => {
+    if (!imageUrl) {
+      setImageSource(require("../../assets/images/user.jpg"));
+      return;
+    }
+
     const checkUrl = async (url: string) => {
       try {
-        const response = await fetch(url); // check URL validity
+        const response = await fetch(url); // Check if the URL is valid
         if (response.ok) {
-          let imageUri = url;
-          if (cache === false) {
-            imageUri += `?random=${Date.now()}`; // Disable caching
-          }
-          setImageSource({ uri: imageUri });
+          setImageSource({ uri: url });
+        } else {
+          setImageSource(require("../../assets/images/user.jpg"));
         }
       } catch (error) {
         setImageSource(require("../../assets/images/user.jpg"));
       }
     };
 
-    if (imageUrl) {
-      checkUrl(imageUrl);
-    } else {
-      setImageSource(require("../../assets/images/user.jpg"));
+    checkUrl(imageUrl);
+  }, [imageUrl]);
+
+  useEffect(() => {
+    if (!loaded) {
+      // Start the pulsing animation
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.2,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
     }
-  }, [imageUrl, cache]);
-
-  const handleError = () => {
-    setImageSource(require("../../assets/images/user.jpg"));
-    setLoaded(true); // Mark image as loaded even on error
-  };
-
-  console.log(style);
-
+  }, [loaded, pulseAnim]);
   return (
     <View
       style={[
@@ -61,14 +72,28 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
       ]}
     >
       {!loaded && (
-        <ActivityIndicator size="small" color="#FFC88d" style={style} />
+        // Pulse animation while image is loading
+        <Animated.View
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0r0r0r", // Skeleton color
+            transform: [{ scale: pulseAnim }],
+            position: "absolute",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="small" color="#999" />
+        </Animated.View>
       )}
       <Image
-        fadeDuration={250}
         source={imageSource}
-        style={[style, !loaded && { opacity: 0 }]} // Hide image until loaded
-        onError={handleError}
-        onLoad={() => setLoaded(true)} // Set to true once image is loaded
+        transition={100}
+        cachePolicy={cache ? "memory-disk" : "none"}
+        contentFit="cover"
+        style={[style, { opacity: loaded ? 1 : 0 }]} // Hide image until loaded
+        onLoad={() => setLoaded(true)} // Image has loaded
       />
     </View>
   );

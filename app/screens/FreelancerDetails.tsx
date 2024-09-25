@@ -86,6 +86,12 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+  centerContainer: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 0.5,
     flexWrap: "wrap",

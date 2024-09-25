@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 
 const useImagePreloader = (imageUrls: string[]) => {
   const [loading, setLoading] = useState(true);

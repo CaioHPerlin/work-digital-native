@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import ImageWithFallback from "./ImageWithFallback";
+import { Image } from "expo-image";
 
 const { width } = Dimensions.get("window");
 const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
@@ -19,45 +20,43 @@ interface Props {
 export default function Slider({ imageUrls }: Props) {
   const flatListRef = useRef<FlatList<string>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false); // Track if FlatList is in the middle of a scroll
 
   const onViewRef = useRef(({ changed }: { changed: any }) => {
     if (changed[0].isViewable) {
       const newIndex = changed[0].index;
-      console.log("New index from viewable items:", newIndex); // Debugging log
       setCurrentIndex(newIndex);
+      setIsScrolling(false); // Reset scrolling status when view changes
     }
   });
 
   const scrollToIndex = (index: number) => {
-    if (index >= 0 && index < imageUrls.length) {
+    if (index >= 0 && index < imageUrls.length && !isScrolling) {
+      setIsScrolling(true); // Set scrolling status to true to prevent multiple scrolls
       flatListRef.current?.scrollToIndex({ animated: true, index });
-    } else {
-      console.warn("Invalid index:", index); // Warn for invalid index
     }
   };
 
   const handleNext = () => {
     const nextIndex = (currentIndex + 1) % imageUrls.length;
-    console.log("Next index:", nextIndex); // Debugging log
     scrollToIndex(nextIndex);
   };
 
   const handlePrev = () => {
     const prevIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
-    console.log("Previous index:", prevIndex); // Debugging log
     scrollToIndex(prevIndex);
   };
 
   useEffect(() => {
     if (imageUrls.length > 0) {
-      const interval = setInterval(handleNext, 3000); // Change image every 3 seconds
+      const interval = setInterval(handleNext, 3000); // Auto-slide every 3 seconds
       return () => clearInterval(interval); // Clear interval on unmount
     }
-  }, [imageUrls.length]); // Removed currentIndex from dependency to prevent unnecessary intervals
+  }, [imageUrls.length, currentIndex]); // Only reset interval if imageUrls length or currentIndex changes
 
   const renderItems = ({ item }: { item: string }) => (
     <View>
-      <ImageWithFallback imageUrl={item} style={styles.image} />
+      <Image source={item} transition={100} style={styles.image} />
     </View>
   );
 
