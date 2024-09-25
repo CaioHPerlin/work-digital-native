@@ -9,21 +9,21 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Text } from "react-native-paper";
+import { Icon, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
+import useChatNotifications from "../../hooks/useChatNotifications";
 
-const ChatList: React.FC = () => {
-  const [userId, setUserId] = useState("");
+interface Props {
+  userId: string;
+}
+
+const ChatList: React.FC<Props> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<CustomStackNavigationProp>();
+  const { markChatAsRead, unreadChats } = useChatNotifications(userId);
   const [loading, setLoading] = useState(false);
-
-  const fetchUserId = async () => {
-    const { data } = await supabase.auth.getSession();
-    setUserId(data.session?.user.id || "");
-  };
 
   const fetchConversations = async () => {
     const { data, error } = await supabase
@@ -50,10 +50,6 @@ const ChatList: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUserId();
-  }, []);
-
-  useEffect(() => {
     if (userId) {
       fetchConversations();
     }
@@ -64,6 +60,7 @@ const ChatList: React.FC = () => {
     userId: string,
     freelancerId: string
   ) => {
+    markChatAsRead(chatId, userId);
     navigation.navigate("ChatScreen", { chatId, userId, freelancerId }); // Navigate to the chat screen
   };
 
@@ -89,6 +86,9 @@ const ChatList: React.FC = () => {
           <Text style={styles.nameText}>
             {userId === item.user_2_id ? item.user_1.name : item.user_2.name}
           </Text>
+          {unreadChats.includes(item.id) && (
+            <Icon size={15} color="#f27e26" source={"circle"} />
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -166,7 +166,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   textContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    alignItems: "center",
     marginLeft: 10,
+    marginRight: 20,
   },
   image: {
     width: 50,

@@ -67,10 +67,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchId();
-  }, []);
-
   const fetchFreelancers = async (role: string) => {
     if (!role || !userId) return;
 
@@ -130,6 +126,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     //   setIsLoading(false);
     // }
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchId();
+      if (selectedValue) {
+        setSelectedValue("");
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
 
   const handleItemSelect = (item: string) => {
     setSelectedValue(item);

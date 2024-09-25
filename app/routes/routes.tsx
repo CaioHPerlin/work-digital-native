@@ -23,7 +23,6 @@ import Header from "../components/Header";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Ionicon from "react-native-vector-icons/Ionicons";
 import ChatList from "../screens/ChatList";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
 import ChatScreen from "../screens/ChatScreen";
@@ -113,7 +112,9 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
             <Drawer.Navigator
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={({ route }) => ({
-                header: () => <Header title={route.name} />,
+                header: () => (
+                  <Header title={route.name} userId={session.user.id} />
+                ),
                 drawerStyle: { backgroundColor: "#2d47f0", width: 310 },
                 headerStyle: { height: 80, backgroundColor: "#2d47f0" },
                 headerTitleStyle: { color: "#f27e26" },
@@ -135,13 +136,16 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               {!isFreelancer && (
                 <Drawer.Screen
                   name="Dados Pessoais"
-                  component={DadosPessoais}
                   options={{
                     drawerIcon: ({ color, size }) => (
                       <Icon name="user" color={color} size={size} />
                     ),
                   }}
-                />
+                >
+                  {(props) => (
+                    <DadosPessoais {...props} userId={session.user.id} />
+                  )}
+                </Drawer.Screen>
               )}
               <Drawer.Screen
                 name="Alterar Cidade"
@@ -197,11 +201,14 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
       <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
       <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
       <Stack.Screen name="Slider" component={Slider} />
-      <Stack.Screen
-        name="ChatList"
-        component={ChatList}
-        options={{ animation: "slide_from_right" }}
-      />
+      {session && (
+        <Stack.Screen
+          name="ChatList"
+          options={{ animation: "slide_from_right" }}
+        >
+          {(props) => <ChatList {...props} userId={session.user.id} />}
+        </Stack.Screen>
+      )}
       <Stack.Screen
         name="ChatScreen"
         children={(props: any) => <ChatScreen {...props} />}

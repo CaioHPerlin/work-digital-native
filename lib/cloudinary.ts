@@ -67,7 +67,10 @@ export const uploadImage = async (imageUri: string, id: string) => {
     return { secure_url: data.secure_url };
   } catch (error) {
     console.error("Upload image error:", error);
-    Alert.alert("Erro no upload da imagem.", (error as Error).message);
+    Alert.alert(
+      "Erro no upload da imagem.",
+      "Ocorreu um erro interno no servidor ao fazer upload de seus destaques. Se possível, tente novamente mais tarde."
+    );
     return { secure_url: "" };
   }
 };

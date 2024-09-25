@@ -1,71 +1,61 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
-import Header from "../components/Header";
-import ToastManager, { Toast } from 'toastify-react-native'
+import ToastManager, { Toast } from "toastify-react-native";
 
 type ConfigAppProps = {
   navigation: any;
 };
- 
-const Teste =()=>{
-  Toast.success('funciona')
-}
+
+const Teste = () => {
+  Toast.success("funciona");
+};
 
 const ConfigApp = ({ navigation }: ConfigAppProps) => {
-
   return (
-
     <>
+      <View style={styles.container}>
+        <ToastManager></ToastManager>
 
-    <View style={styles.container}>
-   
-      <ToastManager></ToastManager>
-      
-      <Text style={styles.title}>Configurações do Aplicativo</Text>
-      <TouchableOpacity
-        style={styles.button}
-        ////disabled={true}
-        onPress={() => navigation.navigate("DadosPessoais")}
-      >
-      <Text style={styles.buttonText}>Dados Pessoais</Text>
-      </TouchableOpacity>
+        <Text style={styles.title}>Configurações do Aplicativo</Text>
+        <TouchableOpacity
+          style={styles.button}
+          ////disabled={true}
+          onPress={() => navigation.navigate("DadosPessoais")}
+        >
+          <Text style={styles.buttonText}>Dados Pessoais</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        
-        onPress={() => navigation.navigate("BecomeAutonomo")}
-      >
-        <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        //disabled={true}
-        onPress={() => navigation.navigate("ChangeCity")}
-      >
-        <Text style={styles.buttonText}>Alterar Cidade</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        //disabled={true}
-        onPress={() => navigation.navigate("ChangePassword")}
-      >
-        <Text style={styles.buttonText}>Alterar Senha</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("BecomeAutonomo")}
+        >
+          <Text style={styles.buttonText}>Tornar-se Autônomo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          //disabled={true}
+          onPress={() => navigation.navigate("ChangeCity")}
+        >
+          <Text style={styles.buttonText}>Alterar Cidade</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          //disabled={true}
+          onPress={() => navigation.navigate("ChangePassword")}
+        >
+          <Text style={styles.buttonText}>Alterar Senha</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        
-        onPress={Teste}
-      >
-        <Text style={styles.buttonText}>Teste</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("HomeScreen")}
-      >
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.button} onPress={Teste}>
+          <Text style={styles.buttonText}>Teste</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("HomeScreen")}
+        >
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 };
@@ -80,7 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     fontFamily: "TitanOne-Regular",
-    color:"#f27e26"
+    color: "#f27e26",
   },
   button: {
     backgroundColor: "#2d47f0",

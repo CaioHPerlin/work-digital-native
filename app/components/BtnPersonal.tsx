@@ -155,7 +155,6 @@ const BtnPersonal: React.FC<Props> = ({ freelancer }) => {
       {highlight && highlight.images.length > 0 && (
         <View>
           <SliderDestaque
-            // sei a role e o freelancer, só puxar dos dados aqui.
             startConversation={handleStartConversation}
             highlight={highlight}
             key={0}

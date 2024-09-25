@@ -150,7 +150,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           return;
         }
 
-        const flattenedData = {
+        const flattenedData: any = {
           ...rest,
           ...freelancers,
           highlights: highlights || [], // Ensure highlights is always an array
@@ -293,7 +293,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             highlight.images.map(async (uri, index) => {
               const result = await uploadImage(
                 uri,
-                `highlights/${userId}_${Date.now()}_${index}`
+                `highlights/${userId}_${index}`
               );
               return result?.secure_url; // Adjust this if necessary
             })

@@ -30,7 +30,6 @@ export default Description;
 const styles = StyleSheet.create({
   text: {
     fontSize: 20,
-    color: "black",
     margin: 10,
     color: "#f27e26",
     fontWeight: "bold",

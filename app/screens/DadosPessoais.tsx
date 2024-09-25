@@ -1,130 +1,235 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
+  Alert,
+  TextInput,
 } from "react-native";
-import { TextInput } from "react-native-paper";
-//import Layout from "../components/Layout";
+import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
+import { supabase } from "../../lib/supabase";
+import InputField from "../components/InputField";
 
 type DadosPessoaisProps = {
   navigation: any;
+  userId: string;
 };
 
-export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
-  const [nome, setNome] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+type Estado = {
+  id: number;
+  sigla: string;
+  nome: string;
+};
+
+type Cidade = {
+  id: number;
+  nome: string;
+};
+
+export default function DadosPessoais({
+  navigation,
+  userId,
+}: DadosPessoaisProps) {
+  const [name, setName] = useState<string>("");
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
-  const [endereco, setEndereco] = useState<string>("");
-  const [numero, setNumero] = useState<string>("");
-  const [bairro, setBairro] = useState<string>("");
-  const [telefone, setTelefone] = useState<string>("");
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [loadingEstados, setLoadingEstados] = useState<boolean>(true);
+  const [loadingCidades, setLoadingCidades] = useState<boolean>(false);
+  const [estados, setEstados] = useState<Estado[]>([]);
+  const [cidades, setCidades] = useState<Cidade[]>([]);
+
+  useEffect(() => {
+    const fetchEstados = async () => {
+      try {
+        const response = await axios.get(
+          "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome"
+        );
+        const sortedStates = response.data.sort((a: Estado, b: Estado) =>
+          a.nome.localeCompare(b.nome)
+        );
+        setEstados(sortedStates);
+        setLoadingEstados(false);
+      } catch (error) {
+        console.error(error);
+        setLoadingEstados(false);
+      }
+    };
+
+    fetchEstados();
+  }, []);
+
+  useEffect(() => {
+    if (estado) {
+      setLoadingCidades(true);
+      const fetchCidades = async () => {
+        try {
+          const response = await axios.get(
+            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
+          );
+          const sortedCities = response.data.sort((a: Cidade, b: Cidade) =>
+            a.nome.localeCompare(b.nome)
+          );
+          setCidades(sortedCities);
+          setLoadingCidades(false);
+        } catch (error) {
+          console.error(error);
+          setLoadingCidades(false);
+        }
+      };
+
+      fetchCidades();
+    }
+  }, [estado]);
+
+  useEffect(() => {
+    // Fetch user profile on component mount
+    const fetchUserProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles") // Adjust table name if needed
+          .select("*")
+          .eq("id", userId) // Replace with actual user ID
+          .single();
+
+        if (error) {
+          console.error("Error fetching user profile:", error);
+          return;
+        }
+
+        setUserProfile(data);
+        setName(data.name);
+        setEstado(data.state);
+        setCidade(data.city);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const updateUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles") // Adjust table name if needed
+        .update({
+          name: name,
+          state: estado,
+          city: cidade,
+        })
+        .eq("id", userId); // Replace with actual user ID
+
+      if (error) {
+        console.error("Error updating user profile:", error);
+        Alert.alert(
+          "Erro",
+          "Ocorreu um erro ao tentar atualizar o perfil do usuário."
+        );
+        return;
+      }
+
+      Alert.alert("Sucesso", "Dados pessoais atualizados com sucesso.");
+      setUserProfile((prev: any) => ({
+        ...prev,
+        state: estado,
+        city: cidade,
+      }));
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      Alert.alert(
+        "Erro",
+        "Ocorreu um erro ao tentar atualizar o perfil do usuário."
+      );
+    }
+  };
 
   const handleCancel = () => {
-    // Implementar lógica de cancelamento
+    navigation.goBack();
   };
 
-  const handleRegister = () => {
-    // Implementar lógica de registro
+  const handleDadosPessoais = () => {
+    if (estado && cidade) {
+      updateUserProfile();
+    } else {
+      Alert.alert("Error", "Please select both state and city.");
+    }
   };
-
   return (
     <>
       <View style={styles.container}>
         <ScrollView>
-          <Text style={styles.title}>Dados Pessoais</Text>
-
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nome</Text>
-            <TextInput
-              label="Nome"
-              value={nome}
-              onChangeText={(text) => setNome(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
+            {/* Full Name Input */}
+            <InputField
+              label="Nome Completo"
+              value={name}
+              onChangeText={(v) => setName(v)}
+              autoCapitalize="words"
+              keyboardType="default"
             />
+            <Text style={styles.label}>Estado</Text>
+            {loadingEstados ? (
+              <ActivityIndicator size="large" color="#FFC88d" />
+            ) : (
+              <Picker
+                selectedValue={estado}
+                onValueChange={(itemValue) => {
+                  setEstado(itemValue);
+                  setCidade("");
+                }}
+                style={styles.picker}
+              >
+                <Picker.Item label="Selecione um estado" value="" />
+                {estados.map((estado) => (
+                  <Picker.Item
+                    key={estado.id}
+                    label={estado.nome}
+                    value={estado.sigla}
+                  />
+                ))}
+              </Picker>
+            )}
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              label="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              keyboardType="email-address"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Endereço</Text>
-            <TextInput
-              label="Endereço"
-              value={endereco}
-              onChangeText={(text) => setEndereco(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Número</Text>
-            <TextInput
-              label="Número"
-              value={numero}
-              onChangeText={(text) => setNumero(text)}
-              keyboardType="numeric"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Bairro</Text>
-            <TextInput
-              label="Bairro"
-              value={bairro}
-              onChangeText={(text) => setBairro(text)}
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Telefone</Text>
-            <TextInput
-              label="Telefone"
-              value={telefone}
-              onChangeText={(text) => setTelefone(text)}
-              keyboardType="phone-pad"
-              style={styles.input}
-              underlineColor="transparent"
-              activeUnderlineColor="black"
-            />
+            <Text style={styles.label}>Cidade</Text>
+            {loadingCidades ? (
+              <ActivityIndicator size="large" color="#FFC88d" />
+            ) : (
+              <Picker
+                selectedValue={cidade}
+                onValueChange={(itemValue) => setCidade(itemValue)}
+                style={styles.picker}
+                enabled={estado !== ""}
+              >
+                <Picker.Item label="Selecione uma cidade" value="" />
+                {cidades.map((cidade) => (
+                  <Picker.Item
+                    key={cidade.id}
+                    label={cidade.nome}
+                    value={cidade.nome}
+                  />
+                ))}
+              </Picker>
+            )}
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.goBack()}
-            >
+            <TouchableOpacity style={styles.button} onPress={handleCancel}>
               <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => alert("alterado com sucesso")}
+              onPress={handleDadosPessoais}
             >
-              <Text style={styles.buttonText}>Alterar</Text>
+              <Text style={styles.buttonText}>Atualizar Dados</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -135,15 +240,15 @@ export default function DadosPessoais({ navigation }: DadosPessoaisProps) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 40,
     flex: 1,
-    marginTop: 25,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     color: "#2d47f0",
-    fontSize: 30,
+    fontSize: 28,
     marginBottom: 20,
     textAlign: "center",
     fontFamily: "TitanOne-Regular",
@@ -158,12 +263,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: "bold",
   },
-  input: {
-    borderColor: "black",
+  picker: {
+    backgroundColor: "#fffefd",
+    borderColor: "#FFC88d",
     borderWidth: 1,
     marginBottom: 10,
-    color: "#000000",
-    borderRadius: 5,
+    height: 50,
+    width: "100%",
+    justifyContent: "center",
   },
   buttonContainer: {
     flexDirection: "row",
