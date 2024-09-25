@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import { Icon, MD3Colors } from "react-native-paper";
+import { View, Text, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { FlattenedProfile } from "../types";
 import Description from "./Description";
 import ImageWithFallback from "./ImageWithFallback";
@@ -13,11 +13,7 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
   return (
     <>
       <View style={styles.container}>
-        <ImageWithFallback
-          cache={false}
-          imageUrl={freelancer.profile_picture_url}
-          style={styles.image}
-        />
+        <Image source={freelancer.profile_picture_url} style={styles.image} />
 
         <View style={styles.text}>
           <Text style={styles.dados}>{freelancer.name}</Text>

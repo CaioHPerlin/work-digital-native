@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Modal,
-  Image,
-} from "react-native";
-import ImageWithFallback from "./ImageWithFallback";
+import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
+import { Image } from "expo-image";
 import { HighlightImage } from "../types";
 
 interface SliderDestaqueProps {
@@ -31,9 +24,10 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
       <View style={styles.avatarContainer}>
         <TouchableOpacity onPress={() => setPickerVisible(true)}>
           <View style={styles.avatarContainer}>
-            <ImageWithFallback
+            <Image
               style={styles.borderAvatar}
-              imageUrl={highlight.images[0]}
+              source={highlight.images[0]}
+              cachePolicy={"memory-disk"}
             />
           </View>
           <Text style={styles.txtDestak}>Meus Serviços</Text>

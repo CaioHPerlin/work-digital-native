@@ -89,6 +89,14 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
       )}
       <Image
         source={imageSource}
+        placeholder={
+          imageSource
+            ? imageSource.uri.replace(
+                "/upload/",
+                "/upload/w_200,h_200,c_limit,e_blur:400,o_90,b_black/"
+              )
+            : null
+        }
         transition={100}
         cachePolicy={cache ? "memory-disk" : "none"}
         contentFit="cover"
