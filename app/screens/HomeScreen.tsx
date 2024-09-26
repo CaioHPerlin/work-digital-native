@@ -12,12 +12,11 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import ListFreelancer from "../components/ListFreelancer";
-import axios from "axios";
 import roles from "@/constants/roles";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { FlattenedProfile, Freelancer } from "../types";
+import { FlattenedProfile } from "../types";
 import { supabase } from "../../lib/supabase";
 
 SplashScreen.preventAutoHideAsync();
@@ -129,10 +128,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      fetchId();
       if (selectedValue) {
         setSelectedValue("");
       }
+      fetchId();
     });
 
     return () => {

@@ -33,7 +33,12 @@ const ImageWithFallback: React.FC<Props> = ({
 
     const checkUrl = async (url: string) => {
       try {
-        setImageSource({ uri: url });
+        const res = await fetch(url);
+        if (res.ok) {
+          setImageSource({ uri: url });
+        } else {
+          setImageSource(require("../../assets/images/user.jpg"));
+        }
       } catch (error) {
         setImageSource(require("../../assets/images/user.jpg"));
       }

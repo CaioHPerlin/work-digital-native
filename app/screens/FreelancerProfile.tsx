@@ -468,7 +468,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             value={value}
             onChangeText={onChange}
             keyboardType="phone-pad"
-            errorMessage={errors.phoneNumber?.message as string}
+            errorMessage={errors.phoneNumber?.message}
+            mask="phone"
+            maxLength={15}
           />
         )}
       />
