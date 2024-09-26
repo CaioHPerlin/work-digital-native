@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
 import useChatNotifications from "../../hooks/useChatNotifications";
+import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface Props {
   userId: string;
@@ -23,9 +24,10 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<CustomStackNavigationProp>();
   const { markChatAsRead, unreadChats } = useChatNotifications(userId);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchConversations = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("chats")
       .select(
@@ -40,6 +42,8 @@ const ChatList: React.FC<Props> = ({ userId }) => {
 
     if (error) {
       console.log(error);
+      setLoading(false);
+      setConversations([]);
       return Alert.alert(
         "Falha no carregamento.",
         "Erro ao carregar histórico de mensagens"
@@ -47,6 +51,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
     }
 
     setConversations(data);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -65,6 +70,12 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   };
 
   const renderConversation = ({ item }: { item: Conversation }) => {
+    const imageUrl = optimizeImageLowQ(
+      `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${
+        userId === item.user_2_id ? item.user_1.id : item.user_2.id
+      }.jpg`
+    );
+
     return (
       <TouchableOpacity
         onPress={() =>
@@ -76,12 +87,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
         }
         style={styles.itemContainer}
       >
-        <ImageWithFallback
-          imageUrl={`https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${
-            userId === item.user_2_id ? item.user_1.id : item.user_2.id
-          }.jpg`}
-          style={styles.image}
-        />
+        <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
         <View style={styles.textContainer}>
           <Text style={styles.nameText}>
             {userId === item.user_2_id ? item.user_1.name : item.user_2.name}
@@ -102,7 +108,9 @@ const ChatList: React.FC<Props> = ({ userId }) => {
         </Text>
       </View>
       {loading ? (
-        <Text
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
           style={{
             textAlign: "center",
             marginTop: 250,
@@ -110,8 +118,8 @@ const ChatList: React.FC<Props> = ({ userId }) => {
           }}
         >
           Recuperando histórico de conversas...
-        </Text>
-      ) : conversations.length != 0 ? (
+        </Animatable.Text>
+      ) : conversations.length > 0 ? (
         <Animatable.View animation="fadeInUp">
           <FlatList renderItem={renderConversation} data={conversations} />
         </Animatable.View>
