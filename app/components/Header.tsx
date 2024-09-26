@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={openDrawer}>
+      <TouchableOpacity onPress={openDrawer} style={styles.btnHamburger}>
         <Icon name="bars" size={24} color="#f27e26" style={styles.icon} />
       </TouchableOpacity>
       <Text style={styles.headerText}>{title}</Text>
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#2d47f0",
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 45,
+    paddingBottom: 15,
     paddingHorizontal: 40,
   },
   headerText: {
@@ -83,6 +83,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+  },
+  btnHamburger: {
+    padding:5
   },
 });
 
