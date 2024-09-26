@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
 import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
-import { Image } from "expo-image";
 import { HighlightImage } from "../types";
+import ImageWithFallback from "./ImageWithFallback";
+import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface SliderDestaqueProps {
   startConversation: () => void;
@@ -19,15 +20,20 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   setPickerVisible,
   index,
 }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
   return (
     <>
       <View style={styles.avatarContainer}>
-        <TouchableOpacity onPress={() => setPickerVisible(true)}>
+        <TouchableOpacity
+          disabled={imageLoaded}
+          onPress={() => setPickerVisible(true)}
+        >
           <View style={styles.avatarContainer}>
-            <Image
+            <ImageWithFallback
               style={styles.borderAvatar}
-              source={highlight.images[0]}
-              cachePolicy={"memory-disk"}
+              imageUrl={optimizeImageLowQ(highlight.images[0])}
+              cache={"memory-disk"}
+              onLoad={() => setImageLoaded(true)}
             />
           </View>
           <Text style={styles.txtDestak}>Meus Serviços</Text>

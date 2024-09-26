@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Image } from "expo-image";
 import { FlattenedProfile } from "../types";
 import Description from "./Description";
 import ImageWithFallback from "./ImageWithFallback";
+import { optimizeImageHighQ } from "../../utils/imageOptimizer";
 
 interface Props {
   freelancer: FlattenedProfile;
@@ -13,7 +13,11 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
   return (
     <>
       <View style={styles.container}>
-        <Image source={freelancer.profile_picture_url} style={styles.image} />
+        <ImageWithFallback
+          imageUrl={optimizeImageHighQ(freelancer.profile_picture_url)}
+          cache="memory-disk"
+          style={styles.image}
+        />
 
         <View style={styles.text}>
           <Text style={styles.dados}>{freelancer.name}</Text>

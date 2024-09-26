@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { FlattenedProfile, Freelancer } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
+import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface ListFreelancerProps {
   data: FlattenedProfile[];
@@ -23,8 +24,6 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
   selectedRole,
 }) => {
   const navigateToDetails = (freelancer: FlattenedProfile) => {
-    Image.prefetch(freelancer.profile_picture_url);
-
     navigation.navigate("FreelancerDetails", {
       freelancer: { ...freelancer, roles: [selectedRole] },
     });
@@ -50,9 +49,9 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
               style={styles.itemContainer}
             >
               <ImageWithFallback
-                imageUrl={item.profile_picture_url}
+                imageUrl={optimizeImageLowQ(item.profile_picture_url)}
                 style={styles.image}
-                cache={false}
+                cache={"none"}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.nameText}>

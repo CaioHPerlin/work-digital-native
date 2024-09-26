@@ -26,6 +26,8 @@ import roles from "../../constants/roles";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LogBox } from "react-native";
 import { uploadImage } from "../../lib/cloudinary";
+import ImageWithFallback from "../components/ImageWithFallback";
+import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface UpdateFreelancer {
   name: string;
@@ -421,7 +423,11 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={imageUri} style={styles.profileImage} />
+      <ImageWithFallback
+        cache="none"
+        imageUrl={optimizeImageLowQ(imageUri)}
+        style={styles.profileImage}
+      />
 
       <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
         <Text style={styles.uploadButtonText}>Alterar Foto de Perfil</Text>

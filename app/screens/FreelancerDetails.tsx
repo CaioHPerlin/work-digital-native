@@ -13,7 +13,7 @@ interface Props {
 }
 
 const FreelancerDetails: React.FC<Props> = ({ route }) => {
-  const [loading, setLoading] = useState(true);
+  const [initLoading, setInitLoading] = useState(false);
   const { freelancer } = route.params;
   const [highlight, setHighlight] = useState<HighlightImage | null>(null);
 
@@ -44,6 +44,8 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
           "Error in fetching highlights:",
           (error as Error).message
         );
+      } finally {
+        setInitLoading(false);
       }
     };
 
@@ -51,28 +53,28 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   }, [freelancer]);
 
   // Ensure the image URLs are properly formatted
-  // const imageUrls = [
-  //   freelancer.profile_picture_url,
-  //   ...(highlight?.images ?? []), // Fallback to empty array if no images
-  // ].filter(Boolean); // Remove any undefined/null values
+  const imageUrls = [
+    freelancer.profile_picture_url,
+    ...(highlight?.images ?? []), // Fallback to empty array if no images
+  ].filter(Boolean); // Remove any undefined/null values
 
   // Use the custom hook to preload images
-  // const loading = useImagePreloader(imageUrls);
+  const loading = useImagePreloader(imageUrls);
 
   // Show loading animation while images are being cached
-  // if (loading) {
-  //   return (
-  //     <View style={styles.centerContainer}>
-  //       <Animatable.Text
-  //         animation="bounce"
-  //         iterationCount="infinite"
-  //         style={styles.loadingText}
-  //       >
-  //         Carregando...
-  //       </Animatable.Text>
-  //     </View>
-  //   );
-  // }
+  if (loading || initLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          style={styles.loadingText}
+        >
+          Carregando...
+        </Animatable.Text>
+      </View>
+    );
+  }
 
   // Once images are cached, show the actual UI
   return (
@@ -81,11 +83,7 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
         <PersonalCard freelancer={freelancer} />
         <Description freelancer={freelancer} />
       </View>
-      <BtnPersonal
-        onThumbLoad={() => setLoading(false)}
-        highlight={highlight}
-        freelancer={freelancer}
-      />
+      <BtnPersonal highlight={highlight} freelancer={freelancer} />
     </View>
   );
 };

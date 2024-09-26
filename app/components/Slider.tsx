@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import ImageWithFallback from "./ImageWithFallback";
-import { Image } from "expo-image";
+import { optimizeImageMediumQ } from "../../utils/imageOptimizer";
 
 const { width } = Dimensions.get("window");
 const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
@@ -56,7 +56,10 @@ export default function Slider({ imageUrls }: Props) {
 
   const renderItems = ({ item }: { item: string }) => (
     <View>
-      <Image source={item} transition={100} style={styles.image} />
+      <ImageWithFallback
+        imageUrl={optimizeImageMediumQ(item)}
+        style={styles.image}
+      />
     </View>
   );
 

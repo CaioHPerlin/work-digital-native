@@ -11,10 +11,16 @@ import { Image } from "expo-image";
 interface Props {
   imageUrl: string | null; // Allow imageUrl to be null
   style?: StyleProp<ImageStyle>;
-  cache?: boolean;
+  cache?: "none" | "memory-disk" | "disk" | "memory";
+  onLoad?: () => void;
 }
 
-const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
+const ImageWithFallback: React.FC<Props> = ({
+  imageUrl,
+  style,
+  cache,
+  onLoad,
+}) => {
   const [loaded, setLoaded] = useState(false);
   const [imageSource, setImageSource] = useState<any>();
   const pulseAnim = useRef(new Animated.Value(1)).current; // Animation value for pulse effect
@@ -27,12 +33,7 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
 
     const checkUrl = async (url: string) => {
       try {
-        const response = await fetch(url); // Check if the URL is valid
-        if (response.ok) {
-          setImageSource({ uri: url });
-        } else {
-          setImageSource(require("../../assets/images/user.jpg"));
-        }
+        setImageSource({ uri: url });
       } catch (error) {
         setImageSource(require("../../assets/images/user.jpg"));
       }
@@ -84,24 +85,19 @@ const ImageWithFallback: React.FC<Props> = ({ imageUrl, style, cache }) => {
             alignItems: "center",
           }}
         >
-          <ActivityIndicator size="small" color="#999" />
+          <ActivityIndicator size="large" color="#FFC88d" />
         </Animated.View>
       )}
       <Image
         source={imageSource}
-        placeholder={
-          imageSource
-            ? imageSource.uri.replace(
-                "/upload/",
-                "/upload/w_200,h_200,c_limit,e_blur:400,o_90,b_black/"
-              )
-            : null
-        }
-        transition={100}
-        cachePolicy={cache ? "memory-disk" : "none"}
+        cachePolicy={cache ? cache : "disk"}
         contentFit="cover"
+        transition={100}
         style={[style, { opacity: loaded ? 1 : 0 }]} // Hide image until loaded
-        onLoad={() => setLoaded(true)} // Image has loaded
+        onLoad={() => {
+          setLoaded(true);
+          if (onLoad) onLoad();
+        }} // Image has loaded
       />
     </View>
   );
