@@ -25,7 +25,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
     <>
       <View style={styles.avatarContainer}>
         <TouchableOpacity
-          disabled={imageLoaded}
+          disabled={!imageLoaded}
           onPress={() => setPickerVisible(true)}
         >
           <View style={styles.avatarContainer}>
