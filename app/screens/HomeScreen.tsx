@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import * as SplashScreen from "expo-splash-screen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FlattenedProfile } from "../types";
 import { supabase } from "../../lib/supabase";
+import { useFocusEffect } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -100,7 +101,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       setApiError("Erro ao buscar prestadores. Tente novamente.");
       return console.log(error.message);
     } else {
-      console.log("Freelancers data:", data);
+      console.log("Freelancers data:", data, selectedValue);
     }
 
     const flattenedData: any[] = data.map((profile) => {
@@ -126,12 +127,17 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     // }
   };
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      if (selectedValue) {
-        setSelectedValue("");
-      }
+  useFocusEffect(
+    useCallback(() => {
       fetchId();
+      fetchFreelancers(selectedValue);
+    }, [userCity])
+  );
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      await fetchId();
+      await fetchFreelancers(selectedValue);
     });
 
     return () => {
@@ -139,13 +145,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [navigation]);
 
-  const handleItemSelect = (item: string) => {
+  const handleItemSelect = async (item: string) => {
     if (!userId) {
-      fetchId();
+      await fetchId();
     }
     setSelectedValue(item);
     setIsModalVisible(false);
-    fetchFreelancers(item); // Fetch freelancers immediately after selection
+    await fetchFreelancers(item); // Fetch freelancers immediately after selection
   };
 
   const handleSearch = (text: string) => {
