@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Slider from "./Slider";
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Modal,
+  TextInput,
+} from "react-native";
 import { HighlightImage } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
@@ -49,24 +57,28 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Slider imageUrls={highlight.images} />
+              <Icon
+                name="close"
+                size={30}
+                color="#f27e26"
+                style={styles.iconClose}
+                onPress={() => setPickerVisible(false)}
+              />
 
               <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={() => setPickerVisible(false)}
-                  style={styles.modalButton}
-                >
-                  <Text style={styles.buttonText}>Fechar</Text>
-                </TouchableOpacity>
+                {/* input type instagram */}
 
-                <TouchableOpacity
-                  onPress={() => {
-                    setPickerVisible(false);
-                    startConversation();
-                  }}
-                  style={styles.modalButtonChat}
-                >
-                  <Text style={styles.buttonText}>Chat</Text>
-                </TouchableOpacity>
+                <TextInput
+                  style={styles.inputMensage}
+                  placeholder="Enviar Mensagem"
+                  placeholderTextColor="#f27e26"
+                />
+                <Icon
+                  name="send"
+                  size={30}
+                  color="#f27e26"
+                  style={styles.iconSend}
+                />
               </View>
             </View>
           </View>
@@ -87,7 +99,7 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 221, 31, 0.5)",
+    backgroundColor: "#fff",
   },
   modalContent: {
     height: "100%",
@@ -142,6 +154,25 @@ const styles = StyleSheet.create({
     bottom: -10,
     right: 10,
     textAlign: "center",
+  },
+
+  inputMensage: {
+    width: "85%",
+    height: 50,
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#f27e26",
+    borderRadius: 50,
+    color: "#f27e26",
+    paddingLeft: 20,
+  },
+  iconSend: {
+    marginTop: 10,
+  },
+  iconClose: {
+    position: "absolute",
+    top: 10,
+    left: 10,
   },
 });
 
