@@ -253,7 +253,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                   style={[
                     styles.modalItem,
                     selectedRoles.includes(item) && {
-                      backgroundColor: "#6200ee",
+                      backgroundColor: "#2d47f0",
                     },
                   ]}
                   onPress={() =>
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   submitButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 20,
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   uploadButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 20,
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: "center",
     backgroundColor: "#fff",
-    borderColor: "#6200ee",
+    borderColor: "#2d47f0",
     borderWidth: 1,
     borderTopWidth: 0,
     paddingVertical: 8,

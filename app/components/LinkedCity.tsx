@@ -100,7 +100,7 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
                   style={[
                     styles.modalItem,
                     city == item.nome && {
-                      backgroundColor: "#6200ee",
+                      backgroundColor: "#2d47f0",
                     },
                   ]}
                   onPress={() => {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   uploadButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: "center",
     backgroundColor: "#fff",
-    borderColor: "#6200ee",
+    borderColor: "#2d47f0",
     borderWidth: 1,
     borderTopWidth: 0,
     paddingVertical: 8,

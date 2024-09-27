@@ -255,6 +255,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     setInitLoading(true);
     console.log(highlightImages);
 
+
     try {
       console.log(data.profilePhoto);
       if (imageUri && freelancer) {
@@ -326,6 +327,12 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
+
+
+
+
+
+
   if (initLoading) {
     return (
       <View style={styles.centerContainer}>
@@ -378,7 +385,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                   style={[
                     styles.modalItem,
                     selectedRoles.includes(item) && {
-                      backgroundColor: "#6200ee",
+                      backgroundColor: "#2d47f0",
                     },
                   ]}
                   onPress={() =>
@@ -538,7 +545,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
               color="#FFF"
               style={{
                 padding: 10,
-                backgroundColor: "#6200ee",
+                backgroundColor: "#2d47f0",
                 maxWidth: 45,
                 borderRadius: 10,
               }}
@@ -553,6 +560,14 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                   key={index}
                   onPress={() => handleHighlightRemove(role, index)}
                 >
+                  <Icon
+                    name="close"
+                    size={23}
+                    color="#f27e26"
+                    style={{
+                      textAlign: "right",
+                    }}
+                  />
                   <Image source={{ uri }} style={styles.image} />
                 </TouchableOpacity>
               ))}
@@ -574,6 +589,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 const styles = StyleSheet.create({
+
   centerContainer: {
     flex: 1,
     padding: 20,
@@ -598,7 +614,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   uploadButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
@@ -609,7 +625,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: "#6200ee",
+    backgroundColor: "#2d47f0",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -682,7 +698,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: "center",
     backgroundColor: "#fff",
-    borderColor: "#6200ee",
+    borderColor: "#2d47f0",
     borderWidth: 1,
     borderTopWidth: 0,
     paddingVertical: 8,
