@@ -60,6 +60,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const [highlightImages, setHighlightImages] = useState<HighlightImage[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const {
     control,
@@ -255,7 +257,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     setInitLoading(true);
     console.log(highlightImages);
 
-
     try {
       console.log(data.profilePhoto);
       if (imageUri && freelancer) {
@@ -326,12 +327,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       setInitLoading(false);
     }
   };
-
-
-
-
-
-
 
   if (initLoading) {
     return (
@@ -428,6 +423,16 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     </Modal>
   );
 
+  // Funções para abrir e fechar o modal
+  const openModal = (uri: string) => {
+    setSelectedImage(uri);
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <ImageWithFallback
@@ -455,19 +460,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
       <Controller
         control={control}
-        name="description"
-        render={({ field: { onChange, value } }) => (
-          <InputField
-            label="Descrição"
-            value={value}
-            onChangeText={onChange}
-            errorMessage={errors.description?.message}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
         name="phoneNumber"
         render={({ field: { onChange, value } }) => (
           <InputField
@@ -478,6 +470,19 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             errorMessage={errors.phoneNumber?.message}
             mask="phone"
             maxLength={15}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="description"
+        render={({ field: { onChange, value } }) => (
+          <InputField
+            label="Descrição"
+            value={value}
+            onChangeText={onChange}
+            errorMessage={errors.description?.message}
           />
         )}
       />
@@ -558,15 +563,15 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
               ?.images.map((uri, index) => (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => handleHighlightRemove(role, index)}
+                  onPress={() => openModal(uri)}
+                  style={styles.imageContainer}
                 >
                   <Icon
+                    onPress={() => handleHighlightRemove(role, index)}
                     name="close"
                     size={23}
                     color="#f27e26"
-                    style={{
-                      textAlign: "right",
-                    }}
+                    style={styles.closeIcon}
                   />
                   <Image source={{ uri }} style={styles.image} />
                 </TouchableOpacity>
@@ -574,6 +579,32 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           </ScrollView>
         </View>
       ))}
+
+      {/* Modal para exibir a imagem em tela cheia */}
+      {selectedImage && (
+        <Modal
+          visible={isModalVisible}
+          transparent={false}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalContainerFullImage}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={closeModal}
+            >
+              <Icon
+                name="close"
+                size={40}
+                color="#f27e26"
+              />
+            </TouchableOpacity>
+            <Image
+              source={{ uri: selectedImage }}
+              style={styles.fullImage}
+            />
+          </View>
+        </Modal>
+      )}
 
       <TouchableOpacity
         style={styles.submitButton}
@@ -589,7 +620,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 const styles = StyleSheet.create({
-
   centerContainer: {
     flex: 1,
     padding: 20,
@@ -629,6 +659,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 20,
   },
   submitButtonText: {
     color: "#fff",
@@ -724,10 +755,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
   },
+  imageContainer: {
+    position: "relative",
+    marginRight: 10,
+  },
   image: {
     width: 100,
     height: 100,
-    marginRight: 10,
+    borderRadius: 10,
+  },
+  closeIcon: {
+    position: "absolute",
+    top: -5,
+    right: -1,
+    //backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 2,
+    zIndex: 1,
+  },
+  modalContainerFullImage: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullImage: {
+    width: "90%",
+    height: "70%",
+    resizeMode: "contain",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 30,
+    right: 30,
   },
   loadingText: {
     fontSize: 34,
