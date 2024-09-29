@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native-animatable";
+import { View, Modal, StyleSheet, TouchableOpacity, Image, Alert, FlatList } from "react-native";
 import { Conversation, CustomStackNavigationProp } from "../types";
-import * as Animatable from "react-native-animatable";
-import {
-  Alert,
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import { Icon, Text } from "react-native-paper";
+import { Text, IconButton } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
 import useChatNotifications from "../../hooks/useChatNotifications";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
-
+import Icon from "react-native-vector-icons/FontAwesome";
 interface Props {
   userId: string;
 }
 
 const ChatList: React.FC<Props> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Estado para armazenar a imagem selecionada
+  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar o modal
   const navigation = useNavigation<CustomStackNavigationProp>();
   const { markChatAsRead, unreadChats } = useChatNotifications(userId);
   const [loading, setLoading] = useState(true);
@@ -69,6 +63,16 @@ const ChatList: React.FC<Props> = ({ userId }) => {
     navigation.navigate("ChatScreen", { chatId, userId, freelancerId }); // Navigate to the chat screen
   };
 
+  const handleImagePress = (imageUrl: string) => {
+    setSelectedImage(imageUrl); // Armazena a URL da imagem clicada
+    setModalVisible(true); // Mostra o modal
+  };
+
+  const closeModal = () => {
+    setModalVisible(false); // Fecha o modal
+    setSelectedImage(null); // Limpa a imagem selecionada
+  };
+
   const renderConversation = ({ item }: { item: Conversation }) => {
     const imageUrl = optimizeImageLowQ(
       `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${
@@ -87,13 +91,15 @@ const ChatList: React.FC<Props> = ({ userId }) => {
         }
         style={styles.itemContainer}
       >
-        <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
+        <TouchableOpacity onPress={() => handleImagePress(imageUrl)}>
+          <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
+        </TouchableOpacity>
         <View style={styles.textContainer}>
           <Text style={styles.nameText}>
             {userId === item.user_2_id ? item.user_1.name : item.user_2.name}
           </Text>
           {unreadChats.includes(item.id) && (
-            <Icon size={15} color="#f27e26" source={"circle"} />
+            <Icon size={15} color="#f27e26" name={"circle"} />
           )}
         </View>
       </TouchableOpacity>
@@ -108,32 +114,31 @@ const ChatList: React.FC<Props> = ({ userId }) => {
         </Text>
       </View>
       {loading ? (
-        <Animatable.Text
-          animation="bounce"
-          iterationCount="infinite"
-          style={{
-            textAlign: "center",
-            marginTop: 250,
-            color: "#aaa",
-          }}
-        >
-          Recuperando histórico de conversas...
-        </Animatable.Text>
+        <Text style={styles.loadingText}>Recuperando histórico de conversas...</Text>
       ) : conversations.length > 0 ? (
-        <Animatable.View animation="fadeInUp">
-          <FlatList renderItem={renderConversation} data={conversations} />
-        </Animatable.View>
+        <FlatList renderItem={renderConversation} data={conversations} />
       ) : (
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: 250,
-            color: "#aaa",
-          }}
-        >
-          Você ainda não possui nenhuma conversa
-        </Text>
+        <Text style={styles.noConversationsText}>Você ainda não possui nenhuma conversa</Text>
       )}
+
+<Modal
+  visible={modalVisible}
+  transparent={true}
+  animationType="fade"
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalContainer}>
+    {selectedImage && (
+      <View style={styles.modalContent}>
+        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+          <Icon name="close" size={25} color="#f27e26" />
+        </TouchableOpacity>
+        <Image source={{ uri: selectedImage }} style={styles.fullScreenImage} />
+      </View>
+    )}
+  </View>
+</Modal>
+
     </View>
   );
 };
@@ -154,22 +159,12 @@ const styles = StyleSheet.create({
     fontFamily: "TitanOne-Regular",
     fontSize: 20,
   },
-  conversation: {
-    flex: 1,
-    borderBottomColor: "#888",
-    borderBottomWidth: 2,
-    height: 120,
-  },
-  flatlist: {
-    flex: 1,
-  },
   itemContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    borderColor: "#FFC88d",
     borderBottomWidth: 2,
+    borderColor: "#FFC88d",
     backgroundColor: "#ffffff",
     borderRadius: 5,
   },
@@ -177,7 +172,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     flexDirection: "row",
-    flexWrap: "nowrap",
     alignItems: "center",
     marginLeft: 10,
     marginRight: 20,
@@ -190,10 +184,46 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 20,
   },
-  roleText: {
-    fontSize: 18,
-    color: "#666",
+  loadingText: {
+    textAlign: "center",
+    marginTop: 250,
+    color: "#aaa",
   },
+  noConversationsText: {
+    textAlign: "center",
+    marginTop: 250,
+    color: "#aaa",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  modalBackground: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    zIndex: 1, // Garante que o botão de fechar fique acima da imagem
+  },
+  fullScreenImage: {
+    width: '90%',
+    height: '90%',
+    resizeMode: 'contain',
+  },
+
 });
 
 export default ChatList;
