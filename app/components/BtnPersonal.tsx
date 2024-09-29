@@ -149,13 +149,14 @@ export default BtnPersonal;
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: "#2d47f0",
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     borderColor: "#f27e26",
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingVertical: 0,
   },
   button: {
     backgroundColor: "#2d47f0",

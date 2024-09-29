@@ -81,9 +81,9 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
     <View style={styles.geral}>
       <View style={styles.dadosFreelancer}>
         <PersonalCard freelancer={freelancer} />
-        <Description freelancer={freelancer} />
       </View>
       <BtnPersonal highlight={highlight} freelancer={freelancer} />
+      <Description freelancer={freelancer} />
     </View>
   );
 };
