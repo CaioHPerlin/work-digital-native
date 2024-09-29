@@ -32,10 +32,10 @@ const ChatList: React.FC<Props> = ({ userId }) => {
       .from("chats")
       .select(
         `
-    *,
-    user_1:profiles!chats_user_1_id_fkey(id, name),
-    user_2:profiles!chats_user_2_id_fkey(id, name)
-  `
+          *,
+          user_1:profiles!chats_user_1_id_fkey(id, name),
+          user_2:profiles!chats_user_2_id_fkey(id, name)
+        `
       )
       .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`)
       .order("updated_at", { ascending: false });

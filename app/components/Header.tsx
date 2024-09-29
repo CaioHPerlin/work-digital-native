@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
 import useChatNotifications from "../../hooks/useChatNotifications";
-import { supabase } from "../../lib/supabase";
-
 interface HeaderProps {
   title?: string;
   userId: string;
@@ -13,18 +11,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const { fetchNotifications, notificationCount } =
-    useChatNotifications(userId);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      fetchNotifications();
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation]);
+  const { notificationCount } = useChatNotifications(userId);
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -85,7 +72,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   btnHamburger: {
-    padding:5
+    padding: 5,
   },
 });
 
