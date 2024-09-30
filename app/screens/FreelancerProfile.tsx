@@ -65,12 +65,12 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   const [showHighlightSection, setShowHighlightSection] = useState(false);
 
-  const handlerConfirmRoles = () =>{
+  const handlerConfirmRoles = () => {
     setIsOpen(false);
     setShowHighlightSection(true);
 
     Alert.alert("Cargos confirmados");
-  }
+  };
 
   const {
     control,
@@ -426,7 +426,10 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 </TouchableOpacity>
               )}
             />
-                        <TouchableOpacity style={styles.confirmButton} onPress={handlerConfirmRoles}>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={handlerConfirmRoles}
+            >
               <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
             </TouchableOpacity>
           </Animatable.View>
@@ -548,51 +551,51 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       {showHighlightSection && (
         <View>
           <Text style={styles.title}>Adicionar Destaques</Text>
-      {selectedRoles.map((role) => (
-        <View key={role} style={styles.roleContainerX}>
-          <TouchableOpacity
-            onPress={() => handleHighlightUpload(role)}
-            style={{
-              flexDirection: "row",
-              gap: 10,
-              alignItems: "center",
-            }}
-          >
-            <Icon
-              name="plus"
-              size={20}
-              color="#FFF"
-              style={{
-                padding: 10,
-                backgroundColor: "#2d47f0",
-                maxWidth: 45,
-                borderRadius: 10,
-              }}
-            />
-            <Text style={styles.roleTitle}>{role}</Text>
-          </TouchableOpacity>
-          <ScrollView horizontal style={styles.imageScrollView}>
-            {highlightImages
-              .find((item) => item.role === role)
-              ?.images.map((uri, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => openModal(uri)}
-                  style={styles.imageContainer}
-                >
-                  <Icon
-                    onPress={() => handleHighlightRemove(role, index)}
-                    name="close"
-                    size={23}
-                    color="#f27e26"
-                    style={styles.closeIcon}
-                  />
-                  <Image source={{ uri }} style={styles.image} />
-                </TouchableOpacity>
-              ))}
-          </ScrollView>
-        </View>
-      ))}
+          {selectedRoles.map((role) => (
+            <View key={role} style={styles.roleContainerX}>
+              <TouchableOpacity
+                onPress={() => handleHighlightUpload(role)}
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
+                <Icon
+                  name="plus"
+                  size={20}
+                  color="#FFF"
+                  style={{
+                    padding: 10,
+                    backgroundColor: "#2d47f0",
+                    maxWidth: 45,
+                    borderRadius: 10,
+                  }}
+                />
+                <Text style={styles.roleTitle}>{role}</Text>
+              </TouchableOpacity>
+              <ScrollView horizontal style={styles.imageScrollView}>
+                {highlightImages
+                  .find((item) => item.role === role)
+                  ?.images.map((uri, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => openModal(uri)}
+                      style={styles.imageContainer}
+                    >
+                      <Icon
+                        onPress={() => handleHighlightRemove(role, index)}
+                        name="close"
+                        size={23}
+                        color="#f27e26"
+                        style={styles.closeIcon}
+                      />
+                      <Image source={{ uri }} style={styles.image} />
+                    </TouchableOpacity>
+                  ))}
+              </ScrollView>
+            </View>
+          ))}
         </View>
       )}
 
@@ -604,20 +607,10 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           onRequestClose={closeModal}
         >
           <View style={styles.modalContainerFullImage}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={closeModal}
-            >
-              <Icon
-                name="close"
-                size={40}
-                color="#f27e26"
-              />
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Icon name="close" size={40} color="#f27e26" />
             </TouchableOpacity>
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.fullImage}
-            />
+            <Image source={{ uri: selectedImage }} style={styles.fullImage} />
           </View>
         </Modal>
       )}
@@ -811,7 +804,7 @@ const styles = StyleSheet.create({
   },
 
   confirmButton: {
-    width:"90%",
+    width: "90%",
     marginTop: 20,
     backgroundColor: "#2d47f0",
     padding: 15,
@@ -822,8 +815,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
-
-
 });
 
 export default FreelancerProfile;
