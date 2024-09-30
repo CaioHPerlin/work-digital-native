@@ -12,7 +12,12 @@ export type RootStackParamList = {
   SliderDestaque: undefined;
   Slider: undefined;
   ChatList: undefined;
-  ChatScreen: { chatId: string; userId: string; freelancerId: string };
+  ChatScreen: {
+    chatId: string;
+    userId: string;
+    freelancerId: string;
+    initialMessage?: string;
+  };
 };
 
 export type DrawerParamList = {

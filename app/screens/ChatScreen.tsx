@@ -20,7 +20,14 @@ import { useFocusEffect } from "expo-router";
 import useChatNotifications from "../../hooks/useChatNotifications";
 
 interface ChatScreenProps {
-  route: { params: { chatId: string; userId: string; freelancerId: string } };
+  route: {
+    params: {
+      chatId: string;
+      userId: string;
+      freelancerId: string;
+      initialMessage?: string;
+    };
+  };
 }
 
 interface Message {
@@ -33,12 +40,14 @@ interface Message {
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
-  const { chatId, userId, freelancerId } = route.params;
+  const { chatId, userId, freelancerId, initialMessage } = route.params;
 
   const [targetUserName, setTargetUserName] = useState("Carregando...");
   const [targetUserPicture, setTargetUserPicture] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState(
+    initialMessage ? initialMessage : ""
+  );
   const { markChatAsRead, fetchNotifications } = useChatNotifications(userId);
   const flatListRef = useRef<FlatList<Message>>(null);
 

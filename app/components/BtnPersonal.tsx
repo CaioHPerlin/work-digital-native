@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
-  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -27,6 +26,7 @@ interface Props {
 const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
   const [userId, setUserId] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [initialMessage, setInitialMessage] = useState("");
   const { phone_number } = freelancer;
   const navigation = useNavigation<CustomStackNavigationProp>();
 
@@ -76,6 +76,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
           chatId: existingChat.id,
           userId: userId,
           freelancerId: freelancer.id,
+          initialMessage: initialMessage,
         });
         return;
       }
@@ -117,6 +118,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
       {highlight && highlight.images.length > 0 && (
         <View>
           <SliderDestaque
+            setInitialMessage={setInitialMessage}
             startConversation={handleStartConversation}
             highlight={{ ...highlight }}
             key={0}

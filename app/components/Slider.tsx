@@ -15,24 +15,25 @@ const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
 
 interface Props {
   imageUrls: string[];
+  paused?: boolean;
 }
 
-export default function Slider({ imageUrls }: Props) {
+export default function Slider({ imageUrls, paused = false }: Props) {
   const flatListRef = useRef<FlatList<string>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false); // Track if FlatList is in the middle of a scroll
+  const [isUserScrolling, setIsUserScrolling] = useState(false); // Track user scrolling state
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // To store the interval ID
 
   const onViewRef = useRef(({ changed }: { changed: any }) => {
     if (changed[0].isViewable) {
       const newIndex = changed[0].index;
       setCurrentIndex(newIndex);
-      setIsScrolling(false); // Reset scrolling status when view changes
+      setIsUserScrolling(false); // Reset user scrolling status when view changes
     }
   });
 
   const scrollToIndex = (index: number) => {
-    if (index >= 0 && index < imageUrls.length && !isScrolling) {
-      setIsScrolling(true); // Set scrolling status to true to prevent multiple scrolls
+    if (index >= 0 && index < imageUrls.length) {
       flatListRef.current?.scrollToIndex({ animated: true, index });
     }
   };
@@ -48,11 +49,29 @@ export default function Slider({ imageUrls }: Props) {
   };
 
   useEffect(() => {
-    if (imageUrls.length > 0) {
-      const interval = setInterval(handleNext, 3000); // Auto-slide every 3 seconds
-      return () => clearInterval(interval); // Clear interval on unmount
+    // Set interval for auto-slide if not paused and user is not scrolling
+    if (imageUrls.length > 0 && !paused && !isUserScrolling) {
+      intervalRef.current = setInterval(handleNext, 3000); // Auto-slide every 3 seconds
     }
-  }, [imageUrls.length, currentIndex]); // Only reset interval if imageUrls length or currentIndex changes
+
+    // Cleanup interval on unmount or when conditions change
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [imageUrls.length, paused, isUserScrolling]); // Only reset interval if these change
+
+  useEffect(() => {
+    // Restart interval if user is not scrolling and not paused
+    if (imageUrls.length > 0 && !paused && !isUserScrolling) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(handleNext, 3000); // Restart auto-slide every 3 seconds
+    }
+  }, [currentIndex]); // Restart interval when currentIndex changes
 
   const renderItems = ({ item }: { item: string }) => (
     <View>
@@ -94,6 +113,19 @@ export default function Slider({ imageUrls }: Props) {
         style={styles.carousel}
         viewabilityConfig={viewConfigRef}
         onViewableItemsChanged={onViewRef.current}
+        onTouchStart={() => {
+          setIsUserScrolling(true); // Set user scrolling state to true on touch
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current); // Clear interval on touch
+          }
+        }}
+        onTouchEnd={() => {
+          setIsUserScrolling(false); // Set user scrolling state to false when touch ends
+          // Restart interval after user interaction
+          if (!paused) {
+            intervalRef.current = setInterval(handleNext, 3000);
+          }
+        }}
       />
 
       {/* Touchable areas on the sides */}

@@ -14,6 +14,7 @@ import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface SliderDestaqueProps {
+  setInitialMessage: (str: string) => void;
   startConversation: () => void;
   highlight: HighlightImage;
   isPickerVisible: boolean;
@@ -22,6 +23,7 @@ interface SliderDestaqueProps {
 }
 
 const SliderDestaque: React.FC<SliderDestaqueProps> = ({
+  setInitialMessage,
   startConversation,
   highlight,
   isPickerVisible,
@@ -29,6 +31,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   index,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [sliderPaused, setSliderPaused] = useState(false);
   return (
     <>
       <View style={styles.avatarContainer}>
@@ -56,7 +59,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Slider imageUrls={highlight.images} />
+              <Slider imageUrls={highlight.images} paused={sliderPaused} />
               <Icon
                 name="close"
                 size={30}
@@ -71,14 +74,25 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
                 <TextInput
                   style={styles.inputMensage}
                   placeholder="Enviar Mensagem"
+                  onChangeText={(v: string) => setInitialMessage(v)}
                   placeholderTextColor="#f27e26"
+                  onFocus={() => setSliderPaused(true)} // Pause slider when input is focused
+                  onBlur={() => setSliderPaused(false)} // Resume slider when input loses focus
                 />
-                <Icon
-                  name="send"
-                  size={30}
-                  color="#f27e26"
-                  style={styles.iconSend}
-                />
+
+                <TouchableOpacity
+                  onPress={() => {
+                    setPickerVisible(false);
+                    startConversation();
+                  }}
+                >
+                  <Icon
+                    name="send"
+                    size={30}
+                    color="#f27e26"
+                    style={styles.iconSend}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
