@@ -96,6 +96,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
         chatId: chat.id,
         userId: userId,
         freelancerId: freelancer.id,
+        initialMessage: initialMessage,
       });
     } catch (error) {
       console.error(error);
