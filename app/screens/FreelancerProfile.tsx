@@ -63,6 +63,15 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const [showHighlightSection, setShowHighlightSection] = useState(false);
+
+  const handlerConfirmRoles = () =>{
+    setIsOpen(false);
+    setShowHighlightSection(true);
+
+    Alert.alert("Cargos confirmados");
+  }
+
   const {
     control,
     handleSubmit,
@@ -417,6 +426,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 </TouchableOpacity>
               )}
             />
+                        <TouchableOpacity style={styles.confirmButton} onPress={handlerConfirmRoles}>
+              <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
+            </TouchableOpacity>
           </Animatable.View>
         </View>
       </TouchableWithoutFeedback>
@@ -533,7 +545,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         {roleModal}
       </>
 
-      <Text style={styles.title}>Adicionar Destaques</Text>
+      {showHighlightSection && (
+        <View>
+          <Text style={styles.title}>Adicionar Destaques</Text>
       {selectedRoles.map((role) => (
         <View key={role} style={styles.roleContainerX}>
           <TouchableOpacity
@@ -579,6 +593,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           </ScrollView>
         </View>
       ))}
+        </View>
+      )}
 
       {/* Modal para exibir a imagem em tela cheia */}
       {selectedImage && (
@@ -793,6 +809,21 @@ const styles = StyleSheet.create({
     fontSize: 34,
     color: "#feb96f",
   },
+
+  confirmButton: {
+    width:"90%",
+    marginTop: 20,
+    backgroundColor: "#2d47f0",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+
+
 });
 
 export default FreelancerProfile;
