@@ -11,11 +11,13 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const { notificationCount } = useChatNotifications(userId);
+  const { unreadChats } = useChatNotifications(userId);
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
+
+  console.log(unreadChats);
 
   const openChatScreen = () => {
     navigation.navigate("ChatList");
@@ -28,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
       </TouchableOpacity>
       <Text style={styles.headerText}>{title}</Text>
       <TouchableOpacity onPress={openChatScreen}>
-        {notificationCount > 0 && (
+        {unreadChats.length > 0 && (
           <View
             style={{
               position: "absolute",
@@ -43,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
             }}
           >
             <Text style={{ color: "white", fontSize: 12 }}>
-              {notificationCount}
+              {unreadChats.length}
             </Text>
           </View>
         )}

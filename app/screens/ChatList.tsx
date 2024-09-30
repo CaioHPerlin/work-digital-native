@@ -23,7 +23,8 @@ interface Props {
 const ChatList: React.FC<Props> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const { markChatAsRead, unreadChats } = useChatNotifications(userId);
+  const { markChatAsRead, messageNotifications, unreadChats } =
+    useChatNotifications(userId);
   const [loading, setLoading] = useState(true);
 
   const fetchConversations = async () => {
@@ -58,7 +59,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
     if (userId) {
       fetchConversations();
     }
-  }, [userId]);
+  }, [userId, messageNotifications]);
 
   const navigateToChat = (
     chatId: string,
@@ -92,8 +93,14 @@ const ChatList: React.FC<Props> = ({ userId }) => {
           <Text style={styles.nameText}>
             {userId === item.user_2_id ? item.user_1.name : item.user_2.name}
           </Text>
+
+          {/* If there are unread messages, show the unread messages count */}
           {unreadChats.includes(item.id) && (
-            <Icon size={15} color="#f27e26" source={"circle"} />
+            <View style={styles.unreadCountContainer}>
+              <Text style={styles.unreadCountText}>
+                {messageNotifications[item.id]}
+              </Text>
+            </View>
           )}
         </View>
       </TouchableOpacity>
@@ -193,6 +200,19 @@ const styles = StyleSheet.create({
   roleText: {
     fontSize: 18,
     color: "#666",
+  },
+  unreadCountContainer: {
+    backgroundColor: "#f27e26", // Orange color for the circle
+    width: 24, // Width and height to make it circular
+    height: 24,
+    borderRadius: 12, // Half of width/height for perfect circle
+    justifyContent: "center",
+    alignItems: "center", // Center the text
+  },
+  unreadCountText: {
+    color: "#fff", // White text inside the circle
+    fontWeight: "bold",
+    fontSize: 12, // Adjust font size to fit inside the circle
   },
 });
 
