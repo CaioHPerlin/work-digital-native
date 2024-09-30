@@ -266,7 +266,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.noSelectionContainer}>
             <Text style={{ textAlign: "center" }}>
               {selectedValue
-                ? "Nenhum freelancer encontrado."
+                ? "Nenhum prestador encontrado."
                 : "Selecione um serviço acima para buscar por prestadores!"}
             </Text>
           </View>

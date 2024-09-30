@@ -89,6 +89,11 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       service.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  const handleOpenModal = () => {
+    setIsOpen(true);
+    setPreSelectedRoles([...selectedRoles]);
+  };
+
   useEffect(() => {
     setPreSelectedRoles([...selectedRoles]);
   }, [selectedRoles]);
@@ -433,7 +438,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
               style={styles.confirmButton}
               onPress={handleConfirmRoles}
             >
-              <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
+              <Text style={styles.confirmButtonText}>Confirmar</Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>
@@ -510,7 +515,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           <FlatList
             ListHeaderComponent={
               <TouchableOpacity
-                onPress={() => setIsOpen(true)}
+                onPress={handleOpenModal}
                 style={
                   selectedRoles.length === 0
                     ? {

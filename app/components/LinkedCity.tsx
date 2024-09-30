@@ -30,6 +30,7 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log(state);
     if (state) {
       setLoading(true);
       const fetchCidades = async () => {
@@ -41,6 +42,17 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
             a.nome.localeCompare(b.nome)
           );
           setCities(sortedCities);
+
+          if (city) {
+            const cityExists = sortedCities.some(
+              (cidade: Cidade) => cidade.nome === city
+            );
+
+            if (!cityExists) {
+              setCity(null); // Set city to null if it doesn't exist in the fetched cities
+            }
+          }
+
           setLoading(false);
         } catch (error) {
           console.error(error);

@@ -12,7 +12,7 @@ const useChatNotifications = (userId: string) => {
       const { data: chatsData, error: chatsError } = await supabase
         .from("chats")
         .select(
-          "id, user_1_id, user_2_id, user_1_read, user_2_read, updated_at"
+          "id, user_1_id, user_2_id, user_1_read, user_2_read, user_1_read_at, user_2_read_at, updated_at"
         )
         .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`);
 
@@ -34,7 +34,10 @@ const useChatNotifications = (userId: string) => {
               .from("messages")
               .select("id, created_at")
               .eq("chat_id", chat.id)
-              .gt("created_at", isUser1 ? chat.user_1_read : chat.user_2_read); // Unread messages are those sent after the chat's updated_at timestamp
+              .gt(
+                "created_at",
+                isUser1 ? chat.user_1_read_at : chat.user_2_read_at
+              ); // Unread messages are those sent after the chat's updated_at timestamp
 
             if (messagesError) throw messagesError;
 
@@ -124,18 +127,19 @@ const useChatNotifications = (userId: string) => {
         user_2_read_at: string;
       }> = {};
 
-      if (chat.user_1_id === userId && !chat.user_1_read) {
+      if (chat.user_1_id === userId) {
         updateData = {
           user_1_read: true,
           user_1_read_at: new Date().toISOString(),
         };
-      } else if (chat.user_2_id === userId && !chat.user_2_read) {
+      } else if (chat.user_2_id === userId) {
         updateData = {
           user_2_read: true,
           user_2_read_at: new Date().toISOString(),
         };
       }
 
+      console.log("data: ", updateData);
       if (Object.keys(updateData).length > 0) {
         const { error: updateError } = await supabase
           .from("chats")

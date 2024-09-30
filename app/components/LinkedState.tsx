@@ -68,9 +68,13 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
     );
 
   // Handle state selection from the modal
-  const handleSelectState = (state: Estado) => {
-    setSelectedState(state);
-    setState(state.sigla); // Send sigla back to parent
+  const handleSelectState = (newState: Estado) => {
+    setSelectedState(newState);
+
+    if (newState.sigla !== state) {
+      setState(newState.sigla);
+    }
+
     setIsOpen(false); // Close modal
   };
 

@@ -6,11 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   Alert,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
 import { supabase } from "../../lib/supabase";
 import LinkedCity from "../components/LinkedCity";
 import LinkedState from "../components/LinkedState";
@@ -91,7 +88,7 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
     if (estado && cidade) {
       updateUserProfile();
     } else {
-      Alert.alert("Error", "Please select both state and city.");
+      Alert.alert("Selecione seu estado e cidade.");
     }
   };
 

@@ -60,8 +60,8 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       confirmPassword: z
         .string({ message: "É obrigatório confirmar sua senha" })
         .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-      state: z.string().min(1, { message: "Por favor, selecione seu estado" }),
-      city: z.string().min(1, { message: "Por favor, selecione sua cidade" }),
+      state: z.string({ message: "Por favor, selecione seu estado" }),
+      city: z.string({ message: "Por favor, selecione sua cidade" }),
       isFreelancer: z.boolean(),
       cpf: z
         .string()
@@ -146,6 +146,11 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       service.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  const handleOpenModal = () => {
+    setIsOpen(true);
+    setPreSelectedRoles([...selectedRoles]);
+  };
+
   const handleRoleSelect = (role: string) => {
     if (preSelectedRoles.includes(role)) {
       setPreSelectedRoles(preSelectedRoles.filter((r) => r !== role));
@@ -213,7 +218,6 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
   let state = watch("state");
   let city = watch("city");
-
   const roleModal = (
     <Modal
       visible={isOpen}
@@ -294,7 +298,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               style={styles.confirmButton}
               onPress={handleConfirmRoles}
             >
-              <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
+              <Text style={styles.confirmButtonText}>Confirmar</Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>
@@ -410,7 +414,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               <FlatList
                 ListHeaderComponent={
                   <TouchableOpacity
-                    onPress={() => setIsOpen(true)}
+                    onPress={handleOpenModal}
                     style={
                       selectedRoles.length === 0
                         ? {

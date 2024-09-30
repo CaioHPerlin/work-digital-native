@@ -101,6 +101,11 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       service.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  const handleOpenModal = () => {
+    setIsOpen(true);
+    setPreSelectedRoles([...selectedRoles]);
+  };
+
   const handleConfirmRoles = () => {
     setIsOpen(false);
 
@@ -280,7 +285,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               style={styles.confirmButton}
               onPress={handleConfirmRoles}
             >
-              <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
+              <Text style={styles.confirmButtonText}>Confirmar</Text>
             </TouchableOpacity>
           </Animatable.View>
         </View>
@@ -312,7 +317,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             <FlatList
               ListHeaderComponent={
                 <TouchableOpacity
-                  onPress={() => setIsOpen(true)}
+                  onPress={handleOpenModal}
                   style={
                     selectedRoles.length === 0
                       ? {

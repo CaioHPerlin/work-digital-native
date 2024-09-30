@@ -33,7 +33,7 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
     <SafeAreaView style={styles.container}>
       {data.length === 0 ? (
         <Text style={{ textAlign: "center" }}>
-          Nenhum freelancer encontrado.
+          Nenhum prestador encontrado.
         </Text>
       ) : (
         <FlatList
