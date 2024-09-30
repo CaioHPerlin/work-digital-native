@@ -173,9 +173,12 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     setLoading(true);
 
+    let formattedBirthDate;
     if (data.birthDate && isFreelancer) {
-      data.birthDate.split("/").reverse().join("-");
+      formattedBirthDate = data.birthDate.split("/").reverse().join("-");
     }
+
+    console.log(formattedBirthDate);
 
     const { data: supabaseData, error } = await supabase.auth.signUp({
       email: data.email,
@@ -189,7 +192,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           is_freelancer: data.isFreelancer,
           cpf: data.isFreelancer ? data.cpf : undefined,
           phone_number: data.isFreelancer ? data.phoneNumber : undefined,
-          birth_date: data.isFreelancer ? data.birthDate : undefined,
+          birth_date: data.isFreelancer ? formattedBirthDate : undefined,
           profile_photo: data.isFreelancer ? data.profilePhoto : undefined,
           roles: data.isFreelancer ? selectedRoles : undefined,
         },
