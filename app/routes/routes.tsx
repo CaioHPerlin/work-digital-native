@@ -181,7 +181,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                 />
               ) : (
                 <Drawer.Screen
-                  name="Meu Perfil de Prestador"
+                  name="Perfil de Prestador"
                   options={{
                     drawerIcon: ({ color, size }) => (
                       <Icon name="briefcase" color={color} size={size} />
@@ -199,8 +199,6 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
       )}
       <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
       <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
-      <Stack.Screen name="SliderDestaque" component={SliderDestaque} />
-      <Stack.Screen name="Slider" component={Slider} />
       {session && (
         <Stack.Screen
           name="ChatList"

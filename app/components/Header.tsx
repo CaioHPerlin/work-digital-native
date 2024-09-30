@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
@@ -13,11 +13,13 @@ const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
   const { unreadChats } = useChatNotifications(userId);
 
+  useEffect(() => {
+    console.log(unreadChats);
+  }, [unreadChats]);
+
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
   };
-
-  console.log(unreadChats);
 
   const openChatScreen = () => {
     navigation.navigate("ChatList");

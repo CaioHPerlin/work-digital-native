@@ -57,7 +57,6 @@ const useChatNotifications = (userId: string) => {
 
       // Update unread message counts per chat
       setMessageNotifications(() => {
-        console.log(messageNotificationMap);
         return { ...messageNotificationMap };
       });
 

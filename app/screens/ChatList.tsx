@@ -9,7 +9,7 @@ import {
   FlatList,
 } from "react-native";
 import { Conversation, CustomStackNavigationProp } from "../types";
-import { Text, IconButton } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
@@ -36,8 +36,8 @@ const ChatList: React.FC<Props> = ({ userId }) => {
       .select(
         `
           *,
-          user_1:profiles!chats_user_1_id_fkey(id, name),
-          user_2:profiles!chats_user_2_id_fkey(id, name)
+          user_1:profiles!chats_user_1_id_fkey(id, name, is_freelancer),
+          user_2:profiles!chats_user_2_id_fkey(id, name, is_freelancer)
         `
       )
       .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`)
@@ -83,11 +83,18 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   };
 
   const renderConversation = ({ item }: { item: Conversation }) => {
-    const imageUrl = optimizeImageLowQ(
-      `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${
-        userId === item.user_2_id ? item.user_1.id : item.user_2.id
-      }.jpg`
-    );
+    const isOtherUserFreelancer =
+      userId === item.user_2_id
+        ? item.user_1.is_freelancer
+        : item.user_2.is_freelancer;
+    const otherUserId =
+      userId === item.user_2_id ? item.user_1_id : item.user_2_id;
+
+    const imageUrl = isOtherUserFreelancer
+      ? optimizeImageLowQ(
+          `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${otherUserId}.jpg`
+        )
+      : require("../../assets/images/user.jpg");
 
     return (
       <TouchableOpacity

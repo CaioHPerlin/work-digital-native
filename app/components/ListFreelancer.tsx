@@ -29,10 +29,6 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
     });
   };
 
-  useEffect(() => {
-    data.map((freelancer) => console.log(freelancer));
-  }, [data]);
-
   return (
     <SafeAreaView style={styles.container}>
       {data.length === 0 ? (

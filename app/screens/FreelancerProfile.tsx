@@ -51,6 +51,7 @@ const profileSchema = z.object({
 
 const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [preSelectedRoles, setPreSelectedRoles] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
@@ -63,13 +64,10 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const [showHighlightSection, setShowHighlightSection] = useState(false);
-
   const handlerConfirmRoles = () => {
     setIsOpen(false);
-    setShowHighlightSection(true);
 
-    Alert.alert("Cargos confirmados");
+    setSelectedRoles([...preSelectedRoles]);
   };
 
   const {
@@ -91,15 +89,19 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       service.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  useEffect(() => {
+    setPreSelectedRoles([...selectedRoles]);
+  }, [selectedRoles]);
+
   const handleRoleSelect = (role: string) => {
-    if (selectedRoles.includes(role)) {
-      setSelectedRoles(selectedRoles.filter((r) => r !== role));
+    if (preSelectedRoles.includes(role)) {
+      setPreSelectedRoles(preSelectedRoles.filter((r) => r !== role));
     } else {
-      setSelectedRoles([...selectedRoles, role]);
+      setPreSelectedRoles([...preSelectedRoles, role]);
     }
   };
 
-  const handleRoleRemove = (role: string) => {
+  const handleSelectedRoleRemove = (role: string) => {
     if (selectedRoles.includes(role)) {
       const newArray = selectedRoles.filter((item) => item !== role);
       setSelectedRoles(newArray);
@@ -253,6 +255,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
+
       quality: 1,
     });
 
@@ -388,7 +391,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                 <TouchableOpacity
                   style={[
                     styles.modalItem,
-                    selectedRoles.includes(item) && {
+                    preSelectedRoles.includes(item) && {
                       backgroundColor: "#2d47f0",
                     },
                   ]}
@@ -399,12 +402,12 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                   {item.length > 1 && (
                     <Icon
                       name={
-                        selectedRoles.includes(item)
+                        preSelectedRoles.includes(item)
                           ? "check-square-o"
                           : "square-o"
                       }
                       style={
-                        selectedRoles.includes(item)
+                        preSelectedRoles.includes(item)
                           ? { ...styles.modalItemText, color: "#FFF" }
                           : item.length > 1
                           ? styles.modalItemText
@@ -414,7 +417,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                   )}
                   <Text
                     style={
-                      selectedRoles.includes(item)
+                      preSelectedRoles.includes(item)
                         ? { ...styles.modalItemText, color: "#FFF" }
                         : item.length > 1
                         ? styles.modalItemText
@@ -530,7 +533,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             data={selectedRoles}
             renderItem={(item) => (
               <TouchableOpacity
-                onPress={() => handleRoleRemove(item.item)}
+                onPress={() => handleSelectedRoleRemove(item.item)}
                 style={styles.roleContainer}
               >
                 <Text>{item.item}</Text>
@@ -548,7 +551,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         {roleModal}
       </>
 
-      {showHighlightSection && (
+      {selectedRoles.length > 0 && (
         <View>
           <Text style={styles.title}>Adicionar Destaques</Text>
           {selectedRoles.map((role) => (
