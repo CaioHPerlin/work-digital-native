@@ -64,7 +64,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handlerConfirmRoles = () => {
+  const handleConfirmRoles = () => {
     setIsOpen(false);
 
     setSelectedRoles([...preSelectedRoles]);
@@ -431,7 +431,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             />
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={handlerConfirmRoles}
+              onPress={handleConfirmRoles}
             >
               <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
             </TouchableOpacity>

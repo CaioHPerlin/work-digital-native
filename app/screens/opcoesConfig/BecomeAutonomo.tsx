@@ -37,6 +37,7 @@ interface Props {
 const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [preSelectedRoles, setPreSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
@@ -100,15 +101,21 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       service.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  const handleConfirmRoles = () => {
+    setIsOpen(false);
+
+    setSelectedRoles([...preSelectedRoles]);
+  };
+
   const handleRoleSelect = (role: string) => {
-    if (selectedRoles.includes(role)) {
-      setSelectedRoles(selectedRoles.filter((r) => r !== role));
+    if (preSelectedRoles.includes(role)) {
+      setPreSelectedRoles(preSelectedRoles.filter((r) => r !== role));
     } else {
-      setSelectedRoles([...selectedRoles, role]);
+      setPreSelectedRoles([...preSelectedRoles, role]);
     }
   };
 
-  const handleRoleRemove = (role: string) => {
+  const handleSelectedRoleRemove = (role: string) => {
     if (selectedRoles.includes(role)) {
       const newArray = selectedRoles.filter((item) => item !== role);
       setSelectedRoles(newArray);
@@ -230,7 +237,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                 <TouchableOpacity
                   style={[
                     styles.modalItem,
-                    selectedRoles.includes(item) && {
+                    preSelectedRoles.includes(item) && {
                       backgroundColor: "#2d47f0",
                     },
                   ]}
@@ -241,12 +248,12 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                   {item.length > 1 && (
                     <Icon
                       name={
-                        selectedRoles.includes(item)
+                        preSelectedRoles.includes(item)
                           ? "check-square-o"
                           : "square-o"
                       }
                       style={
-                        selectedRoles.includes(item)
+                        preSelectedRoles.includes(item)
                           ? { ...styles.modalItemText, color: "#FFF" }
                           : item.length > 1
                           ? styles.modalItemText
@@ -256,7 +263,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                   )}
                   <Text
                     style={
-                      selectedRoles.includes(item)
+                      preSelectedRoles.includes(item)
                         ? { ...styles.modalItemText, color: "#FFF" }
                         : item.length > 1
                         ? styles.modalItemText
@@ -268,6 +275,13 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             />
+
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={handleConfirmRoles}
+            >
+              <Text style={styles.confirmButtonText}>Confirmar Cargos</Text>
+            </TouchableOpacity>
           </Animatable.View>
         </View>
       </TouchableWithoutFeedback>
@@ -320,7 +334,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
               data={selectedRoles}
               renderItem={(item) => (
                 <TouchableOpacity
-                  onPress={() => handleRoleRemove(item.item)}
+                  onPress={() => handleSelectedRoleRemove(item.item)}
                   style={styles.roleContainer}
                 >
                   <Text>{item.item}</Text>
@@ -542,6 +556,22 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginBottom: 10,
+  },
+  loadingText: {
+    fontSize: 34,
+    color: "#feb96f",
+  },
+  confirmButton: {
+    width: "90%",
+    marginTop: 20,
+    backgroundColor: "#2d47f0",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
