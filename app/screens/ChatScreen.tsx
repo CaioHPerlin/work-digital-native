@@ -244,7 +244,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
             value={newMessage}
             multiline={true}
             onChangeText={setNewMessage}
-            placeholder="Type a message..."
+            placeholder="Digite a mensagem"
             placeholderTextColor="#888"
           />
           <TouchableOpacity

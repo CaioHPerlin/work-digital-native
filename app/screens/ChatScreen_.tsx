@@ -76,7 +76,7 @@ const ChatScreen: React.FC = () => {
             style={styles.textInput}
             value={messageText}
             onChangeText={setMessageText}
-            placeholder="Type a message..."
+            placeholder="Enviar mensagem"
             placeholderTextColor="#888"
           />
           <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
