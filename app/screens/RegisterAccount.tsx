@@ -62,12 +62,8 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
       confirmPassword: z
         .string({ message: "É obrigatório confirmar sua senha" })
         .min(6, { message: "Senha deve ter pelo menos 6 caracteres" }),
-      state: z
-        .string({ message: "Por favor, selecione seu estado" })
-        .min(1, { message: "Estado é obrigatório" }),
-      city: z
-        .string({ message: "Por favor, selecione sua cidade" })
-        .min(1, { message: "Cidade é obrigatória" }),
+      state: z.string().min(1, { message: "Por favor, selecione seu estado" }),
+      city: z.string().min(1, { message: "Por favor, selecione sua cidade" }),
       isFreelancer: z.boolean(),
       cpf: z
         .string()
@@ -163,14 +159,14 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleSignUp = async (data: SignUpFreelancer) => {
+    if (isFreelancer && selectedRoles.length < 1) {
+      return;
+    }
+
     setLoading(true);
 
-    if (isFreelancer) {
-      if (selectedRoles.length < 1) {
-        return;
-      }
-
-      data.birthDate = data.birthDate.split("/").reverse().join("-");
+    if (data.birthDate && isFreelancer) {
+      data.birthDate.split("/").reverse().join("-");
     }
 
     const { data: supabaseData, error } = await supabase.auth.signUp({
