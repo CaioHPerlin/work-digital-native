@@ -37,7 +37,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   const [targetUserPicture, setTargetUserPicture] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const flatListRef = useRef<FlatList<Message>>(null);
 
   useEffect(() => {

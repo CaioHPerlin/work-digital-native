@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Conversation, CustomStackNavigationProp } from "../types";
 import { Text } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
 import useChatNotifications from "../../hooks/useChatNotifications";
@@ -25,17 +25,27 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // Estado para armazenar a imagem selecionada
   const [modalVisible, setModalVisible] = useState(false); // Estado para controlar o modal
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const { markChatAsRead, messageNotifications, unreadChats } =
-    useChatNotifications(userId);
+  const {
+    markChatAsRead,
+    fetchNotifications,
+    messageNotifications,
+    unreadChats,
+  } = useChatNotifications(userId);
   const [loading, setLoading] = useState(true);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchNotifications(); // Refetch notifications when the screen becomes focused
+    }
+  }, [isFocused]);
 
   const fetchConversations = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("chats")
       .select(
-        `
-          *,
+        `          *,
           user_1:profiles!chats_user_1_id_fkey(id, name, is_freelancer),
           user_2:profiles!chats_user_2_id_fkey(id, name, is_freelancer)
         `

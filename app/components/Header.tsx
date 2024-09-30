@@ -1,9 +1,14 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation, DrawerActions } from "@react-navigation/native";
+import {
+  useNavigation,
+  DrawerActions,
+  useIsFocused,
+} from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
 import useChatNotifications from "../../hooks/useChatNotifications";
+import { useFocusEffect } from "expo-router";
 interface HeaderProps {
   title?: string;
   userId: string;
@@ -11,11 +16,14 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title = "Meu Perfil", userId }) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const { unreadChats } = useChatNotifications(userId);
+  const isFocused = useIsFocused();
+  const { unreadChats, fetchNotifications } = useChatNotifications(userId);
 
   useEffect(() => {
-    console.log(unreadChats);
-  }, [unreadChats]);
+    if (isFocused) {
+      fetchNotifications(); // Refetch notifications when the screen becomes focused
+    }
+  }, [isFocused]);
 
   const openDrawer = () => {
     navigation.dispatch(DrawerActions.openDrawer());
