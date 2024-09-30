@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
 import { supabase } from "../../lib/supabase";
+import { useFocusEffect } from "expo-router";
+import useChatNotifications from "../../hooks/useChatNotifications";
 
 interface ChatScreenProps {
   route: { params: { chatId: string; userId: string; freelancerId: string } };
@@ -37,8 +39,30 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   const [targetUserPicture, setTargetUserPicture] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const { markChatAsRead, fetchNotifications } = useChatNotifications(userId);
   const flatListRef = useRef<FlatList<Message>>(null);
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        console.log("trigger left");
+        const markChatAsReadAsync = async () => {
+          try {
+            // Mark chat as read
+            await markChatAsRead(chatId, userId);
+          } catch (error) {
+            console.error(
+              "Error marking chat as read or fetching notifications:",
+              error
+            );
+          }
+        };
+
+        // Call the async function
+        markChatAsReadAsync();
+      };
+    }, [chatId, userId])
+  );
   useEffect(() => {
     const fetchMessages = async () => {
       const { data, error } = await supabase

@@ -34,7 +34,7 @@ const useChatNotifications = (userId: string) => {
               .from("messages")
               .select("id, created_at")
               .eq("chat_id", chat.id)
-              .gt("created_at", chat.updated_at); // Unread messages are those sent after the chat's updated_at timestamp
+              .gt("created_at", isUser1 ? chat.user_1_read : chat.user_2_read); // Unread messages are those sent after the chat's updated_at timestamp
 
             if (messagesError) throw messagesError;
 
@@ -106,7 +106,9 @@ const useChatNotifications = (userId: string) => {
     try {
       const { data: chat, error: fetchError } = await supabase
         .from("chats")
-        .select("user_1_id, user_2_id, user_1_read, user_2_read, updated_at")
+        .select(
+          "user_1_id, user_2_id, user_1_read, user_2_read, user_1_read_at, user_2_read_at, updated_at"
+        )
         .eq("id", chatId)
         .single();
 
@@ -115,15 +117,24 @@ const useChatNotifications = (userId: string) => {
         return;
       }
 
-      let updateData = {};
+      let updateData: Partial<{
+        user_1_read: boolean;
+        user_1_read_at: string;
+        user_2_read: boolean;
+        user_2_read_at: string;
+      }> = {};
 
       if (chat.user_1_id === userId && !chat.user_1_read) {
-        updateData = { user_1_read: true };
+        updateData = {
+          user_1_read: true,
+          user_1_read_at: new Date().toISOString(),
+        };
       } else if (chat.user_2_id === userId && !chat.user_2_read) {
-        updateData = { user_2_read: true };
+        updateData = {
+          user_2_read: true,
+          user_2_read_at: new Date().toISOString(),
+        };
       }
-
-      updateData = { ...updateData, updated_at: new Date().toISOString() };
 
       if (Object.keys(updateData).length > 0) {
         const { error: updateError } = await supabase
@@ -140,7 +151,12 @@ const useChatNotifications = (userId: string) => {
             .from("messages")
             .select("id")
             .eq("chat_id", chatId)
-            .gt("created_at", chat.updated_at);
+            .gt(
+              "created_at",
+              chat.user_1_id === userId
+                ? updateData.user_1_read_at
+                : updateData.user_2_read_at
+            );
 
           if (messagesError) {
             console.error("Error fetching unread messages:", messagesError);

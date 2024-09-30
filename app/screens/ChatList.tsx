@@ -36,7 +36,8 @@ const ChatList: React.FC<Props> = ({ userId }) => {
 
   useEffect(() => {
     if (isFocused) {
-      fetchNotifications(); // Refetch notifications when the screen becomes focused
+      console.log("ChatList focused");
+      fetchNotifications(); // Refetch notifications when the screen was focused
     }
   }, [isFocused]);
 
