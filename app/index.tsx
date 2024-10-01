@@ -7,6 +7,8 @@ import Routes from "./routes/routes";
 import { Text } from "react-native-paper";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { ChatNotificationsProvider } from "../hooks/ChatNotificationsContext";
+import { View } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,9 +39,17 @@ export default function App() {
     return null;
   }
 
+  if (!session) {
+    return (
+      <>
+        <Routes session={session} />
+      </>
+    );
+  }
+
   return (
-    <>
+    <ChatNotificationsProvider userId={session.user.id}>
       <Routes session={session} />
-    </>
+    </ChatNotificationsProvider>
   );
 }

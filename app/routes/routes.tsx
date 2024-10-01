@@ -17,25 +17,19 @@ import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
 import ChangeCity from "../screens/ChangeCity";
 import FreelancerDetails from "../screens/FreelancerDetails";
-import SliderDestaque from "../components/SliderDestaque";
-import Slider from "../components/Slider";
 import Header from "../components/Header";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Ionicon from "react-native-vector-icons/Ionicons";
 import ChatList from "../screens/ChatList";
-import { useNavigation } from "@react-navigation/native";
-import { CustomStackNavigationProp } from "../types";
 import ChatScreen from "../screens/ChatScreen";
 import { supabase } from "../../lib/supabase";
-import { Alert } from "react-native";
+import { Alert, Text, View } from "react-native";
 import FreelancerProfile from "../screens/FreelancerProfile";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const DrawerContent = (props: any) => {
-  const navigation = useNavigation<CustomStackNavigationProp>();
-
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut({ scope: "local" });
     if (error) {
@@ -89,7 +83,6 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
         console.log(data[0].is_freelancer);
       } else {
         setIsFreelancer(false);
-        console.log(false);
       }
     };
 
@@ -112,9 +105,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
             <Drawer.Navigator
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={({ route }) => ({
-                header: () => (
-                  <Header title={route.name} userId={session.user.id} />
-                ),
+                header: () => <Header title={route.name} />,
                 drawerStyle: { backgroundColor: "#2d47f0", width: 310 },
                 headerStyle: { height: 80, backgroundColor: "#2d47f0" },
                 headerTitleStyle: { color: "#f27e26" },

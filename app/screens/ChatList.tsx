@@ -4,7 +4,6 @@ import {
   Modal,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Alert,
   FlatList,
 } from "react-native";
@@ -13,33 +12,21 @@ import { Text } from "react-native-paper";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
-import useChatNotifications from "../../hooks/useChatNotifications";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
+import { Image } from "expo-image";
 interface Props {
   userId: string;
 }
 
 const ChatList: React.FC<Props> = ({ userId }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Estado para armazenar a imagem selecionada
+  const [selectedImage, setSelectedImage] = useState<any>(null); // Estado para armazenar a imagem selecionada
   const [modalVisible, setModalVisible] = useState(false); // Estado para controlar o modal
   const navigation = useNavigation<CustomStackNavigationProp>();
-  const {
-    markChatAsRead,
-    fetchNotifications,
-    messageNotifications,
-    unreadChats,
-  } = useChatNotifications(userId);
+  const { messageNotifications, unreadChats } = useChatNotifications();
   const [loading, setLoading] = useState(true);
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      console.log("ChatList focused");
-      fetchNotifications(); // Refetch notifications when the screen was focused
-    }
-  }, [isFocused]);
 
   const fetchConversations = async () => {
     setLoading(true);
@@ -72,20 +59,29 @@ const ChatList: React.FC<Props> = ({ userId }) => {
     if (userId) {
       fetchConversations();
     }
-  }, [userId, messageNotifications]);
+  }, [userId]);
 
   const navigateToChat = (
     chatId: string,
     userId: string,
     freelancerId: string
   ) => {
-    markChatAsRead(chatId, userId);
     navigation.navigate("ChatScreen", { chatId, userId, freelancerId }); // Navigate to the chat screen
   };
 
-  const handleImagePress = (imageUrl: string) => {
-    setSelectedImage(imageUrl); // Armazena a URL da imagem clicada
-    setModalVisible(true); // Mostra o modal
+  const handleImagePress = async (imageUrl: string) => {
+    try {
+      const res = await fetch(imageUrl);
+      if (res.ok) {
+        setSelectedImage({ uri: imageUrl });
+      } else {
+        setSelectedImage(require("../../assets/images/user.jpg"));
+      }
+    } catch (error) {
+      setSelectedImage(require("../../assets/images/user.jpg"));
+    } finally {
+      setModalVisible(true); // Mostra o modal
+    }
   };
 
   const closeModal = () => {
@@ -170,10 +166,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
               <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
                 <Icon name="close" size={25} color="#f27e26" />
               </TouchableOpacity>
-              <Image
-                source={{ uri: selectedImage }}
-                style={styles.fullScreenImage}
-              />
+              <Image source={selectedImage} style={styles.fullScreenImage} />
             </View>
           )}
         </View>

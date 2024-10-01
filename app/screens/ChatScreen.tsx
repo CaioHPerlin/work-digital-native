@@ -17,7 +17,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
 import { supabase } from "../../lib/supabase";
 import { useFocusEffect } from "expo-router";
-import useChatNotifications from "../../hooks/useChatNotifications";
+import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 
 interface ChatScreenProps {
   route: {
@@ -48,7 +48,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   const [newMessage, setNewMessage] = useState(
     initialMessage ? initialMessage : ""
   );
-  const { markChatAsRead, fetchNotifications } = useChatNotifications(userId);
+  const { markChatAsRead } = useChatNotifications();
   const flatListRef = useRef<FlatList<Message>>(null);
 
   useFocusEffect(
@@ -58,7 +58,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         const markChatAsReadAsync = async () => {
           try {
             // Mark chat as read
-            await markChatAsRead(chatId, userId);
+            await markChatAsRead(chatId);
           } catch (error) {
             console.error(
               "Error marking chat as read or fetching notifications:",
