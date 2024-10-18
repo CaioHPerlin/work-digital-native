@@ -94,8 +94,8 @@ export default function Slider({ imageUrls, paused = false }: Props) {
             style={[
               styles.progressBar,
               {
-                width: `${100 / imageUrls.length}%`,
-                backgroundColor: index <= currentIndex ? "white" : "black",
+                width: `${90 / imageUrls.length}%`, // Reduce width to leave space for the margin
+                backgroundColor: index <= currentIndex ? "white" : "black", // Highlight current step
               },
             ]}
           />
@@ -148,9 +148,14 @@ const styles = StyleSheet.create({
     right: 0,
     height: 5,
     zIndex: 10,
+    justifyContent: "space-between", // Ensure space between each rectangle
+    paddingHorizontal: 5, // Add padding to give some space on the sides
   },
   progressBar: {
     height: "100%",
+    backgroundColor: "black",
+    marginHorizontal: 2, // Space between each rectangle
+    borderRadius: 2, // Make them slightly rounded
   },
   carousel: {
     marginTop: 0,

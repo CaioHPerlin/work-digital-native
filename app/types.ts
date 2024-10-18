@@ -16,6 +16,7 @@ export type RootStackParamList = {
     chatId: string;
     userId: string;
     freelancerId: string;
+    imageUrl: string;
     initialMessage?: string;
   };
 };

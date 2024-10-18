@@ -18,6 +18,7 @@ import * as Animatable from "react-native-animatable";
 import { supabase } from "../../lib/supabase";
 import { useFocusEffect } from "expo-router";
 import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
+import ImageWithFallback from "../components/ImageWithFallback";
 
 interface ChatScreenProps {
   route: {
@@ -25,6 +26,7 @@ interface ChatScreenProps {
       chatId: string;
       userId: string;
       freelancerId: string;
+      imageUrl: string;
       initialMessage?: string;
     };
   };
@@ -40,7 +42,8 @@ interface Message {
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
-  const { chatId, userId, freelancerId, initialMessage } = route.params;
+  const { chatId, userId, freelancerId, imageUrl, initialMessage } =
+    route.params;
 
   const [targetUserName, setTargetUserName] = useState("Carregando...");
   const [targetUserPicture, setTargetUserPicture] = useState("");
@@ -54,7 +57,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        console.log("trigger left");
         const markChatAsReadAsync = async () => {
           try {
             // Mark chat as read
@@ -191,6 +193,18 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 
   const renderItem = ({ item }: { item: Message }) => {
     const isNewMessage = !item.id || item.temp;
+    const isMyMessage = item.sender_id === userId;
+    const date = new Date(item.created_at);
+
+    // Formatting to 'DD/MM HH:mm'
+    const formattedTimestamp =
+      String(date.getDate()).padStart(2, "0") +
+      "/" +
+      String(date.getMonth() + 1).padStart(2, "0") +
+      " " +
+      String(date.getHours()).padStart(2, "0") +
+      ":" +
+      String(date.getMinutes()).padStart(2, "0");
 
     return (
       <Animatable.View
@@ -198,10 +212,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         duration={200}
         style={[
           styles.message,
-          item.sender_id === userId ? styles.selfMessage : styles.otherMessage,
+          isMyMessage ? styles.selfMessage : styles.otherMessage,
         ]}
       >
         <Text style={styles.messageText}>{item.content}</Text>
+        <Text style={styles.messageTimestampText}>{formattedTimestamp}</Text>
       </Animatable.View>
     );
   };
@@ -250,6 +265,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
         <Text style={styles.headerText}>{capitalize(targetUserName)}</Text>
       </View>
       <KeyboardAvoidingView
@@ -300,13 +316,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#2d47f0",
     paddingTop: 50,
     paddingBottom: 20,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    flexWrap: "nowrap",
+    flexDirection: "row", // Aligns items horizontally
+    alignItems: "center", // Centers items vertically within the row
   },
   headerText: {
     color: "#f27e26",
     fontFamily: "TitanOne-Regular",
     fontSize: 20,
+    marginLeft: 10, // Adds space between the image and text
   },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+
   chatContainer: {
     flex: 1,
     padding: 10,
@@ -332,6 +358,11 @@ const styles = StyleSheet.create({
   messageText: {
     color: "#fff",
     fontSize: 16,
+  },
+  messageTimestampText: {
+    color: "#fff",
+    opacity: 0.6,
+    fontSize: 12,
   },
   inputContainer: {
     flexDirection: "row",

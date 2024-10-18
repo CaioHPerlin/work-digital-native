@@ -64,9 +64,15 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   const navigateToChat = (
     chatId: string,
     userId: string,
-    freelancerId: string
+    freelancerId: string,
+    imageUrl: string
   ) => {
-    navigation.navigate("ChatScreen", { chatId, userId, freelancerId }); // Navigate to the chat screen
+    navigation.navigate("ChatScreen", {
+      chatId,
+      userId,
+      freelancerId,
+      imageUrl,
+    }); // Navigate to the chat screen
   };
 
   const handleImagePress = async (imageUrl: string) => {
@@ -109,7 +115,8 @@ const ChatList: React.FC<Props> = ({ userId }) => {
           navigateToChat(
             item.id,
             userId,
-            userId === item.user_2_id ? item.user_1_id : item.user_2_id
+            userId === item.user_2_id ? item.user_1_id : item.user_2_id,
+            imageUrl
           )
         }
         style={styles.itemContainer}
