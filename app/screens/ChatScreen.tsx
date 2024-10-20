@@ -266,7 +266,9 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
-        <Text style={styles.headerText}>{capitalize(targetUserName)}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerText}>
+          {capitalize(targetUserName)}
+        </Text>
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -324,6 +326,8 @@ const styles = StyleSheet.create({
   headerText: {
     color: "#f27e26",
     fontFamily: "TitanOne-Regular",
+    overflow: "hidden",
+    maxWidth: "90%",
     fontSize: 20,
     marginLeft: 10, // Adds space between the image and text
   },
