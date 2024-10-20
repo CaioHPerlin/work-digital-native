@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Conversation, CustomStackNavigationProp } from "../types";
 import { Text } from "react-native-paper";
@@ -169,12 +170,22 @@ const ChatList: React.FC<Props> = ({ userId }) => {
       >
         <View style={styles.modalContainer}>
           {selectedImage && (
-            <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Icon name="close" size={25} color="#f27e26" />
-              </TouchableOpacity>
-              <Image source={selectedImage} style={styles.fullScreenImage} />
-            </View>
+            <TouchableWithoutFeedback onPress={closeModal}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={closeModal}
+                >
+                  <Icon name="close" size={25} color="#f27e26" />
+                </TouchableOpacity>
+                <TouchableWithoutFeedback>
+                  <Image
+                    source={selectedImage}
+                    style={styles.fullScreenImage}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
           )}
         </View>
       </Modal>
@@ -272,7 +283,7 @@ const styles = StyleSheet.create({
   },
   fullScreenImage: {
     width: "90%",
-    height: "90%",
+    aspectRatio: 1,
     resizeMode: "contain",
   },
 });
