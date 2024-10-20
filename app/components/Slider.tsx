@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  BackHandler,
 } from "react-native";
 import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageMediumQ } from "../../utils/imageOptimizer";

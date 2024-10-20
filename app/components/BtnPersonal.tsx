@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  BackHandler,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -17,6 +18,7 @@ import {
 } from "../types";
 import { supabase } from "../../lib/supabase";
 import SliderDestaque from "./SliderDestaque";
+import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 
 interface Props {
   freelancer: FlattenedProfile;
@@ -68,6 +70,11 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
           `Erro ao verificar chats existentes: ${fetchError.message}`
         );
       }
+      const imageUrl = freelancer.profile_picture_url
+        ? optimizeImageLowQ(
+            `https://res.cloudinary.com/dwngturuh/image/upload/profile_pictures/${freelancer.id}.jpg`
+          )
+        : require("../../assets/images/user.jpg");
 
       if (existingChats.length > 0) {
         // Chat already exists
@@ -76,6 +83,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
           chatId: existingChat.id,
           userId: userId,
           freelancerId: freelancer.id,
+          imageUrl: imageUrl,
           initialMessage: initialMessage,
         });
         return;
@@ -96,6 +104,7 @@ const BtnPersonal: React.FC<Props> = ({ freelancer, highlight }) => {
         chatId: chat.id,
         userId: userId,
         freelancerId: freelancer.id,
+        imageUrl: imageUrl,
         initialMessage: initialMessage,
       });
     } catch (error) {

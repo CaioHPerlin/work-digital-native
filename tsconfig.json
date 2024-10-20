@@ -3,22 +3,20 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-   
+
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
     "noEmit": true,
     "isolatedModules": true
-    
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/components/Slider.tsx"  ]
+    "expo-env.d.ts",
+    "app/components/Slider.tsx"
+  ]
 }

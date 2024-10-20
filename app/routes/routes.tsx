@@ -11,7 +11,6 @@ import { Session } from "@supabase/supabase-js"; // Import Session type
 import RegisterAccount from "../screens/RegisterAccount";
 import Login from "../screens/Login";
 import HomeScreen from "../screens/HomeScreen";
-import PersonalInfo from "../screens/PersonalInfo";
 import BecomeAutonomo from "../screens/opcoesConfig/BecomeAutonomo";
 import ChangePassword from "../screens/opcoesConfig/ChangePassword";
 import DadosPessoais from "../screens/DadosPessoais";
@@ -188,7 +187,6 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
           )}
         </Stack.Screen>
       )}
-      <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
       <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
       {session && (
         <Stack.Screen

@@ -8,6 +8,7 @@ import {
   Text,
   Modal,
   TextInput,
+  BackHandler,
 } from "react-native";
 import { HighlightImage } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
@@ -32,6 +33,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [sliderPaused, setSliderPaused] = useState(false);
+
   return (
     <>
       <View style={styles.avatarContainer}>
@@ -56,6 +58,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
           transparent={true}
           style={styles.modalContainer}
           animationType="slide"
+          onRequestClose={() => setPickerVisible(false)}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>

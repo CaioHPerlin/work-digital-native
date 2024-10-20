@@ -1,5 +1,4 @@
 BACKLOG
-- Deixar o story sair com o botão do celular tbm e com o x 
 - Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
 - Adicionar o campo de e-mail nos dados pessoais do usuário.
 - Botões de chat, whatsapp e perfil na foto da pessoa (tenha em mente que isso é praticamente uma tela nova kk)
@@ -12,3 +11,4 @@ DONE
 - Incluir foto de perfil no chat.
 - Fragmentar a barra de progresso dos stories (atualmente uma barra reta) em retângulos.
 - Remover listener para fechar os modais
+- Deixar o story sair com o botão do celular tbm e com o x 
