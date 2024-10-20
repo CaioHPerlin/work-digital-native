@@ -1,6 +1,6 @@
 BACKLOG
-- Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
 - Adicionar o campo de e-mail nos dados pessoais do usuário.
+- Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
 - Botões de chat, whatsapp e perfil na foto da pessoa (tenha em mente que isso é praticamente uma tela nova kk)
 - Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net ...
 - Nos click por exemplo se eu clicar fora da foto de perfil eu volto novamente ... (não sei o que isso significa)

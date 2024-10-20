@@ -19,7 +19,6 @@ const ConfigApp = ({ navigation }: ConfigAppProps) => {
         <Text style={styles.title}>Configurações do Aplicativo</Text>
         <TouchableOpacity
           style={styles.button}
-          ////disabled={true}
           onPress={() => navigation.navigate("DadosPessoais")}
         >
           <Text style={styles.buttonText}>Dados Pessoais</Text>

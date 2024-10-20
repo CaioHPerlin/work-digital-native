@@ -10,28 +10,21 @@ import {
   Alert,
   TextInput,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
 import { supabase } from "../../lib/supabase";
 import InputField from "../components/InputField";
 import LinkedState from "../components/LinkedState";
 import LinkedCity from "../components/LinkedCity";
+import { z } from "zod";
 
 type DadosPessoaisProps = {
   navigation: any;
   userId: string;
 };
 
-type Estado = {
-  id: number;
-  sigla: string;
-  nome: string;
-};
-
-type Cidade = {
-  id: number;
-  nome: string;
-};
+// Define the schema for email validation
+const schema = z.object({
+  email: z.string().email("Por favor, insira um endereço de e-mail válido."),
+});
 
 export default function DadosPessoais({
   navigation,
@@ -39,32 +32,39 @@ export default function DadosPessoais({
 }: DadosPessoaisProps) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
 
+  const [emailError, setEmailError] = useState<string>("");
+
+  let initEmail = "";
+
+  const fetchUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles") // Adjust table name if needed
+        .select("*")
+        .eq("id", userId) // Replace with actual user ID
+        .single();
+
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        return;
+      }
+
+      setName(data.name);
+      setEmail(data.email);
+      initEmail = data.email;
+      setEstado(data.state);
+      setCidade(data.city);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   useEffect(() => {
     // Fetch user profile on component mount
-    const fetchUserProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles") // Adjust table name if needed
-          .select("*")
-          .eq("id", userId) // Replace with actual user ID
-          .single();
-
-        if (error) {
-          console.error("Error fetching user profile:", error);
-          return;
-        }
-
-        setName(data.name);
-        setEstado(data.state);
-        setCidade(data.city);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-
     fetchUserProfile();
   }, []);
 
@@ -75,6 +75,7 @@ export default function DadosPessoais({
         .from("profiles") // Adjust table name if needed
         .update({
           name: name,
+          email: email,
           state: estado,
           city: cidade,
         })
@@ -90,6 +91,7 @@ export default function DadosPessoais({
       }
 
       Alert.alert("Sucesso", "Dados pessoais atualizados com sucesso.");
+      fetchUserProfile();
       navigation.goBack();
     } catch (error) {
       console.error("Error updating user profile:", error);
@@ -106,11 +108,19 @@ export default function DadosPessoais({
     navigation.goBack();
   };
 
-  const handleDadosPessoais = () => {
-    if (estado && cidade) {
-      updateUserProfile();
-    } else {
-      Alert.alert("Error", "Please select both state and city.");
+  const handleDadosPessoais = async () => {
+    try {
+      schema.parse({ email });
+
+      if (estado && cidade) {
+        await updateUserProfile();
+      } else {
+        Alert.alert("Erro", "Por favor, selecione uma cidade e um estado.");
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setEmailError(error.errors[0]?.message);
+      }
     }
   };
   return (
@@ -126,6 +136,19 @@ export default function DadosPessoais({
               autoCapitalize="words"
               keyboardType="default"
             />
+
+            <InputField
+              label="E-mail"
+              value={email}
+              onChangeText={(v) => {
+                setEmail(v);
+                setEmailError("");
+              }}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              errorMessage={emailError}
+            />
+
             <Text style={styles.label}>Estado</Text>
             <LinkedState state={estado} setState={setEstado} />
           </View>

@@ -211,7 +211,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [9, 16],
       quality: 1,
     });
 
