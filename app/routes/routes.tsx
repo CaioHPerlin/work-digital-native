@@ -32,7 +32,12 @@ const DrawerContent = (props: any) => {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut({ scope: "local" });
     if (error) {
-      Alert.alert("Erro ao sair.", error.message);
+      if (error.message === "Network error") {
+        Alert.alert("Verifique sua conexão e tente novamente.");
+      } else {
+        Alert.alert("Erro ao sair.", error.message);
+      }
+      return;
     }
   };
 

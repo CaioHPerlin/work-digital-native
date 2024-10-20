@@ -24,12 +24,15 @@ const Login: React.FC<Props> = ({ navigation }) => {
       password: senha,
     });
 
-    if (error) {
-      setLoading(false);
-      return Alert.alert("Credenciais incorretas");
-    }
-
     setLoading(false);
+    if (error) {
+      if (error.message === "Network error") {
+        Alert.alert("Verifique sua conexão e tente novamente.");
+      } else {
+        Alert.alert("Credenciais incorretas");
+      }
+      return;
+    }
   };
 
   if (loading) {

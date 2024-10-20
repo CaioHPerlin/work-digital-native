@@ -84,7 +84,13 @@ export default function ChangePassword({
       );
 
       if (error) {
-        throw new Error(error);
+        if (error.message === "Network error") {
+          Alert.alert("Verifique sua conexão e tente novamente.");
+        } else {
+          console.error("Error updating user password:", error);
+          Alert.alert("Erro", "Verifique as credenciais digitadas.");
+        }
+        return;
       }
 
       Alert.alert(

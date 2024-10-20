@@ -201,10 +201,15 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     if (error) {
       setLoading(false);
-      return Alert.alert(
-        "Erro ao cadastrar.",
-        "Já existe um usuário com este CPF ou E-mail."
-      );
+      if (error.message === "Network error") {
+        Alert.alert("Verifique sua conexão e tente novamente.");
+        return;
+      } else {
+        return Alert.alert(
+          "Erro ao cadastrar.",
+          "Já existe um usuário com este CPF ou E-mail."
+        );
+      }
     }
 
     Alert.alert(
