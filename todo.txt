@@ -1,14 +1,14 @@
 BACKLOG
-- Remover listener para fechar modal na homescreen
-- Fragmentar a barra de progresso dos stories (atualmente uma barra reta) em retângulos.
--  Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
+- Deixar o story sair com o botão do celular tbm e com o x 
+- Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
 - Adicionar o campo de e-mail nos dados pessoais do usuário.
 - Botões de chat, whatsapp e perfil na foto da pessoa (tenha em mente que isso é praticamente uma tela nova kk)
 - Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net ...
 - Nos click por exemplo se eu clicar fora da foto de perfil eu volto novamente ... (não sei o que isso significa)
-- Deixar o story sair com o botão do celular tbm e com o x 
--  Build para iOS.
+- Build para iOS.
 
 DONE
--  Adicionar data e hora nas mensagens (de forma simples, pois além disso exigiria um novo orçamento).
+- Adicionar data e hora nas mensagens (de forma simples, pois além disso exigiria um novo orçamento).
 - Incluir foto de perfil no chat.
+- Fragmentar a barra de progresso dos stories (atualmente uma barra reta) em retângulos.
+- Remover listener para fechar os modais

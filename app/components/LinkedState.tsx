@@ -87,65 +87,68 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
     >
       <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
         <View style={styles.modalBackground}>
-          <Animatable.View
-            animation="slideInUp"
-            duration={400}
-            style={styles.modalContainer}
-          >
-            <View style={styles.searchInputContainer}>
-              <TextInput
-                style={styles.modalSearchBar}
-                placeholder="Buscar Estado"
-                placeholderTextColor="#FFF"
-                value={searchText}
-                onChangeText={handleSearch}
-              />
-              <Icon
-                name="search"
-                size={20}
-                color="#FFF"
-                style={styles.searchIcon}
-              />
-            </View>
-            <FlatList
-              style={{ width: "100%" }}
-              data={filteredStates}
-              keyExtractor={(item) => item.sigla}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.modalItem,
-                    selectedState?.sigla == item.sigla && {
-                      backgroundColor: "#2d47f0",
-                    },
-                  ]}
-                  onPress={() => handleSelectState(item)}
-                >
-                  <Icon
-                    name={
-                      selectedState?.sigla == item.sigla
-                        ? "check-square-o"
-                        : "square-o"
-                    }
-                    style={
-                      selectedState?.sigla == item.sigla
-                        ? { ...styles.modalItemText, color: "#FFF" }
-                        : { ...styles.modalItemText, color: "#000" }
-                    }
-                  />
-                  <Text
-                    style={
-                      selectedState?.sigla == item.sigla
-                        ? { ...styles.modalItemText, color: "#FFF" }
-                        : { ...styles.modalItemText, color: "#000" }
-                    }
+          {/* Inner TouchableWithoutFeedback prevents the modal from closing when interacting  */}
+          <TouchableWithoutFeedback>
+            <Animatable.View
+              animation="slideInUp"
+              duration={400}
+              style={styles.modalContainer}
+            >
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={styles.modalSearchBar}
+                  placeholder="Buscar Estado"
+                  placeholderTextColor="#FFF"
+                  value={searchText}
+                  onChangeText={handleSearch}
+                />
+                <Icon
+                  name="search"
+                  size={20}
+                  color="#FFF"
+                  style={styles.searchIcon}
+                />
+              </View>
+              <FlatList
+                style={{ width: "100%" }}
+                data={filteredStates}
+                keyExtractor={(item) => item.sigla}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.modalItem,
+                      selectedState?.sigla == item.sigla && {
+                        backgroundColor: "#2d47f0",
+                      },
+                    ]}
+                    onPress={() => handleSelectState(item)}
                   >
-                    {item.nome}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          </Animatable.View>
+                    <Icon
+                      name={
+                        selectedState?.sigla == item.sigla
+                          ? "check-square-o"
+                          : "square-o"
+                      }
+                      style={
+                        selectedState?.sigla == item.sigla
+                          ? { ...styles.modalItemText, color: "#FFF" }
+                          : { ...styles.modalItemText, color: "#000" }
+                      }
+                    />
+                    <Text
+                      style={
+                        selectedState?.sigla == item.sigla
+                          ? { ...styles.modalItemText, color: "#FFF" }
+                          : { ...styles.modalItemText, color: "#000" }
+                      }
+                    >
+                      {item.nome}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </Animatable.View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>

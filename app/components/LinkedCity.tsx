@@ -83,64 +83,67 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
     >
       <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
         <View style={styles.modalBackground}>
-          <Animatable.View
-            animation="slideInUp"
-            duration={400}
-            style={styles.modalContainer}
-          >
-            <View style={styles.searchInputContainer}>
-              <TextInput
-                style={styles.modalSearchBar}
-                placeholder="Buscar Cidade"
-                placeholderTextColor="#FFF"
-                value={searchText}
-                onChangeText={handleSearch}
-              />
-              <Icon
-                name="search"
-                size={20}
-                color="#FFF"
-                style={styles.searchIcon}
-              />
-            </View>
-            <FlatList
-              style={{ width: "100%" }}
-              data={filteredCities}
-              keyExtractor={(item) => item.nome}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.modalItem,
-                    city == item.nome && {
-                      backgroundColor: "#2d47f0",
-                    },
-                  ]}
-                  onPress={() => {
-                    setCity(item.nome);
-                    setIsOpen(false); // Close modal
-                  }}
-                >
-                  <Icon
-                    name={city == item.nome ? "check-square-o" : "square-o"}
-                    style={
-                      city == item.nome
-                        ? { ...styles.modalItemText, color: "#FFF" }
-                        : { ...styles.modalItemText, color: "#000" }
-                    }
-                  />
-                  <Text
-                    style={
-                      city == item.nome
-                        ? { ...styles.modalItemText, color: "#FFF" }
-                        : { ...styles.modalItemText, color: "#000" }
-                    }
+          {/* Inner TouchableWithoutFeedback prevents the modal from closing when interacting  */}
+          <TouchableWithoutFeedback>
+            <Animatable.View
+              animation="slideInUp"
+              duration={400}
+              style={styles.modalContainer}
+            >
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={styles.modalSearchBar}
+                  placeholder="Buscar Cidade"
+                  placeholderTextColor="#FFF"
+                  value={searchText}
+                  onChangeText={handleSearch}
+                />
+                <Icon
+                  name="search"
+                  size={20}
+                  color="#FFF"
+                  style={styles.searchIcon}
+                />
+              </View>
+              <FlatList
+                style={{ width: "100%" }}
+                data={filteredCities}
+                keyExtractor={(item) => item.nome}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.modalItem,
+                      city == item.nome && {
+                        backgroundColor: "#2d47f0",
+                      },
+                    ]}
+                    onPress={() => {
+                      setCity(item.nome);
+                      setIsOpen(false); // Close modal
+                    }}
                   >
-                    {item.nome}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          </Animatable.View>
+                    <Icon
+                      name={city == item.nome ? "check-square-o" : "square-o"}
+                      style={
+                        city == item.nome
+                          ? { ...styles.modalItemText, color: "#FFF" }
+                          : { ...styles.modalItemText, color: "#000" }
+                      }
+                    />
+                    <Text
+                      style={
+                        city == item.nome
+                          ? { ...styles.modalItemText, color: "#FFF" }
+                          : { ...styles.modalItemText, color: "#000" }
+                      }
+                    >
+                      {item.nome}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </Animatable.View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>

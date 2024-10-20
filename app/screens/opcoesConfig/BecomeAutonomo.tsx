@@ -214,49 +214,61 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     >
       <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
         <View style={styles.modalBackground}>
-          <Animatable.View
-            animation="slideInUp"
-            duration={400}
-            style={styles.modalContainer}
-          >
-            <View style={styles.searchInputContainer}>
-              <TextInput
-                style={styles.modalSearchBar}
-                placeholder="Buscar Função"
-                placeholderTextColor="#FFF"
-                value={searchText}
-                onChangeText={handleSearch}
-              />
-              <Icon
-                name="search"
-                size={20}
-                color="#FFF"
-                style={styles.searchIcon}
-              />
-            </View>
-            <FlatList
-              style={{ width: "100%" }}
-              data={filteredRoles}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.modalItem,
-                    preSelectedRoles.includes(item) && {
-                      backgroundColor: "#2d47f0",
-                    },
-                  ]}
-                  onPress={() =>
-                    item.length > 1 ? handleRoleSelect(item) : ""
-                  }
-                >
-                  {item.length > 1 && (
-                    <Icon
-                      name={
-                        preSelectedRoles.includes(item)
-                          ? "check-square-o"
-                          : "square-o"
-                      }
+          {/* Inner TouchableWithoutFeedback prevents the modal from closing when interacting  */}
+          <TouchableWithoutFeedback>
+            <Animatable.View
+              animation="slideInUp"
+              duration={400}
+              style={styles.modalContainer}
+            >
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={styles.modalSearchBar}
+                  placeholder="Buscar Função"
+                  placeholderTextColor="#FFF"
+                  value={searchText}
+                  onChangeText={handleSearch}
+                />
+                <Icon
+                  name="search"
+                  size={20}
+                  color="#FFF"
+                  style={styles.searchIcon}
+                />
+              </View>
+              <FlatList
+                style={{ width: "100%" }}
+                data={filteredRoles}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.modalItem,
+                      preSelectedRoles.includes(item) && {
+                        backgroundColor: "#2d47f0",
+                      },
+                    ]}
+                    onPress={() =>
+                      item.length > 1 ? handleRoleSelect(item) : ""
+                    }
+                  >
+                    {item.length > 1 && (
+                      <Icon
+                        name={
+                          preSelectedRoles.includes(item)
+                            ? "check-square-o"
+                            : "square-o"
+                        }
+                        style={
+                          preSelectedRoles.includes(item)
+                            ? { ...styles.modalItemText, color: "#FFF" }
+                            : item.length > 1
+                            ? styles.modalItemText
+                            : { ...styles.modalItemText, color: "#f27e26" }
+                        }
+                      />
+                    )}
+                    <Text
                       style={
                         preSelectedRoles.includes(item)
                           ? { ...styles.modalItemText, color: "#FFF" }
@@ -264,30 +276,21 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                           ? styles.modalItemText
                           : { ...styles.modalItemText, color: "#f27e26" }
                       }
-                    />
-                  )}
-                  <Text
-                    style={
-                      preSelectedRoles.includes(item)
-                        ? { ...styles.modalItemText, color: "#FFF" }
-                        : item.length > 1
-                        ? styles.modalItemText
-                        : { ...styles.modalItemText, color: "#f27e26" }
-                    }
-                  >
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
 
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={handleConfirmRoles}
-            >
-              <Text style={styles.confirmButtonText}>Confirmar</Text>
-            </TouchableOpacity>
-          </Animatable.View>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={handleConfirmRoles}
+              >
+                <Text style={styles.confirmButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+            </Animatable.View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>

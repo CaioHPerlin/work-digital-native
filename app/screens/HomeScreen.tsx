@@ -201,51 +201,54 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         >
           <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
             <View style={styles.modalBackground}>
-              <Animatable.View
-                animation="slideInUp"
-                duration={400}
-                style={styles.modalContainer}
-              >
-                <View style={styles.searchInputContainer}>
-                  <TextInput
-                    style={styles.modalSearchBar}
-                    placeholder="Buscar Um Serviço"
-                    placeholderTextColor="#FFF"
-                    value={searchText}
-                    onChangeText={handleSearch}
-                  />
-                  <Icon
-                    name="search"
-                    size={20}
-                    color="#FFF"
-                    style={styles.searchIcon}
-                  />
-                </View>
+              {/* Inner TouchableWithoutFeedback prevents the modal from closing when interacting  */}
+              <TouchableWithoutFeedback>
+                <Animatable.View
+                  animation="slideInUp"
+                  duration={400}
+                  style={styles.modalContainer}
+                >
+                  <View style={styles.searchInputContainer}>
+                    <TextInput
+                      style={styles.modalSearchBar}
+                      placeholder="Buscar Um Serviço"
+                      placeholderTextColor="#FFF"
+                      value={searchText}
+                      onChangeText={handleSearch}
+                    />
+                    <Icon
+                      name="search"
+                      size={20}
+                      color="#FFF"
+                      style={styles.searchIcon}
+                    />
+                  </View>
 
-                <FlatList
-                  style={{ width: "100%" }}
-                  data={filteredServiceTypes}
-                  keyExtractor={(item) => item}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={styles.modalItem}
-                      onPress={() =>
-                        item.length > 1 ? handleItemSelect(item) : ""
-                      }
-                    >
-                      <Text
-                        style={
-                          item.length > 1
-                            ? styles.modalItemText
-                            : { ...styles.modalItemText, color: "#f27e26" }
+                  <FlatList
+                    style={{ width: "100%" }}
+                    data={filteredServiceTypes}
+                    keyExtractor={(item) => item}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.modalItem}
+                        onPress={() =>
+                          item.length > 1 ? handleItemSelect(item) : ""
                         }
                       >
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                />
-              </Animatable.View>
+                        <Text
+                          style={
+                            item.length > 1
+                              ? styles.modalItemText
+                              : { ...styles.modalItemText, color: "#f27e26" }
+                          }
+                        >
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </Animatable.View>
+              </TouchableWithoutFeedback>
             </View>
           </TouchableWithoutFeedback>
         </Modal>
