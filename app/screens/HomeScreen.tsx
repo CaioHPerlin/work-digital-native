@@ -116,17 +116,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     setFreelancers(flattenedData);
     setIsLoading(false);
-
-    // try {
-    //   const response = await axios.get(
-    //     `https://app-api-pied.vercel.app/freelancers?role=${role}`
-    //   );
-    //   setFreelancers(response.data);
-    // } catch (error) {
-    //   setApiError("Erro ao buscar freelancers. Tente novamente.");
-    // } finally {
-    //   setIsLoading(false);
-    // }
   };
 
   useFocusEffect(

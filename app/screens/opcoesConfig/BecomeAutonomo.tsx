@@ -39,8 +39,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [preSelectedRoles, setPreSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-
   const [loading, setLoading] = useState(false);
+
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
@@ -205,8 +206,6 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     setLoading(false);
     await supabase.auth.signOut({ scope: "local" });
   };
-
-  const inputRef = useRef<TextInput>(null);
 
   const roleModal = (
     <Modal

@@ -53,7 +53,7 @@ export default function App() {
           <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
             <View style={styles.shadowBackground}>
               <Text style={styles.errorText}>
-                Conexão de internet não detectada.
+                Buscando conexão de internet...
               </Text>
             </View>
           </View>
@@ -70,7 +70,7 @@ export default function App() {
         <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
           <View style={styles.shadowBackground}>
             <Text style={styles.errorText}>
-              Conexão de internet não detectada.
+              Buscando conexão de internet...
             </Text>
           </View>
         </View>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   shadowBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Shadowy background
+    backgroundColor: "rgba(0, 0, 0, 0.2)", // Shadowy background
     justifyContent: "center",
     alignItems: "center",
   },

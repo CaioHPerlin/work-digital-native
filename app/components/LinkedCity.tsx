@@ -29,6 +29,8 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
   const [cities, setCities] = useState<Cidade[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const inputRef = useRef<TextInput>(null);
+  
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -73,8 +75,6 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
     .filter((city) =>
       city.nome.toLowerCase().startsWith(searchText.toLowerCase())
     );
-
-  const inputRef = useRef<TextInput>(null);
 
   const modal = (
     <Modal
