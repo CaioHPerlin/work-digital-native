@@ -64,6 +64,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const inputRef = useRef<TextInput>(null);
+
   const handleConfirmRoles = () => {
     setIsOpen(false);
 
@@ -357,8 +359,6 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
       </View>
     );
   }
-
-  const inputRef = useRef<TextInput>(null);
 
   const roleModal = (
     <Modal

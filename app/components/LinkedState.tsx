@@ -30,6 +30,8 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
   const [loading, setLoading] = useState(false);
   const [selectedState, setSelectedState] = useState<Estado | null>(null);
 
+  const inputRef = useRef<TextInput>(null);
+
   useEffect(() => {
     setLoading(true);
     const fetchEstados = async () => {
@@ -77,8 +79,6 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
 
     setIsOpen(false); // Close modal
   };
-
-  const inputRef = useRef<TextInput>(null);
 
   const modal = (
     <Modal
