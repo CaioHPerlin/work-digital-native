@@ -8,7 +8,6 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  TextInput,
 } from "react-native";
 import { supabase } from "../../lib/supabase";
 import InputField from "../components/InputField";
@@ -30,6 +29,7 @@ export default function DadosPessoais({
   navigation,
   userId,
 }: DadosPessoaisProps) {
+  const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -38,28 +38,27 @@ export default function DadosPessoais({
 
   const [emailError, setEmailError] = useState<string>("");
 
-  let initEmail = "";
-
   const fetchUserProfile = async () => {
     try {
       const { data, error } = await supabase
-        .from("profiles") // Adjust table name if needed
+        .from("profiles")
         .select("*")
-        .eq("id", userId) // Replace with actual user ID
+        .eq("id", userId)
         .single();
 
       if (error) {
-        console.error("Error fetching user profile:", error);
-        return;
+        throw new Error("Ocorreu um erro ao buscar os dados do usuário");
       }
 
       setName(data.name);
       setEmail(data.email);
-      initEmail = data.email;
       setEstado(data.state);
       setCidade(data.city);
     } catch (error) {
+      Alert.alert("Ocorreu um erro ao buscar os dados do usuário");
       console.error("Error fetching user profile:", error);
+    } finally {
+      setInitLoading(false);
     }
   };
 
@@ -126,53 +125,57 @@ export default function DadosPessoais({
   return (
     <>
       <View style={styles.container}>
-        <ScrollView>
-          <View style={styles.inputGroup}>
-            {/* Full Name Input */}
-            <InputField
-              label="Nome Completo"
-              value={name}
-              onChangeText={(v) => setName(v)}
-              autoCapitalize="words"
-              keyboardType="default"
-            />
+        {initLoading ? (
+          <ActivityIndicator size={"large"} />
+        ) : (
+          <ScrollView>
+            <View style={styles.inputGroup}>
+              {/* Full Name Input */}
+              <InputField
+                label="Nome Completo"
+                value={name}
+                onChangeText={(v) => setName(v)}
+                autoCapitalize="words"
+                keyboardType="default"
+              />
 
-            <InputField
-              label="E-mail"
-              value={email}
-              onChangeText={(v) => {
-                setEmail(v);
-                setEmailError("");
-              }}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              errorMessage={emailError}
-            />
+              <InputField
+                label="E-mail"
+                value={email}
+                onChangeText={(v) => {
+                  setEmail(v);
+                  setEmailError("");
+                }}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                errorMessage={emailError}
+              />
 
-            <Text style={styles.label}>Estado</Text>
-            <LinkedState state={estado} setState={setEstado} />
-          </View>
+              <Text style={styles.label}>Estado</Text>
+              <LinkedState state={estado} setState={setEstado} />
+            </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cidade</Text>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Cidade</Text>
 
-            <LinkedCity state={estado} city={cidade} setCity={setCidade} />
-          </View>
+              <LinkedCity state={estado} city={cidade} setCity={setCidade} />
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Voltar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleDadosPessoais}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? "Atualizando..." : "Atualizar Dados"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleCancel}>
+                <Text style={styles.buttonText}>Voltar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleDadosPessoais}
+              >
+                <Text style={styles.buttonText}>
+                  {loading ? "Atualizando..." : "Atualizar Dados"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        )}
       </View>
     </>
   );

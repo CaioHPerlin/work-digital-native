@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   BackHandler,
 } from "react-native";
-import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageMediumQ } from "../../utils/imageOptimizer";
+import SliderImage from "./SliderImage";
 
 const { width } = Dimensions.get("window");
 const viewConfigRef = { viewAreaCoveragePercentThreshold: 95 };
@@ -75,12 +75,10 @@ export default function Slider({ imageUrls, paused = false }: Props) {
   }, [currentIndex]); // Restart interval when currentIndex changes
 
   const renderItems = ({ item }: { item: string }) => (
-    <View>
-      <ImageWithFallback
-        imageUrl={optimizeImageMediumQ(item)}
-        style={styles.image}
-      />
-    </View>
+    <SliderImage
+      style={{ width: width }}
+      imageUrl={optimizeImageMediumQ(item)}
+    />
   );
 
   return (
@@ -160,11 +158,6 @@ const styles = StyleSheet.create({
   },
   carousel: {
     marginTop: 0,
-  },
-  image: {
-    width,
-    height: "100%",
-    resizeMode: "cover",
   },
   leftTouchArea: {
     position: "absolute",

@@ -59,15 +59,11 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
         .eq("id", userId); // Replace with actual user ID
 
       if (error) {
-        if (error.message === "Network error") {
-          Alert.alert("Verifique sua conexão e tente novamente.");
-        } else {
-          console.error("Error updating user profile:", error);
-          Alert.alert(
-            "Erro",
-            "Ocorreu um erro ao tentar atualizar o perfil do usuário."
-          );
-        }
+        console.error("Error updating user profile:", error);
+        Alert.alert(
+          "Erro",
+          "Ocorreu um erro ao tentar atualizar o perfil do usuário."
+        );
         return;
       }
 

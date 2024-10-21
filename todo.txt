@@ -1,8 +1,8 @@
 BACKLOG
-- "Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net"
 - Build para iOS.
 
 DONE
+- "Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net"
 - "Nos click por exemplo se eu clicar fora da foto de perfil eu volto novamente"
 - Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.
 - Adicionar data e hora nas mensagens (de forma simples, pois além disso exigiria um novo orçamento).

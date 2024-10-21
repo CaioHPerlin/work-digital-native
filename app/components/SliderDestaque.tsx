@@ -34,6 +34,11 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [sliderPaused, setSliderPaused] = useState(false);
 
+  const handleCloseSlider = () => {
+    setPickerVisible(false);
+    setInitialMessage("");
+  };
+
   return (
     <>
       <View style={styles.avatarContainer}>
@@ -58,7 +63,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
           transparent={true}
           style={styles.modalContainer}
           animationType="slide"
-          onRequestClose={() => setPickerVisible(false)}
+          onRequestClose={handleCloseSlider}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -68,7 +73,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
                 size={30}
                 color="#f27e26"
                 style={styles.iconClose}
-                onPress={() => setPickerVisible(false)}
+                onPress={handleCloseSlider}
               />
 
               <View style={styles.buttonContainer}>
@@ -87,6 +92,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
                   onPress={() => {
                     setPickerVisible(false);
                     startConversation();
+                    setInitialMessage("");
                   }}
                 >
                   <Icon
