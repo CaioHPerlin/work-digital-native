@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -205,6 +205,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     setLoading(false);
     await supabase.auth.signOut({ scope: "local" });
   };
+
+  const inputRef = useRef<TextInput>(null);
+
   const roleModal = (
     <Modal
       visible={isOpen}
@@ -223,18 +226,28 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             >
               <View style={styles.searchInputContainer}>
                 <TextInput
+                  ref={inputRef}
                   style={styles.modalSearchBar}
                   placeholder="Buscar Função"
                   placeholderTextColor="#FFF"
                   value={searchText}
                   onChangeText={handleSearch}
                 />
-                <Icon
-                  name="search"
-                  size={20}
-                  color="#FFF"
-                  style={styles.searchIcon}
-                />
+
+                <TouchableOpacity
+                  onPress={() => {
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }}
+                >
+                  <Icon
+                    name="search"
+                    size={20}
+                    color="#FFF"
+                    style={styles.searchIcon}
+                  />
+                </TouchableOpacity>
               </View>
               <FlatList
                 style={{ width: "100%" }}

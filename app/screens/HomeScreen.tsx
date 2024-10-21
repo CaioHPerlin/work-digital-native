@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -36,6 +36,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  const inputRef = useRef<TextInput>(null);
 
   const [loaded, error] = useFonts({
     "TitanOne-Regular": require("../../assets/fonts/TitanOne-Regular.ttf"),
@@ -210,18 +212,27 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 >
                   <View style={styles.searchInputContainer}>
                     <TextInput
+                      ref={inputRef}
                       style={styles.modalSearchBar}
                       placeholder="Buscar Um Serviço"
                       placeholderTextColor="#FFF"
                       value={searchText}
                       onChangeText={handleSearch}
                     />
-                    <Icon
-                      name="search"
-                      size={20}
-                      color="#FFF"
-                      style={styles.searchIcon}
-                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (inputRef.current) {
+                          inputRef.current.focus();
+                        }
+                      }}
+                    >
+                      <Icon
+                        name="search"
+                        size={20}
+                        color="#FFF"
+                        style={styles.searchIcon}
+                      />
+                    </TouchableOpacity>
                   </View>
 
                   <FlatList

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -358,6 +358,8 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
     );
   }
 
+  const inputRef = useRef<TextInput>(null);
+
   const roleModal = (
     <Modal
       visible={isOpen}
@@ -376,18 +378,27 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             >
               <View style={styles.searchInputContainer}>
                 <TextInput
+                  ref={inputRef}
                   style={styles.modalSearchBar}
                   placeholder="Buscar Função"
                   placeholderTextColor="#FFF"
                   value={searchText}
                   onChangeText={handleSearch}
                 />
-                <Icon
-                  name="search"
-                  size={20}
-                  color="#FFF"
-                  style={styles.searchIcon}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }}
+                >
+                  <Icon
+                    name="search"
+                    size={20}
+                    color="#FFF"
+                    style={styles.searchIcon}
+                  />
+                </TouchableOpacity>
               </View>
               <FlatList
                 style={{ width: "100%" }}

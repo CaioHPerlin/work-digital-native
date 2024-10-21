@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -78,6 +78,8 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
     setIsOpen(false); // Close modal
   };
 
+  const inputRef = useRef<TextInput>(null);
+
   const modal = (
     <Modal
       visible={isOpen}
@@ -96,18 +98,27 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
             >
               <View style={styles.searchInputContainer}>
                 <TextInput
+                  ref={inputRef}
                   style={styles.modalSearchBar}
                   placeholder="Buscar Estado"
                   placeholderTextColor="#FFF"
                   value={searchText}
                   onChangeText={handleSearch}
                 />
-                <Icon
-                  name="search"
-                  size={20}
-                  color="#FFF"
-                  style={styles.searchIcon}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }}
+                >
+                  <Icon
+                    name="search"
+                    size={20}
+                    color="#FFF"
+                    style={styles.searchIcon}
+                  />
+                </TouchableOpacity>
               </View>
               <FlatList
                 style={{ width: "100%" }}

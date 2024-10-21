@@ -121,6 +121,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           table: "messages",
         },
         (payload) => {
+          // Check if the message belongs to this chat.
+          if (payload.new.chat_id !== chatId) {
+            return;
+          }
           addMessage({
             id: payload.new.id,
             chat_id: payload.new.chat_id,

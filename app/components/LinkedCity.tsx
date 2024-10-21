@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -74,6 +74,8 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
       city.nome.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
+  const inputRef = useRef<TextInput>(null);
+
   const modal = (
     <Modal
       visible={isOpen}
@@ -92,18 +94,27 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
             >
               <View style={styles.searchInputContainer}>
                 <TextInput
+                  ref={inputRef}
                   style={styles.modalSearchBar}
                   placeholder="Buscar Cidade"
                   placeholderTextColor="#FFF"
                   value={searchText}
                   onChangeText={handleSearch}
                 />
-                <Icon
-                  name="search"
-                  size={20}
-                  color="#FFF"
-                  style={styles.searchIcon}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    if (inputRef.current) {
+                      inputRef.current.focus();
+                    }
+                  }}
+                >
+                  <Icon
+                    name="search"
+                    size={20}
+                    color="#FFF"
+                    style={styles.searchIcon}
+                  />
+                </TouchableOpacity>
               </View>
               <FlatList
                 style={{ width: "100%" }}
