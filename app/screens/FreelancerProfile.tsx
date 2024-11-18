@@ -293,7 +293,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
       if (profileError) throw profileError;
 
-      const { data: freelancerData, error: freelancerError } = await supabase
+      const { data: _, error: freelancerError } = await supabase
         .from("freelancers")
         .update({
           phone_number: data.phoneNumber,
@@ -314,7 +314,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
             highlight.images.map(async (uri, index) => {
               const result = await uploadImage(
                 uri,
-                `highlights/${userId}_${index}_${Date.now()}`
+                `highlights/${userId}_${highlight.role}_${index}`
               );
               return result?.secure_url; // Adjust this if necessary
             })
