@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native-paper";
-import axios from "axios";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import * as Animatable from "react-native-animatable";
-import { useFonts } from "expo-font";
 import InputField from "../components/InputField";
 import { supabase } from "../../lib/supabase";
 
@@ -50,7 +54,10 @@ const Login: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <View style={styles.inlineText}>
         <Animatable.Text animation="bounce" delay={500} style={styles.title}>
           Bem
@@ -123,7 +130,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <Text style={styles.esqueciSenha}>Esqueci a Senha</Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -182,7 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    paddingVertical: 20,
   },
   input: {
     borderColor: "black",

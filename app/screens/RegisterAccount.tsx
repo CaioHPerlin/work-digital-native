@@ -11,6 +11,8 @@ import {
   FlatList,
   TextInput,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import InputField from "../components/InputField";
 import Checkbox from "../components/Checkbox";
@@ -324,7 +326,10 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <ScrollView>
         <Text style={styles.title}>Cadastro</Text>
 
@@ -546,7 +551,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -554,9 +559,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 40,
   },
   title: {
+    paddingTop: 40,
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 30,

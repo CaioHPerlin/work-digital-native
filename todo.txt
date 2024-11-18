@@ -1,8 +1,10 @@
 BACKLOG
-- Corrigir erro no chatscreen do padding (keyboardAvoidingView)
 - Corrigir erro nos destaques
 
+
 DONE
+- Verificar se todos os formulários estão envoltos em keyboardAvoidingView
+- Corrigir erro no chatscreen do padding (keyboardAvoidingView)
 - Verificar input de e-mail lento (por enquanto considero que são as deps)
 - Build para iOS.
 - "Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net"
