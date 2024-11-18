@@ -1,7 +1,10 @@
 BACKLOG
-- Build para iOS.
+- Corrigir erro no chatscreen do padding (keyboardAvoidingView)
+- Corrigir erro nos destaques
 
 DONE
+- Verificar input de e-mail lento (por enquanto considero que são as deps)
+- Build para iOS.
 - "Por exemplo quando eu tô sem Net aparece que os dados inseridos estão errados ... Quando na verdade é a Net"
 - "Nos click por exemplo se eu clicar fora da foto de perfil eu volto novamente"
 - Permitir destaques em qualquer resolução, liberando para o usuário escolher o tamanho da tela.

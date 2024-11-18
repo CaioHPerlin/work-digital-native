@@ -276,7 +276,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} // Adjust based on header height
         style={styles.chatContainer}
       >
         <FlatList
