@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Conversation, CustomStackNavigationProp } from "../types";
 import { Text } from "react-native-paper";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../../lib/supabase";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
