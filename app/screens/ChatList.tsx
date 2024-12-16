@@ -146,6 +146,12 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Icon name="arrow-left" size={25} color={"#f27e26"} />
+        </TouchableOpacity>
         <Text style={styles.headerText}>
           {conversations ? "Conversas" : "Carregando..."}
         </Text>
@@ -202,7 +208,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#2d47f0",
     paddingTop: 50,
     paddingBottom: 20,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    gap: 20,
   },
   headerText: {
     color: "#f27e26",

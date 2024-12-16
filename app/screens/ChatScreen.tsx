@@ -16,9 +16,10 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
 import { supabase } from "../../lib/supabase";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 import ImageWithFallback from "../components/ImageWithFallback";
+import { CustomStackNavigationProp } from "../types";
 
 interface ChatScreenProps {
   route: {
@@ -44,6 +45,8 @@ interface Message {
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   const { chatId, userId, freelancerId, imageUrl, initialMessage } =
     route.params;
+
+  const navigation = useNavigation<CustomStackNavigationProp>();
 
   const [targetUserName, setTargetUserName] = useState("Carregando...");
   const [targetUserPicture, setTargetUserPicture] = useState("");
@@ -269,6 +272,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ marginRight: 20 }}
+        >
+          <Icon name="arrow-left" size={25} color={"#f27e26"} />
+        </TouchableOpacity>
         <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
         <Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerText}>
           {capitalize(targetUserName)}
