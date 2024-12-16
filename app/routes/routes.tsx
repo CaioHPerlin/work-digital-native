@@ -22,11 +22,14 @@ import Ionicon from "react-native-vector-icons/Ionicons";
 import ChatList from "../screens/ChatList";
 import ChatScreen from "../screens/ChatScreen";
 import { supabase } from "../../lib/supabase";
-import { Alert, Text, View } from "react-native";
+import { Alert, Dimensions, Text, View } from "react-native";
 import FreelancerProfile from "../screens/FreelancerProfile";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
+const screenWidth = Dimensions.get("window").width;
+const drawerWidth = Math.min(310, screenWidth * 0.85);
 
 const DrawerContent = (props: any) => {
   const handleLogout = async () => {
@@ -105,7 +108,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
               drawerContent={(props) => <DrawerContent {...props} />}
               screenOptions={({ route }) => ({
                 header: () => <Header title={route.name} />,
-                drawerStyle: { backgroundColor: "#2d47f0", width: 310 },
+                drawerStyle: { backgroundColor: "#2d47f0", width: drawerWidth },
                 headerStyle: { height: 80, backgroundColor: "#2d47f0" },
                 headerTitleStyle: { color: "#f27e26" },
                 drawerActiveBackgroundColor: "#FFC88d",

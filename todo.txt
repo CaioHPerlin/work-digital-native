@@ -1,10 +1,10 @@
 BACKLOG
-- Seta indicando pra voltar
-- Sidebar grande demais em celular pequeno
 - O sistema de notificação está bugado, tipo no Android as mensagens não está sendo contabilizadas como antes e no IOS elas se contabilizam desde desde a primeira conversa ou seja elas vão se acumulando.
 - Outra coisa é que tem contato aparecendo mesmo sem eu mandar uma mensagem, é como se alguém aparecesse ali no ambiente de chat mas nunca tivemos um contato.
 
 DONE
+- Sidebar grande demais em celular pequeno
+- Seta indicando pra voltar
 - Corrigir erro nos destaques
 - Verificar se todos os formulários estão envoltos em keyboardAvoidingView
 - Corrigir erro no chatscreen do padding (keyboardAvoidingView)
