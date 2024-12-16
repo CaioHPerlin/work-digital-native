@@ -52,7 +52,11 @@ const DrawerContent = (props: any) => {
           <Ionicon name="exit-outline" color={color} size={size} />
         )}
         onPress={handleLogout}
-        style={{ borderWidth: 2, borderColor: "#FFC88d" }}
+        style={{
+          borderWidth: 2,
+          borderColor: "#FFC88d",
+          borderRadius: 0,
+        }}
       />
     </DrawerContentScrollView>
   );
@@ -94,7 +98,7 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
   return (
     <Stack.Navigator
       initialRouteName={session ? "HomeScreen" : "Login"} // Redirect based on session
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, animation: "fade" }}
     >
       {!session ? (
         <>
@@ -114,7 +118,12 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
                 drawerActiveBackgroundColor: "#FFC88d",
                 drawerInactiveTintColor: "white",
                 drawerActiveTintColor: "white",
-                drawerItemStyle: { borderWidth: 2, borderColor: "#FFC88d" },
+                drawerItemStyle: {
+                  borderWidth: 2,
+                  borderColor: "#FFC88d",
+                  borderRadius: 0,
+                  marginBottom: 8,
+                },
               })}
             >
               <Drawer.Screen
@@ -192,17 +201,13 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
       )}
       <Stack.Screen name="FreelancerDetails" component={FreelancerDetails} />
       {session && (
-        <Stack.Screen
-          name="ChatList"
-          options={{ animation: "slide_from_right" }}
-        >
+        <Stack.Screen name="ChatList">
           {(props) => <ChatList {...props} userId={session.user.id} />}
         </Stack.Screen>
       )}
       <Stack.Screen
         name="ChatScreen"
         children={(props: any) => <ChatScreen {...props} />}
-        options={{ animation: "slide_from_right" }}
       />
     </Stack.Navigator>
   );

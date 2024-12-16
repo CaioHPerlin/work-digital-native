@@ -1,11 +1,7 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import {
-  useNavigation,
-  DrawerActions,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
 import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 
@@ -61,10 +57,9 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     backgroundColor: "#2d47f0",
-    paddingTop: 45,
-    paddingBottom: 15,
+    height: 80,
+    alignItems: "center",
     paddingHorizontal: 40,
   },
   headerText: {

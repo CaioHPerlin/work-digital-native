@@ -206,8 +206,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#2d47f0",
-    paddingTop: 50,
-    paddingBottom: 20,
+    height: 80,
+    alignItems: "center",
     paddingHorizontal: 20,
     flexDirection: "row",
     gap: 20,

@@ -284,40 +284,75 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           {capitalize(targetUserName)}
         </Text>
       </View>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.chatContainer}
-      >
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderItem}
-          keyExtractor={(item) =>
-            item.id || `${item.created_at}_${messages.indexOf(item)}`
-          }
-          contentContainerStyle={styles.messageList}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-        />
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.textInput}
-            value={newMessage}
-            multiline={true}
-            onChangeText={setNewMessage}
-            placeholder="Digite a mensagem"
-            placeholderTextColor="#888"
+      {Platform.OS === "ios" ? (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.chatContainer}
+        >
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderItem}
+            keyExtractor={(item) =>
+              item.id || `${item.created_at}_${messages.indexOf(item)}`
+            }
+            contentContainerStyle={styles.messageList}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
           />
-          <TouchableOpacity
-            onPress={handleSendMessage}
-            style={styles.sendButton}
-          >
-            <Icon name="send" size={20} color="#fff" />
-          </TouchableOpacity>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={newMessage}
+              multiline={true}
+              onChangeText={setNewMessage}
+              placeholder="Digite a mensagem"
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity
+              onPress={handleSendMessage}
+              style={styles.sendButton}
+            >
+              <Icon name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      ) : (
+        <View style={styles.chatContainer}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderItem}
+            keyExtractor={(item) =>
+              item.id || `${item.created_at}_${messages.indexOf(item)}`
+            }
+            contentContainerStyle={styles.messageList}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
+          />
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              value={newMessage}
+              multiline={true}
+              onChangeText={setNewMessage}
+              placeholder="Digite a mensagem"
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity
+              onPress={handleSendMessage}
+              style={styles.sendButton}
+            >
+              <Icon name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </KeyboardAvoidingView>
+      )}
     </View>
   );
 };
@@ -329,12 +364,11 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#2d47f0",
-    paddingTop: 50,
-    paddingBottom: 20,
+    height: 80,
+    alignItems: "center",
     paddingHorizontal: 20,
     flexWrap: "nowrap",
     flexDirection: "row", // Aligns items horizontally
-    alignItems: "center", // Centers items vertically within the row
   },
   headerText: {
     color: "#f27e26",
