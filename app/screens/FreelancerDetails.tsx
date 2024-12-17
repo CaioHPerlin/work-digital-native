@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
 import PersonalCard from "../components/PersonalCard";
 import Description from "../components/Description";
@@ -8,6 +9,7 @@ import useImagePreloader from "../../hooks/useImagePreloader";
 import { HighlightImage } from "../types";
 import { supabase } from "../../lib/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "expo-router";
 
 interface Props {
   route: any;
@@ -17,6 +19,8 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   const [initLoading, setInitLoading] = useState(false);
   const { freelancer } = route.params;
   const [highlight, setHighlight] = useState<HighlightImage | null>(null);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchHighlight = async () => {
@@ -80,6 +84,13 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
   // Once images are cached, show the actual UI
   return (
     <SafeAreaView style={styles.geral}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        style={{ position: "absolute", left: 20, top: 25, zIndex: 999 }}
+      >
+        <Icon name="arrow-left" size={25} color={"#f27e26"} />
+      </TouchableOpacity>
       <View style={styles.dadosFreelancer}>
         <PersonalCard freelancer={freelancer} />
         <Description freelancer={freelancer} />
@@ -105,6 +116,7 @@ const styles = StyleSheet.create({
     margin: 0,
     borderWidth: 5,
     borderColor: "#2d47f0",
+    paddingLeft: 20,
   },
   geral: {
     backgroundColor: "#2d47f0",
