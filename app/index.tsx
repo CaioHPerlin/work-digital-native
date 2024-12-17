@@ -11,7 +11,10 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { View } from "react-native-animatable";
 import { Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -63,19 +66,21 @@ export default function App() {
   }
 
   return (
-    <ChatNotificationsProvider userId={session.user.id}>
-      {netInfo.isConnected ? (
-        <Routes session={session} />
-      ) : (
-        <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
-          <View style={styles.shadowBackground}>
-            <Text style={styles.errorText}>
-              Buscando conexão de internet...
-            </Text>
+    <SafeAreaProvider>
+      <ChatNotificationsProvider userId={session.user.id}>
+        {netInfo.isConnected ? (
+          <Routes session={session} />
+        ) : (
+          <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
+            <View style={styles.shadowBackground}>
+              <Text style={styles.errorText}>
+                Buscando conexão de internet...
+              </Text>
+            </View>
           </View>
-        </View>
-      )}
-    </ChatNotificationsProvider>
+        )}
+      </ChatNotificationsProvider>
+    </SafeAreaProvider>
   );
 }
 
