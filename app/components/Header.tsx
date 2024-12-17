@@ -1,5 +1,12 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  StatusBar,
+} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import { CustomStackNavigationProp } from "../types";
@@ -61,6 +68,7 @@ const styles = StyleSheet.create({
     height: 80,
     alignItems: "center",
     paddingHorizontal: 40,
+    paddingTop: Platform.OS === "ios" ? StatusBar.currentHeight || 20 : 0,
   },
   headerText: {
     color: "#f27e26",
