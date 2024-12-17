@@ -309,7 +309,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <>
           {/* Description Input */}
@@ -446,7 +446,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -14,6 +14,7 @@ import InputField from "../components/InputField";
 import LinkedState from "../components/LinkedState";
 import LinkedCity from "../components/LinkedCity";
 import { z } from "zod";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type DadosPessoaisProps = {
   navigation: any;
@@ -124,7 +125,7 @@ export default function DadosPessoais({
   };
   return (
     <>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         {initLoading ? (
           <ActivityIndicator size={"large"} />
         ) : (
@@ -176,7 +177,7 @@ export default function DadosPessoais({
             </View>
           </ScrollView>
         )}
-      </View>
+      </SafeAreaView>
     </>
   );
 }

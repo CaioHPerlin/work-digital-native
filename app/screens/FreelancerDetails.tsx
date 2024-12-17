@@ -7,6 +7,7 @@ import BtnPersonal from "../components/BtnPersonal";
 import useImagePreloader from "../../hooks/useImagePreloader";
 import { HighlightImage } from "../types";
 import { supabase } from "../../lib/supabase";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface Props {
   route: any;
@@ -78,13 +79,13 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
 
   // Once images are cached, show the actual UI
   return (
-    <View style={styles.geral}>
+    <SafeAreaView style={styles.geral}>
       <View style={styles.dadosFreelancer}>
         <PersonalCard freelancer={freelancer} />
         <Description freelancer={freelancer} />
       </View>
       <BtnPersonal highlight={highlight} freelancer={freelancer} />
-    </View>
+    </SafeAreaView>
   );
 };
 

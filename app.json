@@ -17,12 +17,16 @@
       "bundleIdentifier": "com.12pulo.app",
       "buildNumber": "3"
     },
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#2d47f0"
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.12pulo.app"
+      "package": "com.pulo.app"
     },
     "web": {
       "bundler": "metro",

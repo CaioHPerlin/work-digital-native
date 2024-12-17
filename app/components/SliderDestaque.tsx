@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   BackHandler,
+  Alert,
 } from "react-native";
 import { HighlightImage } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
@@ -68,13 +69,13 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Slider imageUrls={highlight.images} paused={sliderPaused} />
-              <Icon
-                name="close"
-                size={30}
-                color="#f27e26"
-                style={styles.iconClose}
+              <TouchableOpacity
                 onPress={handleCloseSlider}
-              />
+                style={styles.iconClose}
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+              >
+                <Icon name="close" size={30} color="#f27e26" />
+              </TouchableOpacity>
 
               <View style={styles.buttonContainer}>
                 {/* input type instagram */}
@@ -194,8 +195,9 @@ const styles = StyleSheet.create({
   },
   iconClose: {
     position: "absolute",
-    top: 10,
-    left: 10,
+    top: 20,
+    left: 20,
+    zIndex: 999,
   },
 });
 

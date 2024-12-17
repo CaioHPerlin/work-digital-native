@@ -20,6 +20,7 @@ import { useFocusEffect, useNavigation } from "expo-router";
 import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { CustomStackNavigationProp } from "../types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ChatScreenProps {
   route: {
@@ -270,7 +271,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -353,7 +354,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           </View>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -15,6 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FunctionsHttpError } from "@supabase/supabase-js";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ChangePasswordProps = {
   navigation: any;
@@ -114,7 +115,7 @@ export default function ChangePassword({
 
   return (
     <>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ScrollView>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Senha Atual</Text>
@@ -241,7 +242,7 @@ export default function ChangePassword({
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     </>
   );
 }

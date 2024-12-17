@@ -11,6 +11,8 @@ import {
 import * as Animatable from "react-native-animatable";
 import InputField from "../components/InputField";
 import { supabase } from "../../lib/supabase";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 interface Props {
   navigation: any;
@@ -54,83 +56,86 @@ const Login: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <View style={styles.inlineText}>
-        <Animatable.Text animation="bounce" delay={500} style={styles.title}>
-          Bem
-        </Animatable.Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar style="inverted" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View style={styles.inlineText}>
+          <Animatable.Text animation="bounce" delay={500} style={styles.title}>
+            Bem
+          </Animatable.Text>
 
-        <Animatable.Text
-          animation="bounce"
-          delay={1000}
-          style={styles.titleSubR}
-        >
-          v
-        </Animatable.Text>
-        <Animatable.Text animation="bounce" delay={3500} style={styles.title}>
-          <Text style={styles.colorEspecific}>i</Text>
-        </Animatable.Text>
-        <Animatable.Text
-          animation="bounce"
-          delay={1000}
-          style={styles.titleSub}
-        >
-          ndo
-        </Animatable.Text>
+          <Animatable.Text
+            animation="bounce"
+            delay={1000}
+            style={styles.titleSubR}
+          >
+            v
+          </Animatable.Text>
+          <Animatable.Text animation="bounce" delay={3500} style={styles.title}>
+            <Text style={styles.colorEspecific}>i</Text>
+          </Animatable.Text>
+          <Animatable.Text
+            animation="bounce"
+            delay={1000}
+            style={styles.titleSub}
+          >
+            ndo
+          </Animatable.Text>
 
-        <Animatable.Text animation="bounce" delay={1500} style={styles.title}>
-          ao
-        </Animatable.Text>
-        <Animatable.Text animation="bounce" delay={2000} style={styles.title}>
-          1
-        </Animatable.Text>
-        <Animatable.Text animation="bounce" delay={2500} style={styles.title}>
-          <Text style={styles.colorEspecific}>2</Text>
-        </Animatable.Text>
-        <Animatable.Text animation="bounce" delay={3000} style={styles.title}>
-          PUL
-          <Text style={styles.colorEspecific}>O</Text>
-        </Animatable.Text>
-      </View>
+          <Animatable.Text animation="bounce" delay={1500} style={styles.title}>
+            ao
+          </Animatable.Text>
+          <Animatable.Text animation="bounce" delay={2000} style={styles.title}>
+            1
+          </Animatable.Text>
+          <Animatable.Text animation="bounce" delay={2500} style={styles.title}>
+            <Text style={styles.colorEspecific}>2</Text>
+          </Animatable.Text>
+          <Animatable.Text animation="bounce" delay={3000} style={styles.title}>
+            PUL
+            <Text style={styles.colorEspecific}>O</Text>
+          </Animatable.Text>
+        </View>
 
-      <InputField
-        keyboardType="email-address"
-        textContentType="emailAddress"
-        autoCorrect={false}
-        autoCapitalize="none"
-        label="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
+        <InputField
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          autoCorrect={false}
+          autoCapitalize="none"
+          label="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
 
-      <InputField
-        label="Senha"
-        value={senha}
-        onChangeText={(text) => setSenha(text)}
-        secureTextEntry
-        autoCapitalize="none"
-      />
+        <InputField
+          label="Senha"
+          value={senha}
+          onChangeText={(text) => setSenha(text)}
+          secureTextEntry
+          autoCapitalize="none"
+        />
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>ENTRAR</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>ENTRAR</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("RegisterAccount")}
-        >
-          <Text style={styles.buttonText}>CADASTRAR</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("RegisterAccount")}
+          >
+            <Text style={styles.buttonText}>CADASTRAR</Text>
+          </TouchableOpacity>
+        </View>
 
-      <Text style={styles.esqueciSenha}>Esqueci a Senha</Text>
-    </KeyboardAvoidingView>
+        <Text style={styles.esqueciSenha}>Esqueci a Senha</Text>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

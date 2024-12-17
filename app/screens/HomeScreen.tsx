@@ -19,6 +19,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { FlattenedProfile } from "../types";
 import { supabase } from "../../lib/supabase";
 import { useFocusEffect } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -160,7 +161,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.backColor}>
+    <SafeAreaView style={styles.backColor}>
       <Animatable.Text animation="fadeInDown" style={styles.headerContainer}>
         1<Text style={styles.colorEspecific}>2</Text> PUL
         <Text style={styles.colorEspecific}>O</Text>
@@ -275,7 +276,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

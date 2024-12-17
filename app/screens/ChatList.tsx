@@ -17,6 +17,7 @@ import { optimizeImageLowQ } from "../../utils/imageOptimizer";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 import { Image } from "expo-image";
+import { SafeAreaView } from "react-native-safe-area-context";
 interface Props {
   userId: string;
 }
@@ -144,7 +145,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -195,7 +196,7 @@ const ChatList: React.FC<Props> = ({ userId }) => {
           )}
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 

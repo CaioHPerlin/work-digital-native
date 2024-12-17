@@ -11,6 +11,7 @@ import {
 import { supabase } from "../../lib/supabase";
 import LinkedCity from "../components/LinkedCity";
 import LinkedState from "../components/LinkedState";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type ChangeCityProps = {
   navigation: any;
@@ -94,7 +95,7 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
 
   return (
     <>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ScrollView>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
@@ -117,7 +118,7 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     </>
   );
 }
