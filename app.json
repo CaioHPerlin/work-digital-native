@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.12pulo.app",
-      "buildNumber": "4"
+      "buildNumber": "5"
     },
     "androidStatusBar": {
       "barStyle": "light-content",
