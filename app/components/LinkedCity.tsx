@@ -13,6 +13,7 @@ import * as Animatable from "react-native-animatable";
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import { ActivityIndicator } from "react-native-paper";
+import FixedText from "./FixedText";
 
 type Cidade = {
   id: number;
@@ -30,7 +31,7 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
   const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
-  
+
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -170,9 +171,9 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
           onPress={() => setIsOpen(true)}
           style={styles.submitButton}
         >
-          <Text style={{ ...styles.uploadButtonText }}>
+          <FixedText style={{ ...styles.uploadButtonText }}>
             {city ? city : "Selecione a Cidade"}
-          </Text>
+          </FixedText>
         </TouchableOpacity>
       )}
       {modal}

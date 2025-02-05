@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import FixedText from "./FixedText";
 
 interface CheckboxProps {
   label: string;
@@ -18,7 +19,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, isChecked, onChange }) => {
       <View style={[styles.checkbox, isChecked && styles.checked]}>
         {isChecked && <Ionicons name="checkmark" size={16} color="white" />}
       </View>
-      <Text style={styles.label}>{label}</Text>
+      <FixedText style={styles.label}>{label}</FixedText>
     </TouchableOpacity>
   );
 };

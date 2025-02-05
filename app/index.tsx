@@ -12,6 +12,7 @@ import { View } from "react-native-animatable";
 import { Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FixedText from "./components/FixedText";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,9 +53,9 @@ export default function App() {
         ) : (
           <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
             <View style={styles.shadowBackground}>
-              <Text style={styles.errorText}>
+              <FixedText style={styles.errorText}>
                 Buscando conexão de internet...
-              </Text>
+              </FixedText>
             </View>
           </View>
         )}
@@ -69,9 +70,9 @@ export default function App() {
       ) : (
         <View style={[styles.fullScreen, { paddingTop: insets.top }]}>
           <View style={styles.shadowBackground}>
-            <Text style={styles.errorText}>
+            <FixedText style={styles.errorText}>
               Buscando conexão de internet...
-            </Text>
+            </FixedText>
           </View>
         </View>
       )}

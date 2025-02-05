@@ -28,6 +28,7 @@ import { LogBox } from "react-native";
 import { uploadImage } from "../../lib/cloudinary";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
+import FixedText from "../components/FixedText";
 
 interface UpdateFreelancer {
   name: string;
@@ -354,7 +355,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           iterationCount="infinite"
           style={styles.loadingText}
         >
-          Carregando...
+          {"Carregando... "}
         </Animatable.Text>
       </View>
     );
@@ -479,7 +480,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
         />
 
         <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
-          <Text style={styles.uploadButtonText}>Alterar Foto de Perfil</Text>
+          <FixedText style={styles.uploadButtonText}>
+            Alterar Foto de Perfil
+          </FixedText>
         </TouchableOpacity>
 
         <Controller

@@ -33,6 +33,7 @@ import { LogBox } from "react-native";
 import LinkedState from "../components/LinkedState";
 import LinkedCity from "../components/LinkedCity";
 import { StatusBar } from "expo-status-bar";
+import FixedText from "../components/FixedText";
 
 dayjs.extend(customParseFormat);
 
@@ -298,7 +299,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                         }
                       />
                     )}
-                    <Text
+                    <FixedText
                       style={
                         preSelectedRoles.includes(item)
                           ? { ...styles.modalItemText, color: "#FFF" }
@@ -308,7 +309,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                       }
                     >
                       {item}
-                    </Text>
+                    </FixedText>
                   </TouchableOpacity>
                 )}
               />
@@ -317,7 +318,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                 style={styles.confirmButton}
                 onPress={handleConfirmRoles}
               >
-                <Text style={styles.confirmButtonText}>Confirmar</Text>
+                <FixedText style={styles.confirmButtonText}>
+                  Confirmar
+                </FixedText>
               </TouchableOpacity>
             </Animatable.View>
           </TouchableWithoutFeedback>
@@ -425,7 +428,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             defaultValue={false}
             render={({ field: { onChange, value } }) => (
               <Checkbox
-                label="Sou prestador de serviços"
+                label="Sou prestador de serviços "
                 isChecked={value}
                 onChange={onChange}
               />
@@ -454,7 +457,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                       }
                     >
                       <Text style={styles.uploadButtonText}>
-                        Selecione seus serviços
+                        {"Selecione seus serviços "}
                       </Text>
                     </TouchableOpacity>
                   }
@@ -464,7 +467,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                       onPress={() => handleSelectedRoleRemove(item.item)}
                       style={styles.roleContainer}
                     >
-                      <Text>{item.item}</Text>
+                      <FixedText>{item.item}</FixedText>
                       <Icon name="close" size={16} />
                     </TouchableOpacity>
                   )}
@@ -532,11 +535,11 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                 onPress={handlePickImage}
                 style={styles.uploadButton}
               >
-                <Text style={styles.uploadButtonText}>
+                <FixedText style={styles.uploadButtonText}>
                   {watch("profilePhoto")
                     ? "Alterar Foto de Perfil"
                     : "Adicionar Foto de Perfil (Opcional)"}
-                </Text>
+                </FixedText>
               </TouchableOpacity>
 
               {roleModal}

@@ -14,6 +14,7 @@ import {
 import { HighlightImage } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
+import FixedText from "./FixedText";
 
 interface SliderDestaqueProps {
   setInitialMessage: (str: string) => void;
@@ -55,7 +56,7 @@ const SliderDestaque: React.FC<SliderDestaqueProps> = ({
               onLoad={() => setImageLoaded(true)}
             />
           </View>
-          <Text style={styles.txtDestak}>Meus Serviços</Text>
+          <FixedText style={styles.txtDestak}>Meus Serviços</FixedText>
         </TouchableOpacity>
       </View>
 

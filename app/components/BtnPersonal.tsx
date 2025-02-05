@@ -19,6 +19,7 @@ import {
 import { supabase } from "../../lib/supabase";
 import SliderDestaque from "./SliderDestaque";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
+import FixedText from "./FixedText";
 
 interface Props {
   freelancer: FlattenedProfile;

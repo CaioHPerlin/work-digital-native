@@ -21,6 +21,7 @@ import { useChatNotifications } from "../../hooks/ChatNotificationsContext";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { CustomStackNavigationProp } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FixedText from "../components/FixedText";
 
 interface ChatScreenProps {
   route: {
@@ -223,8 +224,10 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           isMyMessage ? styles.selfMessage : styles.otherMessage,
         ]}
       >
-        <Text style={styles.messageText}>{item.content}</Text>
-        <Text style={styles.messageTimestampText}>{formattedTimestamp}</Text>
+        <FixedText style={styles.messageText}>{item.content}</FixedText>
+        <FixedText style={styles.messageTimestampText}>
+          {formattedTimestamp}
+        </FixedText>
       </Animatable.View>
     );
   };
@@ -281,9 +284,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
           <Icon name="arrow-left" size={25} color={"#f27e26"} />
         </TouchableOpacity>
         <ImageWithFallback imageUrl={imageUrl} style={styles.image} />
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerText}>
+        <FixedText
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={styles.headerText}
+        >
           {capitalize(targetUserName)}
-        </Text>
+        </FixedText>
       </View>
 
       {Platform.OS === "ios" ? (

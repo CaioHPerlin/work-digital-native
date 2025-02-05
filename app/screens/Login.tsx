@@ -49,7 +49,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
           iterationCount="infinite"
           style={styles.loadingText}
         >
-          Carregando...
+          {"Carregando... "}
         </Animatable.Text>
       </View>
     );

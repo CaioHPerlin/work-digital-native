@@ -75,7 +75,7 @@ const FreelancerDetails: React.FC<Props> = ({ route }) => {
           iterationCount="infinite"
           style={styles.loadingText}
         >
-          Carregando...
+          {"Carregando... "}
         </Animatable.Text>
       </View>
     );

@@ -13,6 +13,7 @@ import * as Animatable from "react-native-animatable";
 import Icon from "react-native-vector-icons/FontAwesome";
 import axios from "axios";
 import { ActivityIndicator } from "react-native-paper";
+import FixedText from "./FixedText";
 
 type Estado = {
   id: number;
@@ -174,9 +175,9 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
           onPress={() => setIsOpen(true)}
           style={styles.submitButton}
         >
-          <Text style={styles.uploadButtonText}>
+          <FixedText style={styles.uploadButtonText}>
             {selectedState ? selectedState.nome : "Selecione o Estado"}
-          </Text>
+          </FixedText>
         </TouchableOpacity>
       )}
       {modal}

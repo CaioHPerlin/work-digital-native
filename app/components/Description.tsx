@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import FixedText from "./FixedText";
 
 interface Props {
   freelancer: {
@@ -19,8 +20,8 @@ const Description: React.FC<Props> = ({ freelancer }) => {
 
   return (
     <View>
-      <Text style={styles.text}>Sobre </Text>
-      <Text style={styles.conteudo}>{description}</Text>
+      <FixedText style={styles.text}>Sobre </FixedText>
+      <FixedText style={styles.conteudo}>{description}</FixedText>
     </View>
   );
 };

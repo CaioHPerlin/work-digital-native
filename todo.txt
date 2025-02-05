@@ -1,8 +1,14 @@
 BACKLOG
-- O sistema de notificação está bugado, tipo no Android as mensagens não está sendo contabilizadas como antes e no IOS elas se contabilizam desde desde a primeira conversa ou seja elas vão se acumulando.
-- Outra coisa é que tem contato aparecendo mesmo sem eu mandar uma mensagem, é como se alguém aparecesse ali no ambiente de chat mas nunca tivemos um contato.
+- Esconder seletor de cidade enquanto seletor de estado carrega
+- Bug área cinza ao abrir caixa de texto e depois abrir o cadastro
+- Animação carregamento para sair
+- Progresso no carregamento de cadastro
+- Tratamento de erros no cadastro 
+- Texto escondido com fonte negrito
 
 DONE
+- O sistema de notificação está bugado, tipo no Android as mensagens não está sendo contabilizadas como antes e no IOS elas se contabilizam desde desde a primeira conversa ou seja elas vão se acumulando.
+- Outra coisa é que tem contato aparecendo mesmo sem eu mandar uma mensagem, é como se alguém aparecesse ali no ambiente de chat mas nunca tivemos um contato.
 - Sidebar grande demais em celular pequeno
 - Seta indicando pra voltar
 - Corrigir erro nos destaques

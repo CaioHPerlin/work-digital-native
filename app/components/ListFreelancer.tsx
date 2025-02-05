@@ -11,6 +11,7 @@ import {
 import { FlattenedProfile, Freelancer } from "../types";
 import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageLowQ } from "../../utils/imageOptimizer";
+import FixedText from "./FixedText";
 
 interface ListFreelancerProps {
   data: FlattenedProfile[];
@@ -50,13 +51,13 @@ const ListFreelancer: React.FC<ListFreelancerProps> = ({
                 cache={"none"}
               />
               <View style={styles.textContainer}>
-                <Text style={styles.nameText}>
+                <FixedText style={styles.nameText}>
                   {item.name
                     .toLowerCase()
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" ")}
-                </Text>
+                </FixedText>
               </View>
             </TouchableOpacity>
           )}

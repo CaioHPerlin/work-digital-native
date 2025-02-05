@@ -20,6 +20,7 @@ import { FlattenedProfile } from "../types";
 import { supabase } from "../../lib/supabase";
 import { useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FixedText from "../components/FixedText";
 
 SplashScreen.preventAutoHideAsync();
 
