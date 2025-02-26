@@ -21,10 +21,11 @@ type Estado = {
   sigla: string;
 };
 
-const LinkedState: React.FC<{ state: string; setState: any }> = ({
-  state,
-  setState,
-}) => {
+const LinkedState: React.FC<{
+  state: string;
+  setState: (state: string) => void;
+  onLoad?: () => void;
+}> = ({ state, setState, onLoad }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const [states, setStates] = useState<Estado[]>([]);
@@ -50,10 +51,11 @@ const LinkedState: React.FC<{ state: string; setState: any }> = ({
         if (initialState) {
           setSelectedState(initialState); // Set initial state from sigla
         }
-        setLoading(false);
       } catch (error) {
         console.error(error);
+      } finally {
         setLoading(false);
+        onLoad && onLoad();
       }
     };
 

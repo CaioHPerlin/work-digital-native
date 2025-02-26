@@ -47,6 +47,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
   const [preSelectedRoles, setPreSelectedRoles] = useState<string[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [fetchingStates, setFetchingStates] = useState(true);
 
   let isFreelancer = false;
   // Define o schema Zod para validação
@@ -406,6 +407,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
           <LinkedState
             state={state} // Fetch the current state value
             setState={(selectedState: any) => setValue("state", selectedState)} // Update the form's 'state' field with the selected sigla
+            onLoad={() => setFetchingStates(false)}
           />
           {errors.state && (
             <Text style={styles.errorText}>{errors.state.message}</Text>
@@ -416,6 +418,7 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
             state={state}
             city={city} // Fetch the current city value
             setCity={(selectedCity: any) => setValue("city", selectedCity)} // Update the form's 'city'
+            fetchingStates={fetchingStates}
           />
           {errors.city && (
             <Text style={styles.errorText}>{errors.city.message}</Text>

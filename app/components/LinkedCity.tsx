@@ -20,11 +20,12 @@ type Cidade = {
   nome: string;
 };
 
-const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
-  state,
-  city,
-  setCity,
-}) => {
+const LinkedCity: React.FC<{
+  state: string;
+  city: string;
+  setCity: any;
+  fetchingStates?: boolean;
+}> = ({ state, city, setCity, fetchingStates }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchText, setSearchText] = useState<string>("");
   const [cities, setCities] = useState<Cidade[]>([]);
@@ -142,7 +143,7 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
                           : { ...styles.modalItemText, color: "#000" }
                       }
                     />
-                    <Text
+                    <FixedText
                       style={
                         city == item.nome
                           ? { ...styles.modalItemText, color: "#FFF" }
@@ -150,7 +151,7 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
                       }
                     >
                       {item.nome}
-                    </Text>
+                    </FixedText>
                   </TouchableOpacity>
                 )}
               />
@@ -163,8 +164,12 @@ const LinkedCity: React.FC<{ state: string; city: string; setCity: any }> = ({
 
   return (
     <>
-      {loading ? (
-        <ActivityIndicator size="large" color="#FFC88d" />
+      {loading || fetchingStates ? (
+        <ActivityIndicator
+          style={{ paddingVertical: 14 }}
+          size="large"
+          color="#FFC88d"
+        />
       ) : (
         <TouchableOpacity
           disabled={!state}

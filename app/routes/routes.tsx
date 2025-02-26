@@ -32,18 +32,23 @@ const screenWidth = Dimensions.get("window").width;
 const drawerWidth = Math.min(310, screenWidth * 0.85);
 
 const DrawerContent = (props: any) => {
+  const [loading, setLoading] = React.useState(false);
   const handleLogout = async () => {
+    setLoading(true);
+
     const { error } = await supabase.auth.signOut({ scope: "local" });
     if (error) {
       Alert.alert("Erro ao sair.", "Verifique sua conexão.");
     }
+
+    setLoading(false);
   };
 
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
       <DrawerItem
-        label="Sair"
+        label={loading ? "Saindo..." : "Sair"}
         labelStyle={{ color: "#FFF" }}
         activeTintColor="white"
         inactiveTintColor="white"

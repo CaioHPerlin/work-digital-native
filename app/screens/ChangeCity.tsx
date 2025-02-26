@@ -23,6 +23,8 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
   const [estado, setEstado] = useState<string>("");
   const [cidade, setCidade] = useState<string>("");
 
+  const [fetchingStates, setFetchingStates] = useState(true);
+
   useEffect(() => {
     // Fetch user profile on component mount
     const fetchUserProfile = async () => {
@@ -99,12 +101,21 @@ export default function ChangeCity({ navigation, userId }: ChangeCityProps) {
         <ScrollView>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Estado</Text>
-            <LinkedState state={estado} setState={setEstado} />
+            <LinkedState
+              state={estado}
+              setState={setEstado}
+              onLoad={() => setFetchingStates(false)}
+            />
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Cidade</Text>
-            <LinkedCity state={estado} city={cidade} setCity={setCidade} />
+            <LinkedCity
+              state={estado}
+              city={cidade}
+              setCity={setCidade}
+              fetchingStates={fetchingStates}
+            />
           </View>
 
           <View style={styles.buttonContainer}>

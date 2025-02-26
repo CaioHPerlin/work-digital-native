@@ -39,6 +39,8 @@ export default function DadosPessoais({
 
   const [emailError, setEmailError] = useState<string>("");
 
+  const [fetchingStates, setFecthingStates] = useState(true);
+
   const fetchUserProfile = async () => {
     try {
       const { data, error } = await supabase
@@ -153,13 +155,22 @@ export default function DadosPessoais({
               />
 
               <Text style={styles.label}>Estado</Text>
-              <LinkedState state={estado} setState={setEstado} />
+              <LinkedState
+                state={estado}
+                setState={setEstado}
+                onLoad={() => setFecthingStates(false)}
+              />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Cidade</Text>
 
-              <LinkedCity state={estado} city={cidade} setCity={setCidade} />
+              <LinkedCity
+                state={estado}
+                city={cidade}
+                setCity={setCidade}
+                fetchingStates={fetchingStates}
+              />
             </View>
 
             <View style={styles.buttonContainer}>
