@@ -181,7 +181,27 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
     let formattedBirthDate;
     if (data.birthDate && isFreelancer) {
-      formattedBirthDate = data.birthDate.split("/").reverse().join("-");
+      const [day, month, year] = data.birthDate.split("/").map(Number);
+
+      // Check if the date is valid
+      if (
+        day > 31 ||
+        day < 1 ||
+        month > 12 ||
+        month < 1 ||
+        year > new Date().getFullYear() ||
+        year < 1900
+      ) {
+        setLoading(false);
+        return Alert.alert(
+          "Data de nascimento inválida",
+          "Por favor, insira uma data de nascimento válida."
+        );
+      }
+
+      formattedBirthDate = `${year}-${String(month).padStart(2, "0")}-${String(
+        day
+      ).padStart(2, "0")}`;
     }
 
     console.log(formattedBirthDate);
@@ -206,6 +226,8 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     });
 
     if (error) {
+      console.log("Form error:", error.code);
+
       setLoading(false);
       return Alert.alert(
         "Erro ao cadastrar.",
@@ -434,47 +456,41 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
         {isFreelancer && (
           <>
             {/* Role Input */}
-            <SafeAreaView style={{ marginBottom: 20 }}>
-              <FlatList
-                ListHeaderComponent={
-                  <TouchableOpacity
-                    onPress={handleOpenModal}
-                    style={
-                      selectedRoles.length === 0
-                        ? {
-                            ...styles.uploadButton,
-                            marginBottom: 10,
-                          }
-                        : {
-                            ...styles.uploadButton,
-                            borderBottomLeftRadius: 0,
-                            borderBottomRightRadius: 0,
-                          }
-                    }
-                  >
-                    <Text style={styles.uploadButtonText}>
-                      {"Selecione seus serviços "}
-                    </Text>
-                  </TouchableOpacity>
+            <ScrollView style={{ marginBottom: 20 }}>
+              <TouchableOpacity
+                onPress={handleOpenModal}
+                style={
+                  selectedRoles.length === 0
+                    ? { ...styles.uploadButton, marginBottom: 10 }
+                    : {
+                        ...styles.uploadButton,
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                      }
                 }
-                data={selectedRoles}
-                renderItem={(item) => (
-                  <TouchableOpacity
-                    onPress={() => handleSelectedRoleRemove(item.item)}
-                    style={styles.roleContainer}
-                  >
-                    <FixedText>{item.item}</FixedText>
-                    <Icon name="close" size={16} />
-                  </TouchableOpacity>
-                )}
-              />
+              >
+                <Text style={styles.uploadButtonText}>
+                  {"Selecione seus serviços "}
+                </Text>
+              </TouchableOpacity>
+
+              {selectedRoles.map((role, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleSelectedRoleRemove(role)}
+                  style={styles.roleContainer}
+                >
+                  <FixedText>{role}</FixedText>
+                  <Icon name="close" size={16} />
+                </TouchableOpacity>
+              ))}
 
               {selectedRoles.length < 1 && (
                 <Text style={styles.errorText}>
                   Você deve selecionar ao menos 1 função
                 </Text>
               )}
-            </SafeAreaView>
+            </ScrollView>
 
             {/* CPF Input */}
             <Controller
