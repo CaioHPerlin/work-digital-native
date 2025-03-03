@@ -59,22 +59,39 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   errorMessage,
 }) => {
-  const handleChange = (text: string) => {
-    switch (mask) {
-      case "cpf":
-        onChangeText(formatCPF(text));
-        break;
-      case "date":
-        onChangeText(formatDate(text));
-        break;
-      case "phone":
-        onChangeText(formatPhoneNumber(text));
-        break;
-      default:
-        onChangeText(text);
-        break;
-    }
-  };
+  const handleChange = React.useCallback(
+    (text: string) => {
+      if (!text) {
+        onChangeText("");
+        return;
+      }
+
+      let formattedText = text;
+
+      switch (mask) {
+        case "cpf":
+          formattedText = formatCPF(text);
+          break;
+        case "date":
+          formattedText = formatDate(text);
+          break;
+        case "phone":
+          formattedText = formatPhoneNumber(text);
+          break;
+        default:
+          formattedText = text;
+          break;
+      }
+
+      onChangeText(formattedText);
+    },
+    [mask, onChangeText, value]
+  );
+
+  // FIX FOR EXPO SDK 52 (what a mess of a update huh expo devs)
+  const _inputMode = keyboardType === "numeric" ? "numeric" : undefined;
+  const _keyboardType =
+    keyboardType === "numeric" ? "number-pad" : keyboardType;
 
   return (
     <View style={styles.inputGroup}>
@@ -83,8 +100,9 @@ const InputField: React.FC<InputFieldProps> = ({
         label={label}
         placeholder={placeholder}
         value={value}
+        inputMode={_inputMode}
         onChangeText={handleChange}
-        keyboardType={keyboardType}
+        keyboardType={_keyboardType}
         textContentType={textContentType}
         autoCorrect={autoCorrect}
         autoCapitalize={autoCapitalize}

@@ -1,14 +1,15 @@
-QUARTA
 - Bug área cinza ao abrir caixa de texto e depois abrir o cadastro
-- Progresso no carregamento de cadastro
-
-QUINTA
-- Tratamento de erros no cadastro 
+- Tratamento de erros no cadastro (só tratar o timeout)
+- Tratamento de envio na mensagem (loading)
 - Texto escondido com fonte negrito
-
-SEXTA
 - Só abrir o chat quando enviar uma mensagem
+
 - Build
+- QA
+
+TERÇA
+- deploy
+
 
 DONE
 - Animação carregamento para sair

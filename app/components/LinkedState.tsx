@@ -149,7 +149,7 @@ const LinkedState: React.FC<{
                           : { ...styles.modalItemText, color: "#000" }
                       }
                     />
-                    <Text
+                    <FixedText
                       style={
                         selectedState?.sigla == item.sigla
                           ? { ...styles.modalItemText, color: "#FFF" }
@@ -157,7 +157,7 @@ const LinkedState: React.FC<{
                       }
                     >
                       {item.nome}
-                    </Text>
+                    </FixedText>
                   </TouchableOpacity>
                 )}
               />

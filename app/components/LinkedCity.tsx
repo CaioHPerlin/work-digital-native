@@ -34,7 +34,6 @@ const LinkedCity: React.FC<{
   const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    console.log(state);
     if (state) {
       setLoading(true);
       const fetchCidades = async () => {

@@ -91,7 +91,6 @@ const Routes: React.FC<RoutesProps> = ({ session }) => {
 
       if (data && data.length > 0) {
         setIsFreelancer(data[0].is_freelancer);
-        console.log(data[0].is_freelancer);
       } else {
         setIsFreelancer(false);
       }
