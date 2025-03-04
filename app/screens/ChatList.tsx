@@ -32,13 +32,13 @@ const ChatList: React.FC<Props> = ({ userId }) => {
 
   const fetchConversations = async () => {
     setLoading(true);
+
     const { data, error } = await supabase
       .from("chats")
       .select(
-        `          *,
-          user_1:profiles!chats_user_1_id_fkey(id, name, is_freelancer),
-          user_2:profiles!chats_user_2_id_fkey(id, name, is_freelancer)
-        `
+        `*, 
+        user_1:profiles!chats_user_1_id_fkey(id, name, is_freelancer), 
+        user_2:profiles!chats_user_2_id_fkey(id, name, is_freelancer)`
       )
       .or(`user_1_id.eq.${userId},user_2_id.eq.${userId}`)
       .order("updated_at", { ascending: false });
@@ -53,7 +53,27 @@ const ChatList: React.FC<Props> = ({ userId }) => {
       );
     }
 
-    setConversations(data);
+    // Fetch message counts separately
+    const conversationsWithCounts = await Promise.all(
+      data.map(async (chat) => {
+        const { count, error: countError } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .eq("chat_id", chat.id);
+
+        return {
+          ...chat,
+          is_empty: count || 0, // Default to 0 if there's an error
+        };
+      })
+    );
+
+    // Filter out empty conversations
+    const filteredConversations = conversationsWithCounts.filter(
+      (chat) => chat.is_empty > 0
+    );
+
+    setConversations(filteredConversations);
     setLoading(false);
   };
 

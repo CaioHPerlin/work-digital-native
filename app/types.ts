@@ -66,6 +66,8 @@ export type Conversation = {
   updated_at: string;
   user_1?: any;
   user_2?: any;
+
+  is_empty?: boolean;
 };
 
 export type HighlightImage = {

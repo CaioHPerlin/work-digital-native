@@ -1,7 +1,6 @@
 - Tratamento de erros no cadastro (só tratar o timeout)
 - Tratamento de envio na mensagem (loading)
 - Texto escondido com fonte negrito
-- Só abrir o chat quando enviar uma mensagem
 
 - Build
 - QA
@@ -11,6 +10,7 @@ TERÇA
 
 
 DONE
+- Só abrir o chat quando enviar uma mensagem
 - Bug área cinza ao abrir caixa de texto e depois abrir o cadastro
 - Animação carregamento para sair
 - Esconder seletor de cidade enquanto seletor de estado carrega
