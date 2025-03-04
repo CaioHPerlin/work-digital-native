@@ -433,7 +433,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                         }
                       />
                     )}
-                    <Text
+                    <FixedText
                       style={
                         preSelectedRoles.includes(item)
                           ? { ...styles.modalItemText, color: "#FFF" }
@@ -443,7 +443,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                       }
                     >
                       {item}
-                    </Text>
+                    </FixedText>
                   </TouchableOpacity>
                 )}
               />
@@ -558,7 +558,7 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
                   onPress={() => handleSelectedRoleRemove(item.item)}
                   style={styles.roleContainer}
                 >
-                  <Text>{item.item}</Text>
+                  <FixedText>{item.item}</FixedText>
                   <Icon name="close" size={16} />
                 </TouchableOpacity>
               )}
@@ -645,9 +645,9 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
           onPress={handleSubmit(handleUpdateProfile)}
           disabled={loading}
         >
-          <Text style={styles.submitButtonText}>
+          <FixedText style={styles.submitButtonText}>
             {loading ? "Atualizando..." : "Atualizar Perfil"}
-          </Text>
+          </FixedText>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

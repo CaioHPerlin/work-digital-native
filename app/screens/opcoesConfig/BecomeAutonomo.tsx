@@ -27,6 +27,7 @@ import { validateCPF, validatePhone } from "../../../utils/validator";
 import { uploadImage } from "../../../lib/cloudinary";
 import roles from "../../../constants/roles";
 import { LogBox } from "react-native";
+import FixedText from "@/app/components/FixedText";
 
 dayjs.extend(customParseFormat);
 
@@ -346,9 +347,9 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
                         }
                   }
                 >
-                  <Text style={styles.uploadButtonText}>
+                  <FixedText style={styles.uploadButtonText}>
                     Selecione seus serviços
-                  </Text>
+                  </FixedText>
                 </TouchableOpacity>
               }
               data={selectedRoles}

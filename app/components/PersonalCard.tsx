@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FlattenedProfile } from "../types";
-import Description from "./Description";
 import ImageWithFallback from "./ImageWithFallback";
 import { optimizeImageHighQ } from "../../utils/imageOptimizer";
+import FixedText from "./FixedText";
 
 interface Props {
   freelancer: FlattenedProfile;
@@ -20,10 +20,12 @@ const PersonalCard: React.FC<Props> = ({ freelancer }) => {
         />
 
         <View style={styles.text}>
-          <Text style={styles.dados}>{freelancer.name}</Text>
-          <Text style={styles.subDados}>{freelancer.roles}</Text>
+          <FixedText style={styles.dados}>{freelancer.name}</FixedText>
+          <FixedText style={styles.subDados}>{freelancer.roles}</FixedText>
 
-          <Text style={styles.subDados}>{freelancer.phone_number}</Text>
+          <FixedText style={styles.subDados}>
+            {freelancer.phone_number}
+          </FixedText>
         </View>
       </View>
     </>
