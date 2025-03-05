@@ -59,7 +59,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style="inverted" />
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.container}
       >
         <View style={styles.inlineText}>

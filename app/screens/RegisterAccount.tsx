@@ -352,224 +352,230 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <ScrollView style={styles.container}>
-        <Text style={styles.title}>Cadastro</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={Platform.OS === "ios" && { flex: 1 }}
+        keyboardVerticalOffset={30}
+      >
+        <ScrollView style={styles.container}>
+          <Text style={styles.title}>Cadastro</Text>
 
-        {/* Full Name Input */}
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Nome Completo"
-              value={value}
-              onChangeText={onChange}
-              autoCapitalize="words"
-              keyboardType="default"
-              errorMessage={errors.name?.message}
-            />
+          {/* Full Name Input */}
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Nome Completo"
+                value={value}
+                onChangeText={onChange}
+                autoCapitalize="words"
+                keyboardType="default"
+                errorMessage={errors.name?.message}
+              />
+            )}
+          />
+
+          {/* Email Input */}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="E-mail"
+                value={value}
+                onChangeText={onChange}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                errorMessage={errors.email?.message}
+              />
+            )}
+          />
+
+          {/* Password Input */}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Senha"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                autoCapitalize="none"
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Confirme sua Senha"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                autoCapitalize="none"
+                errorMessage={errors.confirmPassword?.message}
+              />
+            )}
+          />
+
+          {/* State Picker */}
+          <LinkedState
+            state={state} // Fetch the current state value
+            setState={(selectedState: any) => setValue("state", selectedState)} // Update the form's 'state' field with the selected sigla
+            onLoad={() => setFetchingStates(false)}
+          />
+          {errors.state && (
+            <Text style={styles.errorText}>{errors.state.message}</Text>
           )}
-        />
 
-        {/* Email Input */}
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="E-mail"
-              value={value}
-              onChangeText={onChange}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              errorMessage={errors.email?.message}
-            />
+          {/* City Picker */}
+          <LinkedCity
+            state={state}
+            city={city} // Fetch the current city value
+            setCity={(selectedCity: any) => setValue("city", selectedCity)} // Update the form's 'city'
+            fetchingStates={fetchingStates}
+          />
+          {errors.city && (
+            <Text style={styles.errorText}>{errors.city.message}</Text>
           )}
-        />
 
-        {/* Password Input */}
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Senha"
-              value={value}
-              onChangeText={onChange}
-              secureTextEntry
-              autoCapitalize="none"
-              errorMessage={errors.password?.message}
-            />
-          )}
-        />
+          {/* Checkbox Sou prestador de serviços */}
+          <Controller
+            control={control}
+            name="isFreelancer"
+            defaultValue={false}
+            render={({ field: { onChange, value } }) => (
+              <Checkbox
+                label="Sou prestador de serviços "
+                isChecked={value}
+                onChange={onChange}
+              />
+            )}
+          />
 
-        <Controller
-          control={control}
-          name="confirmPassword"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Confirme sua Senha"
-              value={value}
-              onChangeText={onChange}
-              secureTextEntry
-              autoCapitalize="none"
-              errorMessage={errors.confirmPassword?.message}
-            />
-          )}
-        />
+          {isFreelancer && (
+            <>
+              {/* Role Input */}
+              <ScrollView style={{ marginBottom: 20 }}>
+                <TouchableOpacity
+                  onPress={handleOpenModal}
+                  style={
+                    selectedRoles.length === 0
+                      ? { ...styles.uploadButton, marginBottom: 10 }
+                      : {
+                          ...styles.uploadButton,
+                          borderBottomLeftRadius: 0,
+                          borderBottomRightRadius: 0,
+                        }
+                  }
+                >
+                  <Text style={styles.uploadButtonText}>
+                    {"Selecione seus serviços "}
+                  </Text>
+                </TouchableOpacity>
 
-        {/* State Picker */}
-        <LinkedState
-          state={state} // Fetch the current state value
-          setState={(selectedState: any) => setValue("state", selectedState)} // Update the form's 'state' field with the selected sigla
-          onLoad={() => setFetchingStates(false)}
-        />
-        {errors.state && (
-          <Text style={styles.errorText}>{errors.state.message}</Text>
-        )}
+                {selectedRoles.map((role, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleSelectedRoleRemove(role)}
+                    style={styles.roleContainer}
+                  >
+                    <FixedText>{role}</FixedText>
+                    <Icon name="close" size={16} />
+                  </TouchableOpacity>
+                ))}
 
-        {/* City Picker */}
-        <LinkedCity
-          state={state}
-          city={city} // Fetch the current city value
-          setCity={(selectedCity: any) => setValue("city", selectedCity)} // Update the form's 'city'
-          fetchingStates={fetchingStates}
-        />
-        {errors.city && (
-          <Text style={styles.errorText}>{errors.city.message}</Text>
-        )}
+                {selectedRoles.length < 1 && (
+                  <Text style={styles.errorText}>
+                    Você deve selecionar ao menos 1 função
+                  </Text>
+                )}
+              </ScrollView>
 
-        {/* Checkbox Sou prestador de serviços */}
-        <Controller
-          control={control}
-          name="isFreelancer"
-          defaultValue={false}
-          render={({ field: { onChange, value } }) => (
-            <Checkbox
-              label="Sou prestador de serviços "
-              isChecked={value}
-              onChange={onChange}
-            />
-          )}
-        />
+              {/* CPF Input */}
+              <Controller
+                control={control}
+                name="cpf"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label="CPF"
+                    value={value}
+                    onChangeText={onChange}
+                    keyboardType="numeric"
+                    errorMessage={errors.cpf?.message}
+                    mask="cpf"
+                    maxLength={14}
+                  />
+                )}
+              />
 
-        {isFreelancer && (
-          <>
-            {/* Role Input */}
-            <ScrollView style={{ marginBottom: 20 }}>
+              {/* Phone Number Input */}
+              <Controller
+                control={control}
+                name="phoneNumber"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label="Número de Telefone"
+                    value={value}
+                    onChangeText={onChange}
+                    keyboardType="phone-pad"
+                    errorMessage={errors.phoneNumber?.message}
+                    mask="phone"
+                    maxLength={15}
+                  />
+                )}
+              />
+
+              {/* Birth Date Input */}
+              <Controller
+                control={control}
+                name="birthDate"
+                render={({ field: { onChange, value } }) => (
+                  <InputField
+                    label="Data de Nascimento"
+                    value={value}
+                    onChangeText={onChange}
+                    keyboardType="numeric"
+                    errorMessage={errors.birthDate?.message}
+                    mask="date"
+                    maxLength={10}
+                  />
+                )}
+              />
+
+              {/* Profile Photo Upload */}
               <TouchableOpacity
-                onPress={handleOpenModal}
-                style={
-                  selectedRoles.length === 0
-                    ? { ...styles.uploadButton, marginBottom: 10 }
-                    : {
-                        ...styles.uploadButton,
-                        borderBottomLeftRadius: 0,
-                        borderBottomRightRadius: 0,
-                      }
-                }
+                onPress={handlePickImage}
+                style={styles.uploadButton}
               >
-                <Text style={styles.uploadButtonText}>
-                  {"Selecione seus serviços "}
-                </Text>
+                <FixedText style={styles.uploadButtonText}>
+                  {watch("profilePhoto")
+                    ? "Alterar Foto de Perfil"
+                    : "Adicionar Foto de Perfil (Opcional)"}
+                </FixedText>
               </TouchableOpacity>
 
-              {selectedRoles.map((role, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleSelectedRoleRemove(role)}
-                  style={styles.roleContainer}
-                >
-                  <FixedText>{role}</FixedText>
-                  <Icon name="close" size={16} />
-                </TouchableOpacity>
-              ))}
+              {roleModal}
+            </>
+          )}
 
-              {selectedRoles.length < 1 && (
-                <Text style={styles.errorText}>
-                  Você deve selecionar ao menos 1 função
-                </Text>
-              )}
-            </ScrollView>
-
-            {/* CPF Input */}
-            <Controller
-              control={control}
-              name="cpf"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  label="CPF"
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="numeric"
-                  errorMessage={errors.cpf?.message}
-                  mask="cpf"
-                  maxLength={14}
-                />
-              )}
-            />
-
-            {/* Phone Number Input */}
-            <Controller
-              control={control}
-              name="phoneNumber"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  label="Número de Telefone"
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="phone-pad"
-                  errorMessage={errors.phoneNumber?.message}
-                  mask="phone"
-                  maxLength={15}
-                />
-              )}
-            />
-
-            {/* Birth Date Input */}
-            <Controller
-              control={control}
-              name="birthDate"
-              render={({ field: { onChange, value } }) => (
-                <InputField
-                  label="Data de Nascimento"
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="numeric"
-                  errorMessage={errors.birthDate?.message}
-                  mask="date"
-                  maxLength={10}
-                />
-              )}
-            />
-
-            {/* Profile Photo Upload */}
-            <TouchableOpacity
-              onPress={handlePickImage}
-              style={styles.uploadButton}
-            >
-              <FixedText style={styles.uploadButtonText}>
-                {watch("profilePhoto")
-                  ? "Alterar Foto de Perfil"
-                  : "Adicionar Foto de Perfil (Opcional)"}
-              </FixedText>
-            </TouchableOpacity>
-
-            {roleModal}
-          </>
-        )}
-
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit(handleSignUp)}
-          disabled={loading}
-        >
-          <Text style={styles.submitButtonText}>
-            {loading ? "Cadastrando..." : "Cadastrar"}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {/* Submit Button */}
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit(handleSignUp)}
+            disabled={loading}
+          >
+            <Text style={styles.submitButtonText}>
+              {loading ? "Cadastrando..." : "Cadastrar"}
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

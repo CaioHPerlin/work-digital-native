@@ -11,6 +11,8 @@ import {
   FlatList,
   TextInput,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Image } from "expo-image";
 import { supabase } from "../../lib/supabase";
@@ -472,184 +474,199 @@ const FreelancerProfile: React.FC<{ userId: string }> = ({ userId }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <ImageWithFallback
-          cache="none"
-          imageUrl={optimizeImageLowQ(imageUri)}
-          style={styles.profileImage}
-        />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={30}
+      >
+        <ScrollView style={styles.container}>
+          <ImageWithFallback
+            cache="none"
+            imageUrl={optimizeImageLowQ(imageUri)}
+            style={styles.profileImage}
+          />
 
-        <TouchableOpacity onPress={handlePickImage} style={styles.uploadButton}>
-          <FixedText style={styles.uploadButtonText}>
-            Alterar Foto de Perfil
-          </FixedText>
-        </TouchableOpacity>
-
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Nome Completo"
-              value={value}
-              onChangeText={onChange}
-              errorMessage={errors.name?.message as string}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="phoneNumber"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Número de Telefone"
-              value={value}
-              onChangeText={onChange}
-              keyboardType="phone-pad"
-              errorMessage={errors.phoneNumber?.message}
-              mask="phone"
-              maxLength={15}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, value } }) => (
-            <InputField
-              label="Descrição"
-              value={value}
-              onChangeText={onChange}
-              errorMessage={errors.description?.message}
-            />
-          )}
-        />
-
-        <>
-          <SafeAreaView style={{ marginBottom: 20 }}>
-            <FlatList
-              ListHeaderComponent={
-                <TouchableOpacity
-                  onPress={handleOpenModal}
-                  style={
-                    selectedRoles.length === 0
-                      ? {
-                          ...styles.uploadButton,
-                          marginBottom: 10,
-                        }
-                      : {
-                          ...styles.uploadButton,
-                          borderBottomLeftRadius: 0,
-                          borderBottomRightRadius: 0,
-                          marginBottom: 0,
-                        }
-                  }
-                >
-                  <FixedText style={styles.uploadButtonText}>
-                    Selecione seus serviços
-                  </FixedText>
-                </TouchableOpacity>
-              }
-              data={selectedRoles}
-              renderItem={(item) => (
-                <TouchableOpacity
-                  onPress={() => handleSelectedRoleRemove(item.item)}
-                  style={styles.roleContainer}
-                >
-                  <FixedText>{item.item}</FixedText>
-                  <Icon name="close" size={16} />
-                </TouchableOpacity>
-              )}
-            />
-
-            {selectedRoles.length < 1 && (
-              <Text style={styles.errorText}>
-                Você deve selecionar ao menos 1 função
-              </Text>
-            )}
-          </SafeAreaView>
-          {roleModal}
-        </>
-
-        {selectedRoles.length > 0 && (
-          <View>
-            <Text style={styles.title}>Adicionar Destaques</Text>
-            {selectedRoles.map((role) => (
-              <View key={role} style={styles.roleContainerX}>
-                <TouchableOpacity
-                  onPress={() => handleHighlightUpload(role)}
-                  style={{
-                    flexDirection: "row",
-                    gap: 10,
-                    alignItems: "center",
-                  }}
-                >
-                  <Icon
-                    name="plus"
-                    size={20}
-                    color="#FFF"
-                    style={{
-                      padding: 10,
-                      backgroundColor: "#2d47f0",
-                      maxWidth: 45,
-                      borderRadius: 10,
-                    }}
-                  />
-                  <Text style={styles.roleTitle}>{role}</Text>
-                </TouchableOpacity>
-                <ScrollView horizontal style={styles.imageScrollView}>
-                  {highlightImages
-                    .find((item) => item.role === role)
-                    ?.images.map((uri, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        onPress={() => openModal(uri)}
-                        style={styles.imageContainer}
-                      >
-                        <Icon
-                          onPress={() => handleHighlightRemove(role, index)}
-                          name="close"
-                          size={23}
-                          color="#f27e26"
-                          style={styles.closeIcon}
-                        />
-                        <Image source={{ uri }} style={styles.image} />
-                      </TouchableOpacity>
-                    ))}
-                </ScrollView>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Modal para exibir a imagem em tela cheia */}
-        {selectedImage && (
-          <Modal
-            visible={isModalVisible}
-            transparent={false}
-            onRequestClose={closeModal}
+          <TouchableOpacity
+            onPress={handlePickImage}
+            style={styles.uploadButton}
           >
-            <View style={styles.modalContainerFullImage}>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Icon name="close" size={40} color="#f27e26" />
-              </TouchableOpacity>
-              <Image source={{ uri: selectedImage }} style={styles.fullImage} />
-            </View>
-          </Modal>
-        )}
+            <FixedText style={styles.uploadButtonText}>
+              Alterar Foto de Perfil
+            </FixedText>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit(handleUpdateProfile)}
-          disabled={loading}
-        >
-          <FixedText style={styles.submitButtonText}>
-            {loading ? "Atualizando..." : "Atualizar Perfil"}
-          </FixedText>
-        </TouchableOpacity>
-      </ScrollView>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Nome Completo"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.name?.message as string}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="phoneNumber"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Número de Telefone"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="phone-pad"
+                errorMessage={errors.phoneNumber?.message}
+                mask="phone"
+                maxLength={15}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, value } }) => (
+              <InputField
+                label="Descrição"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.description?.message}
+              />
+            )}
+          />
+
+          <>
+            <SafeAreaView style={{ marginBottom: 20 }}>
+              <FlatList
+                ListHeaderComponent={
+                  <TouchableOpacity
+                    onPress={handleOpenModal}
+                    style={
+                      selectedRoles.length === 0
+                        ? {
+                            ...styles.uploadButton,
+                            marginBottom: 10,
+                          }
+                        : {
+                            ...styles.uploadButton,
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                            marginBottom: 0,
+                          }
+                    }
+                  >
+                    <FixedText style={styles.uploadButtonText}>
+                      Selecione seus serviços
+                    </FixedText>
+                  </TouchableOpacity>
+                }
+                data={selectedRoles}
+                renderItem={(item) => (
+                  <TouchableOpacity
+                    onPress={() => handleSelectedRoleRemove(item.item)}
+                    style={styles.roleContainer}
+                  >
+                    <FixedText>{item.item}</FixedText>
+                    <Icon name="close" size={16} />
+                  </TouchableOpacity>
+                )}
+              />
+
+              {selectedRoles.length < 1 && (
+                <Text style={styles.errorText}>
+                  Você deve selecionar ao menos 1 função
+                </Text>
+              )}
+            </SafeAreaView>
+            {roleModal}
+          </>
+
+          {selectedRoles.length > 0 && (
+            <View>
+              <Text style={styles.title}>Adicionar Destaques</Text>
+              {selectedRoles.map((role) => (
+                <View key={role} style={styles.roleContainerX}>
+                  <TouchableOpacity
+                    onPress={() => handleHighlightUpload(role)}
+                    style={{
+                      flexDirection: "row",
+                      gap: 10,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icon
+                      name="plus"
+                      size={20}
+                      color="#FFF"
+                      style={{
+                        padding: 10,
+                        backgroundColor: "#2d47f0",
+                        maxWidth: 45,
+                        borderRadius: 10,
+                      }}
+                    />
+                    <Text style={styles.roleTitle}>{role}</Text>
+                  </TouchableOpacity>
+                  <ScrollView horizontal style={styles.imageScrollView}>
+                    {highlightImages
+                      .find((item) => item.role === role)
+                      ?.images.map((uri, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          onPress={() => openModal(uri)}
+                          style={styles.imageContainer}
+                        >
+                          <Icon
+                            onPress={() => handleHighlightRemove(role, index)}
+                            name="close"
+                            size={23}
+                            color="#f27e26"
+                            style={styles.closeIcon}
+                          />
+                          <Image source={{ uri }} style={styles.image} />
+                        </TouchableOpacity>
+                      ))}
+                  </ScrollView>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Modal para exibir a imagem em tela cheia */}
+          {selectedImage && (
+            <Modal
+              visible={isModalVisible}
+              transparent={false}
+              onRequestClose={closeModal}
+            >
+              <View style={styles.modalContainerFullImage}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={closeModal}
+                >
+                  <Icon name="close" size={40} color="#f27e26" />
+                </TouchableOpacity>
+                <Image
+                  source={{ uri: selectedImage }}
+                  style={styles.fullImage}
+                />
+              </View>
+            </Modal>
+          )}
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit(handleUpdateProfile)}
+            disabled={loading}
+          >
+            <FixedText style={styles.submitButtonText}>
+              {loading ? "Atualizando..." : "Atualizar Perfil"}
+            </FixedText>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

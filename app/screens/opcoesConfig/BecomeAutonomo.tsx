@@ -11,6 +11,8 @@ import {
   FlatList,
   TextInput,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import InputField from "../../components/InputField";
 import * as Animatable from "react-native-animatable";
@@ -311,142 +313,148 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <>
-          {/* Description Input */}
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, value } }) => (
-              <InputField
-                label="Descrição dos seus serviços (Opcional)"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="default"
-                errorMessage={errors.description?.message}
-              />
-            )}
-          />
-
-          {/* Role Input */}
-          <SafeAreaView style={{ marginBottom: 20 }}>
-            <FlatList
-              ListHeaderComponent={
-                <TouchableOpacity
-                  onPress={handleOpenModal}
-                  style={
-                    selectedRoles.length === 0
-                      ? {
-                          ...styles.uploadButton,
-                          marginBottom: 10,
-                        }
-                      : {
-                          ...styles.uploadButton,
-                          borderBottomLeftRadius: 0,
-                          borderBottomRightRadius: 0,
-                        }
-                  }
-                >
-                  <FixedText style={styles.uploadButtonText}>
-                    Selecione seus serviços
-                  </FixedText>
-                </TouchableOpacity>
-              }
-              data={selectedRoles}
-              renderItem={(item) => (
-                <TouchableOpacity
-                  onPress={() => handleSelectedRoleRemove(item.item)}
-                  style={styles.roleContainer}
-                >
-                  <Text>{item.item}</Text>
-                  <Icon name="close" size={16} />
-                </TouchableOpacity>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={Platform.OS === "ios" && { flex: 1 }}
+        keyboardVerticalOffset={30}
+      >
+        <ScrollView>
+          <>
+            {/* Description Input */}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label="Descrição dos seus serviços (Opcional)"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="default"
+                  errorMessage={errors.description?.message}
+                />
               )}
             />
 
-            {selectedRoles.length < 1 && (
-              <Text style={styles.errorText}>
-                Você deve selecionar ao menos 1 função
+            {/* Role Input */}
+            <SafeAreaView style={{ marginBottom: 20 }}>
+              <FlatList
+                ListHeaderComponent={
+                  <TouchableOpacity
+                    onPress={handleOpenModal}
+                    style={
+                      selectedRoles.length === 0
+                        ? {
+                            ...styles.uploadButton,
+                            marginBottom: 10,
+                          }
+                        : {
+                            ...styles.uploadButton,
+                            borderBottomLeftRadius: 0,
+                            borderBottomRightRadius: 0,
+                          }
+                    }
+                  >
+                    <FixedText style={styles.uploadButtonText}>
+                      Selecione seus serviços
+                    </FixedText>
+                  </TouchableOpacity>
+                }
+                data={selectedRoles}
+                renderItem={(item) => (
+                  <TouchableOpacity
+                    onPress={() => handleSelectedRoleRemove(item.item)}
+                    style={styles.roleContainer}
+                  >
+                    <Text>{item.item}</Text>
+                    <Icon name="close" size={16} />
+                  </TouchableOpacity>
+                )}
+              />
+
+              {selectedRoles.length < 1 && (
+                <Text style={styles.errorText}>
+                  Você deve selecionar ao menos 1 função
+                </Text>
+              )}
+            </SafeAreaView>
+            {/* CPF Input */}
+            <Controller
+              control={control}
+              name="cpf"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label="CPF"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="numeric"
+                  errorMessage={errors.cpf?.message}
+                  mask="cpf"
+                  maxLength={14}
+                />
+              )}
+            />
+
+            {/* Phone Number Input */}
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label="Número de Telefone"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="phone-pad"
+                  errorMessage={errors.phoneNumber?.message}
+                  mask="phone"
+                  maxLength={15}
+                />
+              )}
+            />
+
+            {/* Birth Date Input */}
+            <Controller
+              control={control}
+              name="birthDate"
+              render={({ field: { onChange, value } }) => (
+                <InputField
+                  label="Data de Nascimento"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="numeric"
+                  errorMessage={errors.birthDate?.message}
+                  mask="date"
+                  maxLength={10}
+                />
+              )}
+            />
+
+            {/* Profile Photo Upload */}
+            <TouchableOpacity
+              onPress={handlePickImage}
+              style={styles.uploadButton}
+            >
+              <Text style={styles.uploadButtonText}>
+                {watch("profilePhoto")
+                  ? "Alterar Foto de Perfil"
+                  : "Adicionar Foto de Perfil (Opcional)"}
               </Text>
-            )}
-          </SafeAreaView>
-          {/* CPF Input */}
-          <Controller
-            control={control}
-            name="cpf"
-            render={({ field: { onChange, value } }) => (
-              <InputField
-                label="CPF"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="numeric"
-                errorMessage={errors.cpf?.message}
-                mask="cpf"
-                maxLength={14}
-              />
-            )}
-          />
+            </TouchableOpacity>
 
-          {/* Phone Number Input */}
-          <Controller
-            control={control}
-            name="phoneNumber"
-            render={({ field: { onChange, value } }) => (
-              <InputField
-                label="Número de Telefone"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="phone-pad"
-                errorMessage={errors.phoneNumber?.message}
-                mask="phone"
-                maxLength={15}
-              />
-            )}
-          />
+            {roleModal}
+          </>
 
-          {/* Birth Date Input */}
-          <Controller
-            control={control}
-            name="birthDate"
-            render={({ field: { onChange, value } }) => (
-              <InputField
-                label="Data de Nascimento"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="numeric"
-                errorMessage={errors.birthDate?.message}
-                mask="date"
-                maxLength={10}
-              />
-            )}
-          />
-
-          {/* Profile Photo Upload */}
+          {/* Submit Button */}
           <TouchableOpacity
-            onPress={handlePickImage}
-            style={styles.uploadButton}
+            style={styles.submitButton}
+            onPress={handleSubmit(handleSignUp)}
+            disabled={loading}
           >
-            <Text style={styles.uploadButtonText}>
-              {watch("profilePhoto")
-                ? "Alterar Foto de Perfil"
-                : "Adicionar Foto de Perfil (Opcional)"}
+            <Text style={styles.submitButtonText}>
+              {loading ? "Cadastrando..." : "Cadastrar"}
             </Text>
           </TouchableOpacity>
-
-          {roleModal}
-        </>
-
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit(handleSignUp)}
-          disabled={loading}
-        >
-          <Text style={styles.submitButtonText}>
-            {loading ? "Cadastrando..." : "Cadastrar"}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
