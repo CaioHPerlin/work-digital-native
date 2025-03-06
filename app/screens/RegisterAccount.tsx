@@ -354,7 +354,6 @@ const RegisterAccount: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={Platform.OS === "ios" && { flex: 1 }}
         keyboardVerticalOffset={30}
       >
         <ScrollView style={styles.container}>
