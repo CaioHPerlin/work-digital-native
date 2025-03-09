@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ScrollView,
   Keyboard,
   EmitterSubscription,
+  ActivityIndicator,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as Animatable from "react-native-animatable";
@@ -22,7 +24,6 @@ import ImageWithFallback from "../components/ImageWithFallback";
 import { CustomStackNavigationProp } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FixedText from "../components/FixedText";
-import { ActivityIndicator } from "react-native-paper";
 
 interface ChatScreenProps {
   route: {
@@ -53,13 +54,16 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   const navigation = useNavigation<CustomStackNavigationProp>();
 
   const [targetUserName, setTargetUserName] = useState("Carregando...");
-  const [targetUserPicture, setTargetUserPicture] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState(
     initialMessage ? initialMessage : ""
   );
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const { markChatAsRead } = useChatNotifications();
   const flatListRef = useRef<FlatList<Message>>(null);
+
+  const PAGE_SIZE = 20;
 
   useFocusEffect(
     useCallback(() => {
@@ -81,13 +85,18 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       };
     }, [chatId, userId])
   );
+
   useEffect(() => {
-    const fetchMessages = async () => {
+    const fetchMessages = async (initialLoad = false) => {
       const { data, error } = await supabase
         .from("messages")
         .select("*")
         .eq("chat_id", chatId)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: false })
+        .range(
+          initialLoad ? 0 : messages.length,
+          initialLoad ? PAGE_SIZE - 1 : messages.length + PAGE_SIZE - 1
+        );
 
       if (error) {
         return Alert.alert(
@@ -96,7 +105,15 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         );
       }
 
-      setMessages(data as Message[]);
+      if (initialLoad) {
+        setMessages(data.reverse() as Message[]);
+        setHasMore(data.length === PAGE_SIZE);
+
+        scrollToEnd();
+      } else {
+        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+        setHasMore(data.length === PAGE_SIZE);
+      }
     };
 
     const fetchTargetUser = async () => {
@@ -110,12 +127,34 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         console.error("Error fetching target user:", error);
       } else {
         setTargetUserName(data?.name || "Unknown User");
-        setTargetUserPicture(data?.profile_picture_url || "");
       }
     };
     fetchTargetUser();
-    fetchMessages();
+    fetchMessages(true);
   }, [chatId, freelancerId]);
+
+  const loadMoreMessages = async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: false })
+      .range(messages.length, messages.length + PAGE_SIZE - 1);
+
+    if (error) {
+      console.error("Error loading more messages:", error);
+      setLoadingMore(false);
+      return;
+    }
+
+    setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+    setHasMore(data.length === PAGE_SIZE);
+    setLoadingMore(false);
+  };
 
   useEffect(() => {
     const channel = supabase
@@ -155,11 +194,16 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 
       // If it doesn't exist, add it
       if (!messageExists) {
-        return [...prevMessages, message];
+        const newMessages = [...prevMessages, message];
+        return newMessages.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
       }
 
       return prevMessages;
     });
+    scrollToEnd();
   };
 
   const handleSendMessage = async () => {
@@ -175,11 +219,15 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
     };
 
     // Optimistically add the message to the list with a loading indicator
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { ...tempMessage, sending: true },
-    ]);
+    setMessages((prevMessages) => {
+      const newMessages = [...prevMessages, { ...tempMessage, sending: true }];
+      return newMessages.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    });
     setNewMessage("");
+    scrollToEnd();
 
     // Insert message into the database
     const { data, error } = await supabase
@@ -203,12 +251,22 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       Alert.alert("Erro ao enviar mensagem", "Tente novamente mais tarde.");
     } else if (data) {
       // Replace the temporary message with the actual message from the database
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
+      setMessages((prevMessages) => {
+        const newMessages = prevMessages.map((msg) =>
           msg.temp && msg.id === tempMessage.id ? data[0] : msg
-        )
-      );
+        );
+        return newMessages.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      });
     }
+  };
+
+  const scrollToEnd = () => {
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, 100); // smooth scrolling
   };
 
   const renderItem = ({ item }: { item: Message }) => {
@@ -226,20 +284,28 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       String(date.getMinutes()).padStart(2, "0");
 
     return (
-      <Animatable.View
-        animation={item.sending ? "fadeInUp" : undefined} // Apply animation only to new messages
-        duration={200}
-        style={[
-          styles.message,
-          isMyMessage ? styles.selfMessage : styles.otherMessage,
-        ]}
-      >
-        <FixedText style={styles.messageText}>{item.content}</FixedText>
-        <FixedText style={styles.messageTimestampText}>
-          {formattedTimestamp}
-        </FixedText>
-        {item.sending && <ActivityIndicator size="small" color="#fff" />}
-      </Animatable.View>
+      <View style={{ flexDirection: isMyMessage ? "row-reverse" : "row" }}>
+        {item.sending && (
+          <ActivityIndicator
+            size="small"
+            style={{ marginLeft: 4 }}
+            color="#f27e26"
+          />
+        )}
+        <Animatable.View
+          animation={item.sending ? "fadeInUp" : undefined} // Apply animation only to new messages
+          duration={200}
+          style={[
+            styles.message,
+            isMyMessage ? styles.selfMessage : styles.otherMessage,
+          ]}
+        >
+          <FixedText style={styles.messageText}>{item.content}</FixedText>
+          <FixedText style={styles.messageTimestampText}>
+            {formattedTimestamp}
+          </FixedText>
+        </Animatable.View>
+      </View>
     );
   };
 
@@ -254,12 +320,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   useEffect(() => {
     let keyboardDidShowListener: EmitterSubscription;
     let keyboardDidHideListener: EmitterSubscription;
-
-    const scrollToEnd = () => {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100); // smooth scrolling
-    };
 
     const keyboardDidShow = () => {
       scrollToEnd();
@@ -311,14 +371,24 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         >
           <FlatList
             ref={flatListRef}
-            data={messages}
+            data={[
+              ...messages.filter((msg) => !msg.sending),
+              ...messages.filter((msg) => msg.sending),
+            ]}
             renderItem={renderItem}
             keyExtractor={(item) =>
               item.id || `${item.created_at}_${messages.indexOf(item)}`
             }
             contentContainerStyle={styles.messageList}
-            onContentSizeChange={() =>
-              flatListRef.current?.scrollToEnd({ animated: true })
+            onScroll={({ nativeEvent }) => {
+              if (nativeEvent.contentOffset.y === 0) {
+                loadMoreMessages();
+              }
+            }}
+            ListHeaderComponent={
+              loadingMore ? (
+                <ActivityIndicator size="large" color="#f27e26" />
+              ) : null
             }
           />
 
@@ -343,14 +413,24 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         <View style={styles.chatContainer}>
           <FlatList
             ref={flatListRef}
-            data={messages}
+            data={[
+              ...messages.filter((msg) => !msg.sending),
+              ...messages.filter((msg) => msg.sending),
+            ]}
             renderItem={renderItem}
             keyExtractor={(item) =>
               item.id || `${item.created_at}_${messages.indexOf(item)}`
             }
             contentContainerStyle={styles.messageList}
-            onContentSizeChange={() =>
-              flatListRef.current?.scrollToEnd({ animated: true })
+            onScroll={({ nativeEvent }) => {
+              if (nativeEvent.contentOffset.y === 0) {
+                loadMoreMessages();
+              }
+            }}
+            ListHeaderComponent={
+              loadingMore ? (
+                <ActivityIndicator size="large" color="#f27e26" />
+              ) : null
             }
           />
 
