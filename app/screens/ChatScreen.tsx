@@ -22,6 +22,7 @@ import ImageWithFallback from "../components/ImageWithFallback";
 import { CustomStackNavigationProp } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FixedText from "../components/FixedText";
+import { ActivityIndicator } from "react-native-paper";
 
 interface ChatScreenProps {
   route: {
@@ -42,6 +43,7 @@ interface Message {
   content: string;
   created_at: string;
   temp?: boolean;
+  sending?: boolean;
 }
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
@@ -172,8 +174,11 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
       temp: true,
     };
 
-    // Optimistically add the message to the list
-    setMessages((prevMessages) => [...prevMessages, tempMessage]);
+    // Optimistically add the message to the list with a loading indicator
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { ...tempMessage, sending: true },
+    ]);
     setNewMessage("");
 
     // Insert message into the database
@@ -191,7 +196,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 
     if (error) {
       console.error("Error sending message:", error);
+      // Remove the temporary message with the loading indicator
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== tempMessage.id)
+      );
+      Alert.alert("Erro ao enviar mensagem", "Tente novamente mais tarde.");
     } else if (data) {
+      // Replace the temporary message with the actual message from the database
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.temp && msg.id === tempMessage.id ? data[0] : msg
@@ -201,7 +212,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
   };
 
   const renderItem = ({ item }: { item: Message }) => {
-    const isNewMessage = !item.id || item.temp;
     const isMyMessage = item.sender_id === userId;
     const date = new Date(item.created_at);
 
@@ -217,7 +227,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 
     return (
       <Animatable.View
-        animation={isNewMessage ? "fadeInUp" : undefined} // Apply animation only to new messages
+        animation={item.sending ? "fadeInUp" : undefined} // Apply animation only to new messages
         duration={200}
         style={[
           styles.message,
@@ -228,6 +238,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         <FixedText style={styles.messageTimestampText}>
           {formattedTimestamp}
         </FixedText>
+        {item.sending && <ActivityIndicator size="small" color="#fff" />}
       </Animatable.View>
     );
   };
